@@ -1,16 +1,20 @@
-from modelos import Atividade, Questao
-from autenticacao import Autenticacao
+from modelos import Atividade, Questao, InfoUsuario
 
 
 class FormularioUsuario:
-    def __init__(self):
-        self._modelo = Autenticacao
+    def __init__(self, autenticacao):
+        self._modelo = autenticacao
 
     def cadastrar(self):
         print("Bem vindo ao sistema de atividades!")
         email = input("Digite seu email: ")
         senha = input("Digite sua senha: ")
-        self._modelo.cadastrar(email, senha)
+        nome = input("Digite seu nome: ")
+        sobrenome = input("Digite seu sobrenome: ")
+        data_nascimento = input("Digite sua data de nascimento: ")
+        sexo = input("Digite seu sexo: ")
+        info = InfoUsuario(nome, sobrenome, data_nascimento, sexo)
+        self._modelo.cadastrar(email, senha, info)
             
     def login(self):
         print("Bem vindo ao sistema de atividades!")
@@ -28,7 +32,7 @@ class FormularioAtividade:
         titulo = input("Digite o título da atividade: ")
         descricao = input("Digite a descrição da atividade: ")
         questoes = input("Digite as questões da atividade: ")
-        self._modelo.cadastrar(titulo, descricao, usuario, questoes)
+        return self._modelo.cadastrar(titulo, descricao, usuario, questoes)
 
 
 class FormularioQuestao:
@@ -39,4 +43,4 @@ class FormularioQuestao:
         print("Cadastro de questão")
         titulo = input("Digite o título da questão: ")
         descricao = input("Digite a descrição da questão: ")
-        self._modelo.cadastrar(titulo, descricao)
+        return self._modelo.cadastrar(titulo, descricao)

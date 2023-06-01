@@ -11,6 +11,9 @@ class Usuario:
         return f"{self._email}" \
                f"{self._info}"
 
+    def eh_professor(self):
+        return self._info.eh_professor
+
     def get_email(self):
         return self._email
     
@@ -41,6 +44,10 @@ class InfoUsuario:
             f"Sobrenome: {self._sobrenome}\n" \
             f"Data de nascimento: {self._data_nascimento}\n" \
             f"Sexo: {self._sexo}\n"
+    
+    @property
+    def eh_professor(self):
+        return self._eh_professor
 
 
 class Atividade:

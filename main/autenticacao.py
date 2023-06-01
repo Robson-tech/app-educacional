@@ -11,14 +11,20 @@ class Autenticacao:
     @property
     def esta_logado(self):
         return self._usuario is not None
+    
+    def get_usuarios(self):
+        return self._usuarios
+    
+    def get_usuario(self):
+        return self._usuario
 
     def autenticar(self, email, senha):
         if email in self._usuarios:
             return self._usuarios[email].valida_senha(senha)
     
-    def cadastrar(self, email, senha):
-        if self._modelo.valida_email(email):
-            self._usuarios[email] = self._modelo(email, senha)
+    def cadastrar(self, email, senha, info):
+        if self._modelo.valida_email(None, email):
+            self._usuarios[email] = self._modelo(email, senha, info)
             self._usuario = self._usuarios[email]
             return True, "Cadastro realizado com sucesso!"
         else:
