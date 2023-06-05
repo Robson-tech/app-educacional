@@ -9,10 +9,36 @@ class Usuario(abc.ABC):
         self._nome = nome
         self._sobrenome = sobrenome
         self._nascimento = nascimento
+        self._id = None
         self._ultimo_login = None
 
-    def get_email(self):
+    @property
+    def id(self):
+        return self._id
+    
+    @property
+    def nome(self):
+        return self._nome
+    
+    @property
+    def sobrenome(self):
+        return self._sobrenome
+    
+    @property
+    def nascimento(self):
+        return self._nascimento
+    
+    @property
+    def email(self):
         return self._email
+    
+    @property
+    def senha(self):
+        return self._senha
+    
+    @property
+    def ultimo_login(self):
+        return self._ultimo_login
 
     @abc.abstractmethod
     def validar_email(self, email):
@@ -23,9 +49,27 @@ class Usuario(abc.ABC):
         pass
 
 
+class Diretor(Usuario):
+    def __init__(self, email, senha, nome, sobrenome, nascimento):
+        super().__init__(email, senha, nome, sobrenome, nascimento)
+
+    def validar_email(self, email):
+        if email.find("@") != -1:
+            return True
+        else:
+            return False
+
+    def validar_senha(self, senha):
+        if self._senha == senha:
+            return True
+        else:
+            return False
+
+
 class Professor(Usuario):
     def __init__(self, email, senha, nome, sobrenome, nascimento):
         super().__init__(email, senha, nome, sobrenome, nascimento)
+        self._salario = 0
 
     def validar_email(self, email):
         if email.find("@") != -1:
@@ -43,8 +87,7 @@ class Professor(Usuario):
 class Aluno(Usuario):
     def __init__(self, email, senha, nome, sobrenome, nascimento):
         super().__init__(email, senha, nome, sobrenome, nascimento)
-        self._atividades_feitas = {}
-        self._media = 0
+        self._pontuacao = 0
 
     def validar_email(self, email):
         if email.find("@") != -1:
@@ -60,12 +103,10 @@ class Aluno(Usuario):
 
 
 class Materia:
-    def __init__(self, nome, descricao, alunos, professor):
+    def __init__(self, nome, descricao, professor):
         self._nome = nome
         self._descricao = descricao
         self._professor = professor
-        self._alunos = alunos
-        self._lista_atividades = []
 
 
 class Atividade:
