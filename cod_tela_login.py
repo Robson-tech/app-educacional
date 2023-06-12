@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from backend.sistema import SistemaEducacional
 
 
 class Ui_Login(object):
@@ -18,10 +19,14 @@ class Ui_Login(object):
         Login.setMinimumSize(QtCore.QSize(500, 500))
         Login.setMaximumSize(QtCore.QSize(500, 500))
         Login.setStyleSheet("background-color: rgb(33, 33, 33);")
+        qtRectangle = Login.frameGeometry()
+        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+        qtRectangle.moveCenter(centerPoint)
+        Login.move(qtRectangle.topLeft())
         self.background_login = QtWidgets.QFrame(Login)
         self.background_login.setGeometry(QtCore.QRect(30, 30, 444, 422))
         self.background_login.setStyleSheet("border-radius: 10px;\n"
-"background-color: rgb(7, 66, 22);")
+                                            "background-color: rgb(7, 66, 22);")
         self.background_login.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.background_login.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_login.setObjectName("background_login")
@@ -29,7 +34,7 @@ class Ui_Login(object):
         self.background_foto.setGeometry(QtCore.QRect(140, 30, 170, 170))
         self.background_foto.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.background_foto.setStyleSheet("border-radius: 85px;\n"
-"background-color: rgb(217, 217, 217);")
+                                           "background-color: rgb(217, 217, 217);")
         self.background_foto.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.background_foto.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_foto.setObjectName("background_foto")
@@ -41,7 +46,7 @@ class Ui_Login(object):
         self.botao_login.setFont(font)
         self.botao_login.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_login.setStyleSheet("border-radius: 20px;\n"
-"background-color: rgb(11, 97, 144);")
+                                       "background-color: rgb(11, 97, 144);")
         self.botao_login.setObjectName("botao_login")
         self.caixa_senha = QtWidgets.QLineEdit(Login)
         self.caixa_senha.setGeometry(QtCore.QRect(79, 310, 350, 50))
@@ -54,9 +59,10 @@ class Ui_Login(object):
         font.setStrikeOut(False)
         self.caixa_senha.setFont(font)
         self.caixa_senha.setStyleSheet("border-radius: 10px;\n"
-"background-color: rgb(170, 170, 170);")
+                                       "background-color: rgb(170, 170, 170);")
         self.caixa_senha.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.caixa_senha.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.caixa_senha.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.caixa_senha.setObjectName("caixa_senha")
         self.botao_cadastro = QtWidgets.QPushButton(Login)
         self.botao_cadastro.setGeometry(QtCore.QRect(89, 375, 150, 40))
@@ -68,9 +74,10 @@ class Ui_Login(object):
         font.setWeight(50)
         font.setKerning(True)
         self.botao_cadastro.setFont(font)
-        self.botao_cadastro.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_cadastro.setCursor(
+            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_cadastro.setStyleSheet("border-radius: 20px;\n"
-"background-color: rgb(227, 246, 0);")
+                                          "background-color: rgb(227, 246, 0);")
         self.botao_cadastro.setObjectName("botao_cadastro")
         self.caixa_email = QtWidgets.QLineEdit(Login)
         self.caixa_email.setGeometry(QtCore.QRect(79, 242, 350, 50))
@@ -78,12 +85,20 @@ class Ui_Login(object):
         font.setPointSize(16)
         self.caixa_email.setFont(font)
         self.caixa_email.setStyleSheet("border-radius: 10px;\n"
-"background-color: rgb(170, 170, 170);")
-        self.caixa_email.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+                                       "background-color: rgb(170, 170, 170);")
+        self.caixa_email.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.caixa_email.setObjectName("caixa_email")
+
+        # Modificações
+        self.sistema = SistemaEducacional()
+        self.botao_login.clicked.connect(self.logar)
 
         self.retranslateUi(Login)
         QtCore.QMetaObject.connectSlotsByName(Login)
+
+    def logar(self):
+        pass
 
     def retranslateUi(self, Login):
         _translate = QtCore.QCoreApplication.translate

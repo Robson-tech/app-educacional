@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-from modelos import Professor, Aluno
+from .modelos import Professor, Aluno
 
 
 tabelas = {}
@@ -88,35 +88,103 @@ class SistemaEducacional:
 
         self._mydb.commit()
 
+    @property
+    def usuario(self):
+        return self._usuario
+
+    @property
+    def materias(self):
+        if self._usuario:
+            self._sql = "SELECT * FROM sistema_educacional.materias WHERE professor_id = %s"
+            self._val = (self._usuario.id,)
+            self._cursor.execute(self._sql, self._val)
+            return self._cursor.fetchall()
+        else:
+            return []
+
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
-        professor = Professor(email, senha, nome, sobrenome, nascimento)
-        self._usuario = professor
+        if self.buscar(email):
+            return False
         self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento) VALUES (%s, %s, %s, %s, %s)"
-        self._val = (professor.email, professor.senha, professor.nome, professor.sobrenome, professor.nascimento)
+        self._val = (email, senha, nome, sobrenome, nascimento)
         self._cursor.execute(self._sql, self._val)
         self._mydb.commit()
+        professor = Professor(email, senha, nome, sobrenome, nascimento)
+        professor.id = self._cursor.lastrowid
+        self._usuario = professor
+
         self._sql = "INSERT INTO sistema_educacional.professores (usuario_id, salario) VALUES (%s, %s)"
         self._val = (professor.id, 1320)
         self._cursor.execute(self._sql, self._val)
         self._mydb.commit()
+        return True
 
     def cadastrar_aluno(self, email, senha, nome, sobrenome, nascimento):
-        aluno = Aluno(email, senha, nome, sobrenome, nascimento)
-        self._usuario = aluno
+        if self.buscar(email):
+            return False
         self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento) VALUES (%s, %s, %s, %s, %s)"
-        self._val = (aluno.email, aluno.senha, aluno.nome, aluno.sobrenome, aluno.nascimento)
+        self._val = (email, senha, nome,
+                     sobrenome, nascimento)
         self._cursor.execute(self._sql, self._val)
         self._mydb.commit()
+        aluno = Aluno(email, senha, nome, sobrenome, nascimento)
+        aluno.id = self._cursor.lastrowid
+        self._usuario = aluno
+
         self._sql = "INSERT INTO sistema_educacional.alunos (usuario_id, pontuacao_geral) VALUES (%s, %s)"
         self._val = (aluno.id, 0)
         self._cursor.execute(self._sql, self._val)
         self._mydb.commit()
-    
+        return True
+
+    def buscar(self, email):
+        self._sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s"
+        self._val = (email,)
+        self._cursor.execute(self._sql, self._val)
+        try:
+            return self._cursor.fetchone()
+        except:
+            return False
+
     def autenticar(self, email, senha):
-        pass
+        self._sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s AND senha = %s"
+        self._val = (email, senha)
+        self._cursor.execute(self._sql, self._val)
+        try:
+            return self._cursor.fetchone()
+        except:
+            return False
 
     def login(self, email, senha):
-        pass
+        usuario = self.autenticar(email, senha)
+        if usuario:
+            self._sql = "SELECT * FROM sistema_educacional.professores WHERE usuario_id = %s"
+            self._val = (usuario[0],)
+            self._cursor.execute(self._sql, self._val)
+            consulta = self._cursor.fetchone()
+            if consulta:
+                professor = Professor(
+                    usuario[1], usuario[2], usuario[3], usuario[4], usuario[5]
+                )
+                professor.id = consulta[0]
+                self._usuario = professor
+                return True
+            else:
+                self._sql = "SELECT * FROM sistema_educacional.alunos WHERE usuario_id = %s"
+                self._val = (id,)
+                self._cursor.execute(self._sql, self._val)
+                consulta = self._cursor.fetchone()
+                if consulta:
+                    aluno = Aluno(
+                        usuario[1], usuario[2], usuario[3], usuario[4], usuario[5]
+                    )
+                    aluno.id = consulta[0]
+                    self._usuario = aluno
+                    return True
+                else:
+                    return False
+        else:
+            return False
 
     def logout(self):
         self._usuario = None
@@ -124,3 +192,13 @@ class SistemaEducacional:
 
 if __name__ == "__main__":
     sistema = SistemaEducacional()
+    # sistema.cadastrar_professor(
+    #     'junior@example.com',
+    #     '1234',
+    #     'Robson',
+    #     'Silva',
+    #     '1999-01-01'
+    # )
+    sistema.login('junior@example.com', '1234')
+    print(sistema.usuario)
+    print(sistema.materias)

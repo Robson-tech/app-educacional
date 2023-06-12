@@ -40,6 +40,10 @@ class Usuario(abc.ABC):
     def ultimo_login(self):
         return self._ultimo_login
 
+    @id.setter
+    def id(self, id):
+        self._id = id
+
     @abc.abstractmethod
     def validar_email(self, email):
         pass

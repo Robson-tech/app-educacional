@@ -18,6 +18,10 @@ class Ui_Cadastro(object):
         Cadastro.setMinimumSize(QtCore.QSize(640, 640))
         Cadastro.setMaximumSize(QtCore.QSize(640, 640))
         Cadastro.setStyleSheet("background-color: rgb(33, 33, 33);")
+        qtRectangle = Cadastro.frameGeometry()
+        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+        qtRectangle.moveCenter(centerPoint)
+        Cadastro.move(qtRectangle.topLeft())
         self.abas = QtWidgets.QTabWidget(Cadastro)
         self.abas.setGeometry(QtCore.QRect(30, 20, 580, 600))
         self.abas.setTabPosition(QtWidgets.QTabWidget.North)
@@ -215,7 +219,7 @@ class Ui_Cadastro(object):
         self.abas.addTab(self.professores, "")
 
         self.retranslateUi(Cadastro)
-        self.abas.setCurrentIndex(0)
+        self.abas.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Cadastro)
 
     def retranslateUi(self, Cadastro):

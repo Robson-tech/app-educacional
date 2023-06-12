@@ -44,7 +44,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideNone</enum>
@@ -256,7 +256,7 @@ background-color: rgb(11, 97, 144);</string>
       <string>Cadastrar</string>
      </property>
     </widget>
-    <widget class="QDateEdit" name="dateEdit">
+    <widget class="QDateEdit" name="alunos_caixa_nascimento">
      <property name="geometry">
       <rect>
        <x>55</x>
@@ -274,6 +274,9 @@ background-color: rgb(11, 97, 144);</string>
       <string notr="true">border-radius: 10px;
 background-color: rgb(217, 217, 217);
 color: rgb(102, 102, 102);</string>
+     </property>
+     <property name="displayFormat">
+      <string>yyyy-dd-MM</string>
      </property>
     </widget>
    </widget>
@@ -481,7 +484,7 @@ background-color: rgb(227, 246, 0);</string>
       <string>Voltar</string>
      </property>
     </widget>
-    <widget class="QDateEdit" name="dateEdit_2">
+    <widget class="QDateEdit" name="professores_caixa_nascimento">
      <property name="geometry">
       <rect>
        <x>55</x>
@@ -499,6 +502,9 @@ background-color: rgb(227, 246, 0);</string>
       <string notr="true">border-radius: 10px;
 background-color: rgb(217, 217, 217);
 color: rgb(102, 102, 102);</string>
+     </property>
+     <property name="displayFormat">
+      <string>yyyy-dd-MM</string>
      </property>
     </widget>
    </widget>
