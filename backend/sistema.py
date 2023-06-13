@@ -94,13 +94,20 @@ class SistemaEducacional:
 
     @property
     def materias(self):
-        if self._usuario:
-            self._sql = "SELECT * FROM sistema_educacional.materias WHERE professor_id = %s"
-            self._val = (self._usuario.id,)
-            self._cursor.execute(self._sql, self._val)
-            return self._cursor.fetchall()
-        else:
-            return []
+        self._sql = "SELECT * FROM sistema_educacional.materias"
+        self._val = ()
+        self._cursor.execute(self._sql, self._val)
+        return [(x[1], x[3]) for x in self._cursor.fetchall()]
+
+    @property
+    def turmas(self):
+        self._sql = 'SELECT sistema_educacional.materias.nome, sistema_educacional.alunos.id \
+            FROM sistema_educacional.materias \
+            JOIN sistema_educacional.turmas ON sistema_educacional.materias.id = sistema_educacional.turmas.materias_id \
+            JOIN sistema_educacional.alunos ON sistema_educacional.turmas.alunos_id = sistema_educacional.alunos.id'
+        self._val = ()
+        self._cursor.execute(self._sql, self._val)
+        return self._cursor.fetchall()
 
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
         if self.buscar(email):
@@ -171,7 +178,7 @@ class SistemaEducacional:
                 return True
             else:
                 self._sql = "SELECT * FROM sistema_educacional.alunos WHERE usuario_id = %s"
-                self._val = (id,)
+                self._val = (usuario[0],)
                 self._cursor.execute(self._sql, self._val)
                 consulta = self._cursor.fetchone()
                 if consulta:
@@ -201,4 +208,4 @@ if __name__ == "__main__":
     # )
     sistema.login('junior@example.com', '1234')
     print(sistema.usuario)
-    print(sistema.materias)
+    print(sistema.turmas)

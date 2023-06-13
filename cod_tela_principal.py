@@ -29,7 +29,7 @@ materias = [
 
 
 class Ui_TelaPrincipal(object):
-    def setupUi(self, TelaPrincipal):
+    def setupUi(self, TelaPrincipal, materias):
         TelaPrincipal.setObjectName("TelaPrincipal")
         TelaPrincipal.setEnabled(True)
         TelaPrincipal.resize(900, 570)
@@ -70,7 +70,8 @@ class Ui_TelaPrincipal(object):
             self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName("verticalLayout")
         self.pushButtons = {}
-        # self.materias(materias)
+        self.materias(materias)
+        self.hide_materias()
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.background_foto = QtWidgets.QFrame(self.centralwidget)
         self.background_foto.setGeometry(QtCore.QRect(65, 20, 170, 170))
@@ -113,20 +114,23 @@ class Ui_TelaPrincipal(object):
     def materias(self, materias):
         _translate = QtCore.QCoreApplication.translate
         for materia in materias:
-            self.pushButtons[materia] = QtWidgets.QPushButton(
+            self.pushButtons[materia[0]] = QtWidgets.QPushButton(
                 self.scrollAreaWidgetContents)
             font = QtGui.QFont()
             font.setPointSize(24)
-            self.pushButtons[materia].setFont(font)
-            self.pushButtons[materia].setCursor(
+            self.pushButtons[materia[0]].setFont(font)
+            self.pushButtons[materia[0]].setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.pushButtons[materia].setStyleSheet("border-radius: 10px;\n"
+            self.pushButtons[materia[0]].setStyleSheet("border-radius: 10px;\n"
                                                     "background-color: rgb(252, 88, 20);")
-            self.pushButtons[materia].setObjectName(materia)
-            self.verticalLayout.addWidget(self.pushButtons[materia])
-            self.pushButtons[materia].setText(
-                _translate("TelaPrincipal", materia))
-        
+            self.pushButtons[materia[0]].setObjectName(materia[0])
+            self.verticalLayout.addWidget(self.pushButtons[materia[0]])
+            self.pushButtons[materia[0]].setText(
+                _translate("TelaPrincipal", materia[0]))
+    
+    def hide_materias(self):
+        for materia in self.pushButtons:
+            self.pushButtons[materia].hide()    
 
     def retranslateUi(self, TelaPrincipal):
         _translate = QtCore.QCoreApplication.translate

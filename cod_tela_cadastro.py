@@ -241,7 +241,7 @@ class Ui_Cadastro(object):
         self.professores_caixa_sobrenome.setPlaceholderText(_translate("Cadastro", "Sobrenome"))
         self.professores_botao_cadastrar.setText(_translate("Cadastro", "Cadastrar"))
         self.professores_botao_voltar.setText(_translate("Cadastro", "Voltar"))
-        self.professores_caixa_nascimento.setDisplayFormat(_translate("Cadastro", "yyyy-dd-MM"))
+        self.professores_caixa_nascimento.setDisplayFormat(_translate("Cadastro", "yyyy-MM-dd"))
         self.abas.setTabText(self.abas.indexOf(self.professores), _translate("Cadastro", "Professor"))
 
 
