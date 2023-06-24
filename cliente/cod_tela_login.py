@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from backend.sistema import SistemaEducacional
 
 
 class Ui_Login(object):
@@ -90,15 +89,8 @@ class Ui_Login(object):
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.caixa_email.setObjectName("caixa_email")
 
-        # Modificações
-        self.sistema = SistemaEducacional()
-        self.botao_login.clicked.connect(self.logar)
-
         self.retranslateUi(Login)
         QtCore.QMetaObject.connectSlotsByName(Login)
-
-    def logar(self):
-        pass
 
     def retranslateUi(self, Login):
         _translate = QtCore.QCoreApplication.translate

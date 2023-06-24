@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="img">
+    <file>logo-escola.png</file>
+    <file>sombra-de-usuario-masculino.png</file>
+    <file>lista.png</file>
+  </qresource>
+</RCC>

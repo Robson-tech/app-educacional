@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-from .modelos import Professor, Aluno
+from modelos import Professor, Aluno
 
 
 tabelas = {}
@@ -34,18 +34,15 @@ tabelas['materias'] = (
     'CREATE TABLE IF NOT EXISTS sistema_educacional.materias ('
     'id INT AUTO_INCREMENT PRIMARY KEY,'
     'nome VARCHAR(255) NOT NULL,'
-    'descricao VARCHAR(255) NOT NULL,'
-    'professor_id INT NOT NULL,'
-    'FOREIGN KEY (professor_id) REFERENCES professores(id)'
+    'professores_id INT NOT NULL,'
+    'FOREIGN KEY (professores_id) REFERENCES professores(id)'
     ')'
 )
 tabelas['turmas'] = (
     'CREATE TABLE IF NOT EXISTS sistema_educacional.turmas ('
     'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'materias_id INT NOT NULL,'
     'alunos_id INT NOT NULL,'
-    'pontuacao INT NOT NULL,'
-    'FOREIGN KEY (materias_id) REFERENCES materias(id),'
+    'nome VARCHAR(255) NOT NULL,'
     'FOREIGN KEY (alunos_id) REFERENCES alunos(id)'
     ')'
 )
@@ -97,17 +94,19 @@ class SistemaEducacional:
         self._sql = "SELECT * FROM sistema_educacional.materias"
         self._val = ()
         self._cursor.execute(self._sql, self._val)
-        return [(x[1], x[3]) for x in self._cursor.fetchall()]
+        return [x[1] for x in self._cursor.fetchall()]
 
     @property
     def turmas(self):
-        self._sql = 'SELECT sistema_educacional.materias.nome, sistema_educacional.alunos.id \
-            FROM sistema_educacional.materias \
-            JOIN sistema_educacional.turmas ON sistema_educacional.materias.id = sistema_educacional.turmas.materias_id \
-            JOIN sistema_educacional.alunos ON sistema_educacional.turmas.alunos_id = sistema_educacional.alunos.id'
+        turmas = {}
+        self._sql = "SELECT sistema_educacional.usuarios.nome, sistema_educacional.turmas.nome FROM sistema_educacional.turmas INNER JOIN sistema_educacional.alunos ON sistema_educacional.turmas.alunos_id = sistema_educacional.alunos.id INNER JOIN sistema_educacional.usuarios ON sistema_educacional.usuarios.id = sistema_educacional.alunos.usuario_id"
         self._val = ()
         self._cursor.execute(self._sql, self._val)
-        return self._cursor.fetchall()
+        for turma in self._cursor.fetchall():
+            if turma[1] not in turmas.keys():
+                turmas[turma[1]] = []
+            turmas[turma[1]].append(turma[0])
+        return turmas
 
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
         if self.buscar(email):
@@ -196,16 +195,80 @@ class SistemaEducacional:
     def logout(self):
         self._usuario = None
 
+    def fechar_bd(self):
+        self._mydb.close()
+
+
+def main():
+    host = 'localhost'
+    port = 5000
+    addr = (host, port)
+    serv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serv_socket.bind(addr)
+    serv_socket.listen(10)
+    print('Aguardando conexão...')
+    con, cliente = serv_socket.accept()
+    print('Conectado')
+    print('Aguardando interação...')
+
+    while True:
+        try:
+            mensagem = con.recv(1024)
+            mensagem_str = mensagem.decode().split(',')
+
+            if mensagem_str[0] == '1':
+                email = mensagem_str[1]
+                senha = mensagem_str[2]
+                enviar = ''
+                if sistema.login(email, senha):
+                    enviar = '1'
+                    print(f'Usuário {email} efetuou o login no sistema')
+                else:
+                    enviar = '0'
+                    print('Erro no login')
+                con.send(enviar.encode())
+            elif mensagem_str[0] == '2':
+                email = mensagem_str[1]
+                senha = mensagem_str[2]
+                nome = mensagem_str[3]
+                sobrenome = mensagem_str[4]
+                nascimento = mensagem_str[5]
+                enviar = ''
+                if mensagem_str[-1] == 'a':
+                    if sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento):
+                        enviar = '1'
+                        print(f'Aluno {sistema.usuario} cadastrado no sistema')
+                    else:
+                        enviar = '0'
+                        print('Erro ao cadastrar aluno no sistema')
+                else:
+                    if sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
+                        enviar = '1'
+                        print(
+                            f'Professor {sistema.usuario} cadastrado no sistema')
+                    else:
+                        enviar = '0'
+                        print('Erro ao cadastrar professor no sistema')
+                con.send(enviar.encode())
+            elif mensagem_str[0] == '0':
+                print(f'Usuário {sistema.usuario} deslogou')
+                sistema.logout()
+            else:
+                raise Exception('Conexão finalizada pelo cliente')
+        except Exception as e:
+            print(str(e))
+            con.close()
+            serv_socket.close()
+            break
+
 
 if __name__ == "__main__":
+    import socket
+
     sistema = SistemaEducacional()
-    # sistema.cadastrar_professor(
-    #     'junior@example.com',
-    #     '1234',
-    #     'Robson',
-    #     'Silva',
-    #     '1999-01-01'
-    # )
-    sistema.login('junior@example.com', '1234')
-    print(sistema.usuario)
-    print(sistema.turmas)
+    # for turma, aluno in sistema.turmas.items():
+    #     print(turma, aluno)
+    # for materia in sistema.materias:
+    #     print(materia)
+    main()
+    sistema.fechar_bd()

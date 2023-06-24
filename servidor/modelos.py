@@ -11,6 +11,9 @@ class Usuario(abc.ABC):
         self._nascimento = nascimento
         self._id = None
         self._ultimo_login = None
+    
+    def __str__(self):
+        return self.email
 
     @property
     def id(self):

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TelaPrincipalAluno</class>
- <widget class="QWidget" name="TelaPrincipalAluno">
+ <class>TelaPrincipalProfessor</class>
+ <widget class="QWidget" name="TelaPrincipalProfessor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Tela Principal</string>
+   <string>Form</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(30, 30, 30);</string>
@@ -55,18 +55,6 @@
       <height>580</height>
      </rect>
     </property>
-    <property name="minimumSize">
-     <size>
-      <width>580</width>
-      <height>580</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>580</width>
-      <height>580</height>
-     </size>
-    </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(33, 33, 33);</string>
     </property>
@@ -74,7 +62,7 @@
      <number>0</number>
     </property>
     <widget class="QWidget" name="page">
-     <widget class="QLabel" name="rotulo_novas_atividades">
+     <widget class="QLabel" name="novas_atividades">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -92,7 +80,7 @@
        <string notr="true">color: white;</string>
       </property>
       <property name="text">
-       <string>Novas Atividades</string>
+       <string>Atividades</string>
       </property>
      </widget>
      <widget class="Line" name="line">
@@ -117,50 +105,7 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
-     <widget class="QLabel" name="rotulo_respondidas">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>289</y>
-        <width>560</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>24</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: white;</string>
-      </property>
-      <property name="text">
-       <string>Respondidas</string>
-      </property>
-     </widget>
-     <widget class="Line" name="line_2">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>320</y>
-        <width>560</width>
-        <height>7</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <property name="lineWidth">
-       <number>5</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QScrollArea" name="conteudo_scrollArea">
+     <widget class="QScrollArea" name="scrollArea_2">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -232,6 +177,32 @@ background-position: center center;</string>
           </property>
          </widget>
         </item>
+        <item row="1" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="3">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="0" column="1">
          <widget class="QPushButton" name="botao_atividade2">
           <property name="sizePolicy">
@@ -273,51 +244,24 @@ background-position: center center;</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="3">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="2">
-         <widget class="QPushButton" name="botao_atividade3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="QPushButton" name="botao_add_atividade">
           <property name="minimumSize">
            <size>
-            <width>120</width>
-            <height>150</height>
+            <width>50</width>
+            <height>50</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>120</width>
-            <height>150</height>
+            <width>50</width>
+            <height>50</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>32</pointsize>
+           </font>
           </property>
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
@@ -325,201 +269,13 @@ background-position: center center;</string>
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
           </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
           <property name="styleSheet">
-           <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);
-background-image: url(:/img/lista.png);
-background-repeat: no-repeat;
-background-position: center center;</string>
+           <string notr="true">border: 3px solid rgb(7, 66, 22);
+border-radius: 25px;
+background-color: rgb(255, 255, 255);</string>
           </property>
           <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-     <widget class="QScrollArea" name="conteudo_scrollArea_2">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>330</y>
-        <width>561</width>
-        <height>221</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border: none;</string>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOn</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents_3">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>544</width>
-         <height>221</height>
-        </rect>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="0">
-         <spacer name="verticalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="botao_atividade_respondida1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>150</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>150</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);
-background-image: url(:/img/lista.png);
-background-repeat: no-repeat;
-background-position: center center;</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="botao_atividade_respondida2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>150</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>150</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);
-background-image: url(:/img/lista.png);
-background-repeat: no-repeat;
-background-position: center center;</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="botao_atividade_respondida3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>150</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>150</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);
-background-image: url(:/img/lista.png);
-background-repeat: no-repeat;
-background-position: center center;</string>
-          </property>
-          <property name="text">
-           <string/>
+           <string>+</string>
           </property>
          </widget>
         </item>
@@ -550,21 +306,8 @@ background-position: center center;</string>
        <string>X</string>
       </property>
      </widget>
-     <zorder>rotulo_novas_atividades</zorder>
-     <zorder>line</zorder>
-     <zorder>line_2</zorder>
-     <zorder>rotulo_respondidas</zorder>
-     <zorder>conteudo_scrollArea</zorder>
-     <zorder>conteudo_scrollArea_2</zorder>
-     <zorder>botao_fechar</zorder>
     </widget>
-    <widget class="QWidget" name="page_recepcao">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="leftMargin">
-       <number>190</number>
-      </property>
-     </layout>
-    </widget>
+    <widget class="QWidget" name="page_recepcao"/>
    </widget>
   </widget>
   <widget class="QPushButton" name="botao_logoff">
@@ -587,7 +330,7 @@ background-color: blue;</string>
     <string>Logoff</string>
    </property>
   </widget>
-  <widget class="QScrollArea" name="lateral_scrollArea">
+  <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -635,8 +378,8 @@ background-color: rgb(30, 30, 30);</string>
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>283</width>
-      <height>378</height>
+      <width>300</width>
+      <height>361</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -644,7 +387,7 @@ background-color: rgb(30, 30, 30);</string>
       <number>6</number>
      </property>
      <item>
-      <widget class="QPushButton" name="matematica">
+      <widget class="QPushButton" name="turma_1A">
        <property name="font">
         <font>
          <pointsize>24</pointsize>
@@ -658,18 +401,12 @@ background-color: rgb(30, 30, 30);</string>
 background-color: rgb(252, 88, 20);</string>
        </property>
        <property name="text">
-        <string>Matemática</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
+        <string>Turma 1A</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="quimica">
+      <widget class="QPushButton" name="turma_1B">
        <property name="font">
         <font>
          <pointsize>24</pointsize>
@@ -683,12 +420,12 @@ background-color: rgb(252, 88, 20);</string>
 background-color: rgb(252, 88, 20);</string>
        </property>
        <property name="text">
-        <string>Química</string>
+        <string>Turma 1B</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="historia">
+      <widget class="QPushButton" name="turma_2A">
        <property name="font">
         <font>
          <pointsize>24</pointsize>
@@ -702,12 +439,12 @@ background-color: rgb(252, 88, 20);</string>
 background-color: rgb(252, 88, 20);</string>
        </property>
        <property name="text">
-        <string>História</string>
+        <string>Turma 2A</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="ingles">
+      <widget class="QPushButton" name="turma_3A">
        <property name="font">
         <font>
          <pointsize>24</pointsize>
@@ -721,83 +458,7 @@ background-color: rgb(252, 88, 20);</string>
 background-color: rgb(252, 88, 20);</string>
        </property>
        <property name="text">
-        <string>Inglês</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="fisica">
-       <property name="font">
-        <font>
-         <pointsize>24</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 10px;
-background-color: rgb(252, 88, 20);</string>
-       </property>
-       <property name="text">
-        <string>Física</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="geografia">
-       <property name="font">
-        <font>
-         <pointsize>24</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 10px;
-background-color: rgb(252, 88, 20);</string>
-       </property>
-       <property name="text">
-        <string>Geografia</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="filosofia">
-       <property name="font">
-        <font>
-         <pointsize>24</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 10px;
-background-color: rgb(252, 88, 20);</string>
-       </property>
-       <property name="text">
-        <string>Filosofia</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="portugues">
-       <property name="font">
-        <font>
-         <pointsize>24</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 10px;
-background-color: rgb(252, 88, 20);</string>
-       </property>
-       <property name="text">
-        <string>Português</string>
+        <string>Turma 3A</string>
        </property>
       </widget>
      </item>
