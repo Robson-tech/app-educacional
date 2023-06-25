@@ -86,10 +86,14 @@ class Main(QMainWindow, Ui_Main):
 
         if email and senha:
             resposta = self.enviar_login(mensagem)
-            if resposta == '1':
-                self.QtStack.setCurrentIndex(3)
-            elif resposta == '2':
-                self.QtStack.setCurrentIndex(2)
+            if resposta:
+                if resposta[0] == '1':
+                    for turma in resposta.split(',')[1:]:
+                        self.tela_principal_professor.add_turma(f'Turma-{turma.upper()}')
+                    self.tela_principal_professor.inserir_espacamento()
+                    self.QtStack.setCurrentIndex(3)
+                elif resposta[0] == '2':
+                    self.QtStack.setCurrentIndex(2)
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")
         else:
@@ -97,6 +101,7 @@ class Main(QMainWindow, Ui_Main):
 
     def botao_logoff(self):
         mensagem = '0'
+        self.tela_principal_professor.limpar_turmas()
         self.client_socket.send(mensagem.encode())
         self.QtStack.setCurrentIndex(0)
     
@@ -119,7 +124,8 @@ class Main(QMainWindow, Ui_Main):
         nome = self.tela_cadastro.alunos_caixa_nome.text()
         sobrenome = self.tela_cadastro.alunos_caixa_sobrenome.text()
         nascimento = self.tela_cadastro.alunos_caixa_nascimento.text()
-        mensagem = f'2,{email},{senha1},{nome},{sobrenome},{nascimento},a'
+        turma = self.tela_cadastro.alunos_caixa_turma.text()
+        mensagem = f'2,{email},{senha1},{nome},{sobrenome},{nascimento},{turma},a'
         if email and senha1 and senha2 and nome and sobrenome and nascimento:
             if senha1 == senha2:
                 if self.enviar_cadastro(mensagem):
@@ -161,6 +167,7 @@ class Main(QMainWindow, Ui_Main):
         self.tela_cadastro.alunos_caixa_nome.clear()
         self.tela_cadastro.alunos_caixa_sobrenome.clear()
         self.tela_cadastro.alunos_caixa_nascimento.setDate(QtCore.QDate(2000, 1, 1))
+        self.tela_cadastro.alunos_caixa_turma.clear()
         self.tela_cadastro.professores_caixa_email.clear()
         self.tela_cadastro.professores_caixa_senha1.clear()
         self.tela_cadastro.professores_caixa_senha2.clear()
