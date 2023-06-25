@@ -3,6 +3,7 @@ import socket
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from cod_tela_principal import Ui_TelaPrincipalAluno
+from cod_tela_principal_professor import Ui_TelaPrincipalProfessor
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
 # pyuic5 -x tela_principal_professor.ui -o tela_principal_professor.py
@@ -17,6 +18,7 @@ class Ui_Main(QtWidgets.QWidget):
         self.stack0 = QtWidgets.QMainWindow()
         self.stack1 = QtWidgets.QMainWindow()
         self.stack2 = QtWidgets.QMainWindow()
+        self.stack3 = QtWidgets.QMainWindow()
 
         self.tela_login = Ui_Login()
         self.tela_login.setupUi(self.stack0)
@@ -24,10 +26,13 @@ class Ui_Main(QtWidgets.QWidget):
         self.tela_cadastro.setupUi(self.stack1)
         self.tela_principal_aluno = Ui_TelaPrincipalAluno()
         self.tela_principal_aluno.setupUi(self.stack2)
+        self.tela_principal_professor = Ui_TelaPrincipalProfessor()
+        self.tela_principal_professor.setupUi(self.stack3)
 
         self.QtStack.addWidget(self.stack0)
         self.QtStack.addWidget(self.stack1)
         self.QtStack.addWidget(self.stack2)
+        self.QtStack.addWidget(self.stack3)
 
 
 class Main(QMainWindow, Ui_Main):
@@ -42,14 +47,19 @@ class Main(QMainWindow, Ui_Main):
         addr = ((ip, port))
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(addr)
+        materias = self.client_socket.recv(1024).decode()
         self.tela_login.botao_login.clicked.connect(self.botao_login)
         self.tela_login.botao_cadastro.clicked.connect(self.botao_cadastrar)
         self.tela_cadastro.alunos_botao_voltar.clicked.connect(self.botao_voltar_cadastro)
         self.tela_cadastro.professores_botao_voltar.clicked.connect(self.botao_voltar_cadastro)
         self.tela_cadastro.alunos_botao_cadastrar.clicked.connect(self.botao_cadastrar_aluno)
         self.tela_cadastro.professores_botao_cadastrar.clicked.connect(self.botao_cadastrar_professor)
+        for materia in materias.split(',')[1:]:
+            self.tela_principal_aluno.add_materia(materia.capitalize())
         self.tela_principal_aluno.botao_logoff.clicked.connect(self.botao_logoff)
         self.tela_principal_aluno.botao_sair.clicked.connect(self.botao_sair)
+        self.tela_principal_professor.botao_logoff.clicked.connect(self.botao_logoff)
+        self.tela_principal_professor.botao_sair.clicked.connect(self.botao_sair)
 
     def enviar_cadastro(self, mensagem):
         if mensagem.split(',')[0] == '2':
@@ -65,8 +75,8 @@ class Main(QMainWindow, Ui_Main):
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode()
 
-            if resposta and resposta == '1':
-                return True
+            if resposta and resposta != '0':
+                return resposta
         return False
 
     def botao_login(self):
@@ -75,7 +85,10 @@ class Main(QMainWindow, Ui_Main):
         mensagem = f'1,{email},{senha}'
 
         if email and senha:
-            if self.enviar_login(mensagem):
+            resposta = self.enviar_login(mensagem)
+            if resposta == '1':
+                self.QtStack.setCurrentIndex(3)
+            elif resposta == '2':
                 self.QtStack.setCurrentIndex(2)
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")

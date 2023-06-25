@@ -11,8 +11,29 @@ tabelas['usuarios'] = (
     "nome VARCHAR(255) NOT NULL,"
     "sobrenome VARCHAR(255) NOT NULL,"
     "nascimento DATE NOT NULL,"
+    "data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+    "ultimo_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
     "UNIQUE (email)"
     ")"
+)
+tabelas['turmas'] = (
+    'CREATE TABLE IF NOT EXISTS sistema_educacional.turmas ('
+    'id INT AUTO_INCREMENT PRIMARY KEY,'
+    'nome VARCHAR(255) NOT NULL,'
+    'num_sala INT NOT NULL,'
+    'UNIQUE (nome),'
+    'UNIQUE (num_sala)'
+    ')'
+)
+tabelas['alunos'] = (
+    'CREATE TABLE IF NOT EXISTS sistema_educacional.alunos ('
+    'id INT AUTO_INCREMENT PRIMARY KEY,'
+    'usuario_id INT NOT NULL,'
+    'turma_id INT NOT NULL,'
+    'pontuacao_geral INT NOT NULL,'
+    'FOREIGN KEY (usuario_id) REFERENCES usuarios(id),'
+    'FOREIGN KEY (turma_id) REFERENCES turmas(id)'
+    ')'
 )
 tabelas['professores'] = (
     'CREATE TABLE IF NOT EXISTS sistema_educacional.professores ('
@@ -22,12 +43,13 @@ tabelas['professores'] = (
     'FOREIGN KEY (usuario_id) REFERENCES usuarios(id)'
     ')'
 )
-tabelas['alunos'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.alunos ('
+tabelas['turmas_professores'] = (
+    'CREATE TABLE IF NOT EXISTS sistema_educacional.turmas_professores ('
     'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'usuario_id INT NOT NULL,'
-    'pontuacao_geral INT NOT NULL,'
-    'FOREIGN KEY (usuario_id) REFERENCES usuarios(id)'
+    'turma_id INT NOT NULL,'
+    'professor_id INT NOT NULL,'
+    'FOREIGN KEY (turma_id) REFERENCES turmas(id),'
+    'FOREIGN KEY (professor_id) REFERENCES professores(id)'
     ')'
 )
 tabelas['materias'] = (
@@ -36,14 +58,6 @@ tabelas['materias'] = (
     'nome VARCHAR(255) NOT NULL,'
     'professores_id INT NOT NULL,'
     'FOREIGN KEY (professores_id) REFERENCES professores(id)'
-    ')'
-)
-tabelas['turmas'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.turmas ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'alunos_id INT NOT NULL,'
-    'nome VARCHAR(255) NOT NULL,'
-    'FOREIGN KEY (alunos_id) REFERENCES alunos(id)'
     ')'
 )
 tabelas['atividades'] = (
@@ -91,27 +105,30 @@ class SistemaEducacional:
 
     @property
     def materias(self):
-        self._sql = "SELECT * FROM sistema_educacional.materias"
+        self._sql = "SELECT sistema_educacional.materias.nome FROM sistema_educacional.materias"
         self._val = ()
         self._cursor.execute(self._sql, self._val)
-        return [x[1] for x in self._cursor.fetchall()]
+        return [x for x in self._cursor.fetchall()]
 
     @property
     def turmas(self):
-        turmas = {}
-        self._sql = "SELECT sistema_educacional.usuarios.nome, sistema_educacional.turmas.nome FROM sistema_educacional.turmas INNER JOIN sistema_educacional.alunos ON sistema_educacional.turmas.alunos_id = sistema_educacional.alunos.id INNER JOIN sistema_educacional.usuarios ON sistema_educacional.usuarios.id = sistema_educacional.alunos.usuario_id"
-        self._val = ()
-        self._cursor.execute(self._sql, self._val)
-        for turma in self._cursor.fetchall():
-            if turma[1] not in turmas.keys():
-                turmas[turma[1]] = []
-            turmas[turma[1]].append(turma[0])
-        return turmas
+        if isinstance(self._usuario, Professor):
+            turmas = {}
+            self._sql = "SELECT sistema_educacional.usuarios.nome, sistema_educacional.alunos.turma FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.alunos ON sistema_educacional.usuarios.id = sistema_educacional.alunos.usuario_id"
+            self._val = ()
+            self._cursor.execute(self._sql, self._val)
+            for turma in self._cursor.fetchall():
+                if turma[1] not in turmas.keys():
+                    turmas[turma[1]] = []
+                turmas[turma[1]].append(turma[0])
+            return turmas
+        else:
+            return None
 
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
         if self.buscar(email):
             return False
-        self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento) VALUES (%s, %s, %s, %s, %s)"
+        self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
         self._val = (email, senha, nome, sobrenome, nascimento)
         self._cursor.execute(self._sql, self._val)
         self._mydb.commit()
@@ -125,10 +142,10 @@ class SistemaEducacional:
         self._mydb.commit()
         return True
 
-    def cadastrar_aluno(self, email, senha, nome, sobrenome, nascimento):
+    def cadastrar_aluno(self, email, senha, nome, sobrenome, nascimento, turma):
         if self.buscar(email):
             return False
-        self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento) VALUES (%s, %s, %s, %s, %s)"
+        self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
         self._val = (email, senha, nome,
                      sobrenome, nascimento)
         self._cursor.execute(self._sql, self._val)
@@ -137,7 +154,7 @@ class SistemaEducacional:
         aluno.id = self._cursor.lastrowid
         self._usuario = aluno
 
-        self._sql = "INSERT INTO sistema_educacional.alunos (usuario_id, pontuacao_geral) VALUES (%s, %s)"
+        self._sql = "INSERT INTO sistema_educacional.alunos (usuario_id, pontuacao_geral, turma_id) VALUES (%s, %s, %s)"
         self._val = (aluno.id, 0)
         self._cursor.execute(self._sql, self._val)
         self._mydb.commit()
@@ -164,28 +181,41 @@ class SistemaEducacional:
     def login(self, email, senha):
         usuario = self.autenticar(email, senha)
         if usuario:
-            self._sql = "SELECT * FROM sistema_educacional.professores WHERE usuario_id = %s"
+            self._sql = "SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.professores.salario FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.professores ON sistema_educacional.usuarios.id = sistema_educacional.professores.usuario_id WHERE usuario_id = %s"
             self._val = (usuario[0],)
             self._cursor.execute(self._sql, self._val)
             consulta = self._cursor.fetchone()
             if consulta:
                 professor = Professor(
-                    usuario[1], usuario[2], usuario[3], usuario[4], usuario[5]
+                    consulta[0], usuario[1], usuario[2], usuario[3], usuario[4],
+                    usuario[5], usuario[6], usuario[7], consulta[8]
                 )
-                professor.id = consulta[0]
+                self._sql = "SELECT sistema_educacional.turmas.nome, sistema_educacional.turmas.num_sala FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id WHERE professor_id = %s"
+                self._val = (professor.id,)
+                self._cursor.execute(self._sql, self._val)
+                for turma in self._cursor.fetchall():
+                    professor.add_turma(turma)
                 self._usuario = professor
+                self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
+                self._val = (usuario[0],)
+                self._cursor.execute(self._sql, self._val)
+                self._mydb.commit()
                 return True
             else:
-                self._sql = "SELECT * FROM sistema_educacional.alunos WHERE usuario_id = %s"
+                self._sql = "SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.alunos.pontuacao_geral FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.alunos ON sistema_educacional.usuarios.id = sistema_educacional.alunos.usuario_id WHERE usuario_id = %s"
                 self._val = (usuario[0],)
                 self._cursor.execute(self._sql, self._val)
                 consulta = self._cursor.fetchone()
                 if consulta:
                     aluno = Aluno(
-                        usuario[1], usuario[2], usuario[3], usuario[4], usuario[5]
+                        usuario[0], usuario[1], usuario[2], usuario[3], usuario[4],
+                        usuario[5], usuario[6], usuario[7], consulta[8]
                     )
-                    aluno.id = consulta[0]
                     self._usuario = aluno
+                    self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
+                    self._val = (usuario[0],)
+                    self._cursor.execute(self._sql, self._val)
+                    self._mydb.commit()
                     return True
                 else:
                     return False
@@ -208,10 +238,15 @@ def main():
     serv_socket.listen(10)
     print('Aguardando conexão...')
     con, cliente = serv_socket.accept()
+    enviar = '1'
+    for materia in sistema.materias:
+        enviar += f',{materia}'
+    con.send(enviar.encode())
     print('Conectado')
     print('Aguardando interação...')
 
     while True:
+        enviar = ''
         try:
             mensagem = con.recv(1024)
             mensagem_str = mensagem.decode().split(',')
@@ -219,10 +254,13 @@ def main():
             if mensagem_str[0] == '1':
                 email = mensagem_str[1]
                 senha = mensagem_str[2]
-                enviar = ''
                 if sistema.login(email, senha):
-                    enviar = '1'
-                    print(f'Usuário {email} efetuou o login no sistema')
+                    if isinstance(sistema.usuario, Professor):
+                        enviar = '1'
+                        print(f'Professor {sistema.usuario} logou')
+                    else:
+                        enviar = '2'
+                        print(f'Aluno {sistema.usuario} logou')
                 else:
                     enviar = '0'
                     print('Erro no login')
@@ -233,7 +271,6 @@ def main():
                 nome = mensagem_str[3]
                 sobrenome = mensagem_str[4]
                 nascimento = mensagem_str[5]
-                enviar = ''
                 if mensagem_str[-1] == 'a':
                     if sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento):
                         enviar = '1'
@@ -266,9 +303,7 @@ if __name__ == "__main__":
     import socket
 
     sistema = SistemaEducacional()
-    # for turma, aluno in sistema.turmas.items():
-    #     print(turma, aluno)
-    # for materia in sistema.materias:
-    #     print(materia)
-    main()
+    sistema.login('jose@example.com', '1234')
+    print(sistema.usuario.turmas)
+    # main()
     sistema.fechar_bd()

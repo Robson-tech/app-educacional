@@ -3,14 +3,15 @@ import datetime
 
 
 class Usuario(abc.ABC):
-    def __init__(self, email, senha, nome, sobrenome, nascimento):
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login):
+        self._id = id
         self._email = email
         self._senha = senha
         self._nome = nome
         self._sobrenome = sobrenome
         self._nascimento = nascimento
-        self._id = None
-        self._ultimo_login = None
+        self._data_cadastro = data_cadastro
+        self._ultimo_login = ultimo_login
     
     def __str__(self):
         return self.email
@@ -74,9 +75,22 @@ class Diretor(Usuario):
 
 
 class Professor(Usuario):
-    def __init__(self, email, senha, nome, sobrenome, nascimento):
-        super().__init__(email, senha, nome, sobrenome, nascimento)
-        self._salario = 0
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, salario=0):
+        super().__init__(id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login)
+        self._salario = salario
+        self._turmas = []
+
+    @property
+    def salario(self):
+        return self._salario
+    
+    @salario.setter
+    def salario(self, salario):
+        self._salario = salario
+
+    @property
+    def turmas(self):
+        return self._turmas
 
     def validar_email(self, email):
         if email.find("@") != -1:
@@ -89,12 +103,16 @@ class Professor(Usuario):
             return True
         else:
             return False
+    
+    def add_turma(self, turma):
+        self._turmas.append(turma)
 
 
 class Aluno(Usuario):
-    def __init__(self, email, senha, nome, sobrenome, nascimento):
-        super().__init__(email, senha, nome, sobrenome, nascimento)
-        self._pontuacao = 0
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, turma, pontuacao=0):
+        super().__init__(id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login)
+        self._turma = turma
+        self._pontuacao = pontuacao
 
     def validar_email(self, email):
         if email.find("@") != -1:
