@@ -72,9 +72,14 @@ tabelas['atividades'] = (
 tabelas['questoes'] = (
     'CREATE TABLE IF NOT EXISTS sistema_educacional.questoes ('
     'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'enunciado VARCHAR(255) NOT NULL,'
-    'resposta VARCHAR(255) NOT NULL,'
     'atividade_id INT NOT NULL,'
+    'enunciado TEXT NOT NULL,'
+    'resposta VARCHAR(255) NOT NULL,'
+    'letra_a VARCHAR(255) NOT NULL,'
+    'letra_b VARCHAR(255) NOT NULL,'
+    'letra_c VARCHAR(255) NOT NULL,'
+    'letra_d VARCHAR(255) NOT NULL,'
+    'letra_e VARCHAR(255) NOT NULL,'
     'FOREIGN KEY (atividade_id) REFERENCES atividades(id)'
     ')'
 )
@@ -231,6 +236,12 @@ class SistemaEducacional:
     def logout(self):
         self._usuario = None
 
+    def get_atividades(self, materia):
+        self._sql = "SELECT sistema_educacional.atividades.id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
+        self._val = (materia,)
+        self._cursor.execute(self._sql, self._val)
+        return [x[0] for x in self._cursor.fetchall()]
+
     def fechar_bd(self):
         self._mydb.close()
 
@@ -252,10 +263,10 @@ def main():
     print('Aguardando interação...')
 
     while True:
-        enviar = ''
         try:
             mensagem = con.recv(1024)
             mensagem_str = mensagem.decode().split(',')
+            enviar = ''
 
             if mensagem_str[0] == '1':
                 email = mensagem_str[1]
@@ -272,7 +283,6 @@ def main():
                 else:
                     enviar = '0'
                     print('Erro no login')
-                con.send(enviar.encode())
             elif mensagem_str[0] == '2':
                 email = mensagem_str[1]
                 senha = mensagem_str[2]
@@ -295,7 +305,11 @@ def main():
                     else:
                         enviar = '0'
                         print('Erro ao cadastrar professor no sistema')
-                con.send(enviar.encode())
+            elif mensagem_str[0] == '3':
+                materia = mensagem_str[1]
+                enviar = f'3'
+                for atividade in sistema.get_atividades(materia):
+                    enviar += f',{atividade}'
             elif mensagem_str[0] == '0':
                 print(f'Usuário {sistema.usuario} deslogou')
                 sistema.logout()
@@ -307,6 +321,8 @@ def main():
             else:
                 raise Exception(
                     'Conexão finalizada inesperadamente pelo cliente')
+            
+            con.send(enviar.encode())
         except Exception as e:
             print(str(e))
             con.close()

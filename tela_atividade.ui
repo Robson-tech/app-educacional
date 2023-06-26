@@ -53,9 +53,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>-258</y>
+      <y>0</y>
       <width>843</width>
-      <height>810</height>
+      <height>932</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -85,7 +85,7 @@
         <string notr="true">text-align:justify;</string>
        </property>
        <property name="text">
-        <string>Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias maxime accusantium molestias labore nemo odio quos iste ipsam eligendi, delectus, sunt tempora, earum voluptate blanditiis omnis</string>
+        <string>Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias maxime accusantium molestias labore nemo odio quos iste ipsam eligendi, delectus, sunt tempora, earum voluptate blanditiis omnisLorem ipsum dolor sit amet consectetur adipisicing elit. Alias maxime accusantium molestias labore nemo odio quos iste ipsam eligendi, delectus, sunt tempora, earum voluptate blanditiis omnisLorem ipsum dolor sit amet consectetur adipisicing elit. Alias maxime accusantium molestias labore nemo odio quos iste ipsam eligendi, delectus, sunt tempora, earum voluptate blanditiis omnis</string>
        </property>
        <property name="textFormat">
         <enum>Qt::PlainText</enum>
@@ -170,7 +170,7 @@ background-color: rgb(252, 88, 20);</string>
          <bool>true</bool>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>50</x>
@@ -388,6 +388,19 @@ background-color: rgb(252, 88, 20);</string>
       </widget>
      </item>
      <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QPushButton" name="botao_verificar">
@@ -449,7 +462,7 @@ border-radius: 15px;
 background-color: rgb(0, 166, 202);</string>
          </property>
          <property name="text">
-          <string>Publicar</string>
+          <string>Responder</string>
          </property>
         </widget>
        </item>
