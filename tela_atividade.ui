@@ -403,7 +403,7 @@ background-color: rgb(252, 88, 20);</string>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QPushButton" name="botao_verificar">
+        <widget class="QPushButton" name="botao_verificar_2">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -483,6 +483,33 @@ background-color: rgb(0, 166, 202);</string>
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="botao_voltar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>24</pointsize>
+    </font>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 0);</string>
+   </property>
+   <property name="text">
+    <string>Voltar</string>
+   </property>
   </widget>
  </widget>
  <resources/>

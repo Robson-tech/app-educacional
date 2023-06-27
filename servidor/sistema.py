@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-from modelos import Professor, Aluno
+from modelos import Professor, Aluno, Questao
 
 
 tabelas = {}
@@ -233,14 +233,23 @@ class SistemaEducacional:
         else:
             return False
 
-    def logout(self):
-        self._usuario = None
-
     def get_atividades(self, materia):
-        self._sql = "SELECT sistema_educacional.atividades.id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
+        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
         self._val = (materia,)
         self._cursor.execute(self._sql, self._val)
-        return [x[0] for x in self._cursor.fetchall()]
+        return self._cursor.fetchall()
+
+    def get_questoes(self, id_atividade):
+        self._sql = "SELECT sistema_educacional.questoes.id, sistema_educacional.questoes.atividade_id, sistema_educacional.questoes.resposta, sistema_educacional.questoes.letra_a, sistema_educacional.questoes.letra_b, sistema_educacional.questoes.letra_c, sistema_educacional.questoes.letra_d, sistema_educacional.questoes.letra_e, sistema_educacional.questoes.enunciado FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
+        self._val = (id_atividade,)
+        self._cursor.execute(self._sql, self._val)
+        questoes = []
+        for questao in self._cursor.fetchall():
+            questoes.append(Questao(*questao))
+        return questoes
+
+    def logout(self):
+        self._usuario = None
 
     def fechar_bd(self):
         self._mydb.close()
@@ -309,7 +318,14 @@ def main():
                 materia = mensagem_str[1]
                 enviar = f'3'
                 for atividade in sistema.get_atividades(materia):
-                    enviar += f',{atividade}'
+                    enviar += f',{atividade[0]}-{atividade[1]}'
+            elif mensagem_str[0] == '4':
+                for questao in sistema.get_questoes(mensagem_str[1]):
+                    enviar = f'4|{questao}'
+                    con.send(enviar.encode())
+                    con.recv(1024)
+                con.send('0'.encode())
+                continue
             elif mensagem_str[0] == '0':
                 print(f'Usuário {sistema.usuario} deslogou')
                 sistema.logout()
@@ -321,7 +337,7 @@ def main():
             else:
                 raise Exception(
                     'Conexão finalizada inesperadamente pelo cliente')
-            
+
             con.send(enviar.encode())
         except Exception as e:
             print(str(e))
@@ -338,4 +354,7 @@ if __name__ == "__main__":
     sistema = SistemaEducacional()
     while main():
         pass
+    # for q in sistema.get_questoes(2):
+    #     print(q)
+    # print(sistema.get_atividades('Matemática'))
     sistema.fechar_bd()

@@ -4,8 +4,10 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from cod_tela_principal import Ui_TelaPrincipalAluno
 from cod_tela_principal_professor import Ui_TelaPrincipalProfessor
+from cod_tela_atividade import Ui_TelaAtividade
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
+from modelos import Questao
 # pyuic5 -x tela_atividade.ui -o tela_atividade.py
 
 
@@ -15,24 +17,26 @@ class Ui_Main(QtWidgets.QWidget):
         Main.resize(500, 450)
 
         self.QtStack = QtWidgets.QStackedLayout()
-        self.stack0 = QtWidgets.QMainWindow()
-        self.stack1 = QtWidgets.QMainWindow()
-        self.stack2 = QtWidgets.QMainWindow()
-        self.stack3 = QtWidgets.QMainWindow()
+        self.stack = []
+        self.atividades = []
 
         self.tela_login = Ui_Login()
-        self.tela_login.setupUi(self.stack0)
+        self.stack.append(QtWidgets.QMainWindow())
+        self.tela_login.setupUi(self.stack[0])
         self.tela_cadastro = Ui_Cadastro()
-        self.tela_cadastro.setupUi(self.stack1)
+        self.stack.append(QtWidgets.QMainWindow())
+        self.tela_cadastro.setupUi(self.stack[1])
         self.tela_principal_aluno = Ui_TelaPrincipalAluno()
-        self.tela_principal_aluno.setupUi(self.stack2)
+        self.stack.append(QtWidgets.QMainWindow())
+        self.tela_principal_aluno.setupUi(self.stack[2])
         self.tela_principal_professor = Ui_TelaPrincipalProfessor()
-        self.tela_principal_professor.setupUi(self.stack3)
+        self.stack.append(QtWidgets.QMainWindow())
+        self.tela_principal_professor.setupUi(self.stack[3])
 
-        self.QtStack.addWidget(self.stack0)
-        self.QtStack.addWidget(self.stack1)
-        self.QtStack.addWidget(self.stack2)
-        self.QtStack.addWidget(self.stack3)
+        self.QtStack.addWidget(self.stack[0])
+        self.QtStack.addWidget(self.stack[1])
+        self.QtStack.addWidget(self.stack[2])
+        self.QtStack.addWidget(self.stack[3])
 
 
 class Main(QMainWindow, Ui_Main):
@@ -58,11 +62,12 @@ class Main(QMainWindow, Ui_Main):
             self.botao_cadastrar_aluno)
         self.tela_cadastro.professores_botao_cadastrar.clicked.connect(
             self.botao_cadastrar_professor)
+
         for materia in self.materias.split(',')[1:]:
             atividades = self.pegar_atividades(materia)
-            print(atividades)
             self.tela_principal_aluno.add_materia(
-                materia.capitalize(), len(atividades))
+                materia.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
+
         self.tela_principal_aluno.botao_logoff.clicked.connect(
             self.botao_logoff)
         self.tela_principal_aluno.botao_sair.clicked.connect(self.botao_sair)
@@ -70,6 +75,39 @@ class Main(QMainWindow, Ui_Main):
             self.botao_logoff)
         self.tela_principal_professor.botao_sair.clicked.connect(
             self.botao_sair)
+
+    def pegar_atividades(self, nome):
+        self.client_socket.send(f'3,{nome}'.encode())
+        atividades = self.client_socket.recv(1024).decode()
+        return atividades.split(',')[1:]
+
+    def pegar_questoes(self, id_atividade):
+        self.client_socket.send(f'4,{id_atividade}'.encode())
+        questoes = self.client_socket.recv(1024).decode()
+        lista_questoes = []
+        while questoes[0] == '4':
+            lista_questoes.append(Questao(*questoes.split('|')[1:]))
+            self.client_socket.send('4'.encode())
+            questoes = self.client_socket.recv(1024).decode()
+        return lista_questoes
+
+    def criar_pagina_atividade(self, id_atividade, titulo):
+        self.atividades.append(Ui_TelaAtividade())
+        novo = QtWidgets.QWidget()
+        self.stack.append(novo)
+        self.atividades[-1].setupUi(self.stack[-1], titulo)
+        self.QtStack.addWidget(self.stack[-1])
+        lista_questoes = self.pegar_questoes(id_atividade)
+        for i, questao in enumerate(lista_questoes):
+            self.atividades[-1].add_questao(i + 1, questao.enunciado, [
+                                            questao.letra_a, questao.letra_b, questao.letra_c, questao.letra_d, questao.letra_e])
+        self.atividades[-1].add_rodape()
+        def voltar_atividade():
+            self.QtStack.setCurrentIndex(2)
+        self.atividades[-1].botao_voltar.clicked.connect(voltar_atividade)
+        def ir_para_pagina_atividade():
+            self.QtStack.setCurrentWidget(novo)
+        return ir_para_pagina_atividade
 
     def enviar_cadastro(self, mensagem):
         if mensagem.split(',')[0] == '2':
@@ -88,11 +126,6 @@ class Main(QMainWindow, Ui_Main):
             if resposta and resposta != '0':
                 return resposta
         return False
-
-    def pegar_atividades(self, nome):
-        self.client_socket.send(f'3,{nome}'.encode())
-        atividades = self.client_socket.recv(1024).decode()
-        return atividades.split(',')[1:]
 
     def botao_login(self):
         email = self.tela_login.caixa_email.text()
@@ -114,24 +147,6 @@ class Main(QMainWindow, Ui_Main):
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")
         else:
             QMessageBox.about(self, "Erro", "E-mail ou senha não preenchidos")
-
-    def botao_logoff(self):
-        mensagem = '0'
-        self.tela_principal_professor.limpar_turmas()
-        self.client_socket.send(mensagem.encode())
-        self.QtStack.setCurrentIndex(0)
-
-    def botao_sair(self):
-        mensagem = '-1'
-        self.client_socket.send(mensagem.encode())
-        self.client_socket.close()
-        exit()
-
-    def botao_cadastrar(self):
-        self.QtStack.setCurrentIndex(1)
-
-    def botao_voltar_cadastro(self):
-        self.QtStack.setCurrentIndex(0)
 
     def botao_cadastrar_aluno(self):
         email = self.tela_cadastro.alunos_caixa_email.text()
@@ -179,6 +194,24 @@ class Main(QMainWindow, Ui_Main):
                 QMessageBox.about(self, "Erro", "Senhas não coincidem")
         else:
             QMessageBox.about(self, "Erro", "Preencha todos os campos")
+
+    def botao_logoff(self):
+        mensagem = '0'
+        self.tela_principal_professor.limpar_turmas()
+        self.client_socket.send(mensagem.encode())
+        self.QtStack.setCurrentIndex(0)
+
+    def botao_sair(self):
+        mensagem = '-1'
+        self.client_socket.send(mensagem.encode())
+        self.client_socket.close()
+        exit()
+
+    def botao_cadastrar(self):
+        self.QtStack.setCurrentIndex(1)
+
+    def botao_voltar_cadastro(self):
+        self.QtStack.setCurrentIndex(0)
 
     def limpar_campos(self):
         self.tela_cadastro.alunos_caixa_email.clear()

@@ -12,34 +12,34 @@ class Usuario(abc.ABC):
         self._nascimento = nascimento
         self._data_cadastro = data_cadastro
         self._ultimo_login = ultimo_login
-    
+
     def __str__(self):
         return self.email
 
     @property
     def id(self):
         return self._id
-    
+
     @property
     def nome(self):
         return self._nome
-    
+
     @property
     def sobrenome(self):
         return self._sobrenome
-    
+
     @property
     def nascimento(self):
         return self._nascimento
-    
+
     @property
     def email(self):
         return self._email
-    
+
     @property
     def senha(self):
         return self._senha
-    
+
     @property
     def ultimo_login(self):
         return self._ultimo_login
@@ -76,14 +76,15 @@ class Diretor(Usuario):
 
 class Professor(Usuario):
     def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, salario=0):
-        super().__init__(id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login)
+        super().__init__(id, email, senha, nome, sobrenome,
+                         nascimento, data_cadastro, ultimo_login)
         self._salario = salario
         self._turmas = []
 
     @property
     def salario(self):
         return self._salario
-    
+
     @salario.setter
     def salario(self, salario):
         self._salario = salario
@@ -103,14 +104,15 @@ class Professor(Usuario):
             return True
         else:
             return False
-    
+
     def add_turma(self, turma):
         self._turmas.append(turma)
 
 
 class Aluno(Usuario):
     def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, turma, pontuacao=0):
-        super().__init__(id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login)
+        super().__init__(id, email, senha, nome, sobrenome,
+                         nascimento, data_cadastro, ultimo_login)
         self._turma = turma
         self._pontuacao = pontuacao
 
@@ -145,10 +147,39 @@ class Atividade:
 
 
 class Questao:
-    def __init__(self, atividade, enunciado, resposta):
-        self._atividade = atividade
-        self._enunciado = enunciado
+    def __init__(self, id, atividade_id, resposta, letra_a, letra_b, letra_c, letra_d, letra_e, enunciado=None):
+        self._id = id
+        self._atividade_id = atividade_id
         self._resposta = resposta
+        self.letra_a = letra_a
+        self.letra_b = letra_b
+        self.letra_c = letra_c
+        self.letra_d = letra_d
+        self.letra_e = letra_e
+        self._enunciado = enunciado
+
+    def __str__(self):
+        return f'{self.id}|{self.atividade_id}|{self.resposta}|{self.letra_a}|{self.letra_b}|{self.letra_c}|{self.letra_d}|{self.letra_e}|{self.enunciado}'
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def atividade_id(self):
+        return self._atividade_id
+
+    @property
+    def resposta(self):
+        return self._resposta
+
+    @property
+    def enunciado(self):
+        return self._enunciado
+
+    @enunciado.setter
+    def enunciado(self, enunciado):
+        self._enunciado = enunciado
 
     def valida_resposta(self, resposta):
         if resposta == self._resposta:
@@ -158,4 +189,5 @@ class Questao:
 
 
 if __name__ == "__main__":
-    u = Professor("jorge@example.com", "jorge1234", "jorge", "luis", "2003-09-01")
+    u = Professor("jorge@example.com", "jorge1234",
+                  "jorge", "luis", "2003-09-01")
