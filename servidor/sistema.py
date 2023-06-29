@@ -66,6 +66,7 @@ tabelas['atividades'] = (
     'nome VARCHAR(255) NOT NULL,'
     'descricao VARCHAR(255) NOT NULL,'
     'materia_id INT NOT NULL,'
+    'turma_id INT NOT NULL,'
     'FOREIGN KEY (materia_id) REFERENCES materias(id)'
     ')'
 )
@@ -81,6 +82,18 @@ tabelas['questoes'] = (
     'letra_d VARCHAR(255) NOT NULL,'
     'letra_e VARCHAR(255) NOT NULL,'
     'FOREIGN KEY (atividade_id) REFERENCES atividades(id)'
+    ')'
+)
+tabelas['atividades_alunos'] = (
+    'CREATE TABLE IF NOT EXISTS sistema_educacional.atividades_alunos ('
+    'id INT AUTO_INCREMENT PRIMARY KEY,'
+    'atividade_id INT NOT NULL,'
+    'aluno_id INT NOT NULL,'
+    'data_submissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
+    'pontuacao INT NOT NULL,'
+    'taxa_acerto DECIMAL(10,2) NOT NULL,'
+    'FOREIGN KEY (atividade_id) REFERENCES atividades(id),'
+    'FOREIGN KEY (aluno_id) REFERENCES alunos(id)'
     ')'
 )
 
@@ -233,9 +246,15 @@ class SistemaEducacional:
         else:
             return False
 
-    def get_atividades(self, materia):
-        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
+    def get_atividades_materia(self, materia):
+        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
         self._val = (materia,)
+        self._cursor.execute(self._sql, self._val)
+        return self._cursor.fetchall()
+    
+    def get_atividades_turma(self, turma):
+        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id WHERE sistema_educacional.turmas.nome = %s"
+        self._val = (turma,)
         self._cursor.execute(self._sql, self._val)
         return self._cursor.fetchall()
 
@@ -317,8 +336,8 @@ def main():
             elif mensagem_str[0] == '3':
                 materia = mensagem_str[1]
                 enviar = f'3'
-                for atividade in sistema.get_atividades(materia):
-                    enviar += f',{atividade[0]}-{atividade[1]}'
+                for atividade in sistema.get_atividades_materia(materia):
+                    enviar += f',{atividade[0]}-{atividade[1]}-{atividade[2]}'
             elif mensagem_str[0] == '4':
                 for questao in sistema.get_questoes(mensagem_str[1]):
                     enviar = f'4|{questao}'
@@ -326,6 +345,11 @@ def main():
                     con.recv(1024)
                 con.send('0'.encode())
                 continue
+            elif mensagem_str[0] == '5':
+                turma = mensagem_str[1]
+                enviar = f'5'
+                for atividade in sistema.get_atividades_turma(turma):
+                    enviar += f',{atividade[0]}-{atividade[1]}-{atividade[2]}'
             elif mensagem_str[0] == '0':
                 print(f'Usuário {sistema.usuario} deslogou')
                 sistema.logout()

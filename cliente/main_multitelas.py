@@ -5,10 +5,11 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from cod_tela_principal import Ui_TelaPrincipalAluno
 from cod_tela_principal_professor import Ui_TelaPrincipalProfessor
 from cod_tela_atividade import Ui_TelaAtividade
+from cod_tela_atividade_professor import Ui_AtividadeProfessor
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
 from modelos import Questao
-# pyuic5 -x tela_atividade.ui -o tela_atividade.py
+# pyuic5 -x tela_atividade_professor.ui -o tela_atividade_professor.py
 
 
 class Ui_Main(QtWidgets.QWidget):
@@ -19,6 +20,7 @@ class Ui_Main(QtWidgets.QWidget):
         self.QtStack = QtWidgets.QStackedLayout()
         self.stack = []
         self.atividades = []
+        self.atividades_turma = []
 
         self.tela_login = Ui_Login()
         self.stack.append(QtWidgets.QMainWindow())
@@ -81,6 +83,11 @@ class Main(QMainWindow, Ui_Main):
         atividades = self.client_socket.recv(1024).decode()
         return atividades.split(',')[1:]
 
+    def pegar_atividades_turma(self, nome):
+        self.client_socket.send(f'5,{nome}'.encode())
+        atividades = self.client_socket.recv(1024).decode()
+        return atividades.split(',')[1:]
+
     def pegar_questoes(self, id_atividade):
         self.client_socket.send(f'4,{id_atividade}'.encode())
         questoes = self.client_socket.recv(1024).decode()
@@ -102,9 +109,31 @@ class Main(QMainWindow, Ui_Main):
             self.atividades[-1].add_questao(i + 1, questao.enunciado, [
                                             questao.letra_a, questao.letra_b, questao.letra_c, questao.letra_d, questao.letra_e])
         self.atividades[-1].add_rodape()
+
         def voltar_atividade():
             self.QtStack.setCurrentIndex(2)
         self.atividades[-1].botao_voltar.clicked.connect(voltar_atividade)
+
+        def ir_para_pagina_atividade():
+            self.QtStack.setCurrentWidget(novo)
+        return ir_para_pagina_atividade
+
+    def criar_pagina_atividade_turma(self, id_atividade):
+        self.atividades_turma.append(Ui_AtividadeProfessor())
+        novo = QtWidgets.QWidget()
+        self.stack.append(novo)
+        self.atividades_turma[-1].setupUi(self.stack[-1])
+        self.QtStack.addWidget(self.stack[-1])
+        lista_questoes = self.pegar_questoes(id_atividade)
+        for i, questao in enumerate(lista_questoes):
+            self.atividades_turma[-1].add_questao(num=i + 1, enunciado=questao.enunciado, alternativas=[
+                                            questao.letra_a, questao.letra_b, questao.letra_c, questao.letra_d, questao.letra_e])
+
+        def voltar_atividade():
+            self.QtStack.setCurrentIndex(3)
+        self.atividades_turma[-1].botao_voltar.clicked.connect(
+            voltar_atividade)
+
         def ir_para_pagina_atividade():
             self.QtStack.setCurrentWidget(novo)
         return ir_para_pagina_atividade
@@ -136,11 +165,14 @@ class Main(QMainWindow, Ui_Main):
             resposta = self.enviar_login(mensagem)
             if resposta:
                 if resposta[0] == '1':
+                    print(len(self.stack))
                     for turma in resposta.split(',')[1:]:
+                        atividades = self.pegar_atividades_turma(turma)
                         self.tela_principal_professor.add_turma(
-                            f'Turma-{turma.upper()}')
+                            f'Turma-{turma.upper()}', atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
                     self.tela_principal_professor.inserir_espacamento()
                     self.QtStack.setCurrentIndex(3)
+                    print(len(self.stack))
                 elif resposta[0] == '2':
                     self.QtStack.setCurrentIndex(2)
             else:
