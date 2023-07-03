@@ -152,7 +152,7 @@ class SistemaEducacional:
     def cadastrar_aluno(self, email, senha, nome, sobrenome, nascimento, turma):
         if self.buscar(email):
             return False
-        self._sql = "SELECT id FROM sistema_educacional.turmas WHERE nome = %s"
+        self._sql = "SELECT sistema_educacional.turmas.id FROM sistema_educacional.turmas WHERE sistema_educacional.turmas.nome = %s"
         self._val = (turma,)
         self._cursor.execute(self._sql, self._val)
         try:
@@ -206,12 +206,9 @@ class SistemaEducacional:
                 consulta[0], usuario[1], usuario[2], usuario[3], usuario[4],
                 usuario[5], usuario[6], usuario[7], consulta[8]
             )
-            self._sql = "SELECT sistema_educacional.turmas.nome, sistema_educacional.turmas.num_sala FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id WHERE professor_id = %s"
-            self._val = (professor.id,)
-            self._cursor.execute(self._sql, self._val)
-            for turma in self._cursor.fetchall():
-                professor.add_turma(turma)
             self._usuario = professor
+            for turma in sistema.get_turmas_professor():
+                professor.add_turma(turma)
             self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
             self._val = (usuario[0],)
             self._cursor.execute(self._sql, self._val)
@@ -246,14 +243,21 @@ class SistemaEducacional:
         else:
             return False
 
+    def get_turmas_professor(self):
+        if isinstance(self.usuario, Professor):
+            self._sql = "SELECT sistema_educacional.turmas.nome FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores INNER JOIN sistema_educacional.professores ON sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id AND sistema_educacional.turmas_professores.professor_id = sistema_educacional.professores.id WHERE sistema_educacional.professores.usuario_id = %s"
+            self._val = (self.usuario.id,)
+            self._cursor.execute(self._sql, self._val)
+            return [x[0] for x in self._cursor.fetchall()]
+
     def get_atividades_materia(self, materia):
         self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
         self._val = (materia,)
         self._cursor.execute(self._sql, self._val)
         return self._cursor.fetchall()
-    
+
     def get_atividades_turma(self, turma):
-        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id WHERE sistema_educacional.turmas.nome = %s"
+        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id, sistema_educacional.atividades.materia_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id AND sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.turmas.nome = %s"
         self._val = (turma,)
         self._cursor.execute(self._sql, self._val)
         return self._cursor.fetchall()
@@ -266,6 +270,19 @@ class SistemaEducacional:
         for questao in self._cursor.fetchall():
             questoes.append(Questao(*questao))
         return questoes
+
+    def cadastrar_atividade(self, nome, descricao, materia, turma):
+        self._sql = "INSERT INTO sistema_educacional.atividades (nome, descricao, materia_id, turma_id) VALUES (%s, %s, %s, %s)"
+        self._val = (nome, descricao, materia, turma)
+        try:
+            self._cursor.execute(self._sql, self._val)
+        except:
+            return False
+        self._mydb.commit()
+        return self._cursor.lastrowid
+
+    def cadastrar_questao(self, atividade, enunciado, resposta, a, b, c, d, e):
+        pass
 
     def logout(self):
         self._usuario = None
@@ -285,16 +302,17 @@ def main():
     con, cliente = serv_socket.accept()
     enviar = '1'
     for materia in sistema.materias:
-        enviar += f',{materia}'
+        enviar += f'|{materia}'
     con.send(enviar.encode())
     print('Conectado')
     print('Aguardando interação...')
 
     while True:
         try:
-            mensagem = con.recv(1024)
-            mensagem_str = mensagem.decode().split(',')
+            mensagem = con.recv(4096)
+            mensagem_str = mensagem.decode().split('|')
             enviar = ''
+            # print(mensagem_str)
 
             if mensagem_str[0] == '1':
                 email = mensagem_str[1]
@@ -303,7 +321,8 @@ def main():
                     if isinstance(sistema.usuario, Professor):
                         enviar = '1'
                         for turma in sistema.usuario.turmas:
-                            enviar += f',{turma[0]}'
+
+                            enviar += f'|{turma}'
                         print(f'Professor {sistema.usuario} logou')
                     else:
                         enviar = '2'
@@ -317,17 +336,17 @@ def main():
                 nome = mensagem_str[3]
                 sobrenome = mensagem_str[4]
                 nascimento = mensagem_str[5]
-                turma = mensagem_str[6]
                 if mensagem_str[-1] == 'a':
+                    turma = mensagem_str[6]
                     if sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma):
-                        enviar = '1'
+                        enviar = '2'
                         print(f'Aluno {sistema.usuario} cadastrado no sistema')
                     else:
                         enviar = '0'
                         print('Erro ao cadastrar aluno no sistema')
                 else:
                     if sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
-                        enviar = '1'
+                        enviar = '2'
                         print(
                             f'Professor {sistema.usuario} cadastrado no sistema')
                     else:
@@ -337,7 +356,7 @@ def main():
                 materia = mensagem_str[1]
                 enviar = f'3'
                 for atividade in sistema.get_atividades_materia(materia):
-                    enviar += f',{atividade[0]}-{atividade[1]}-{atividade[2]}'
+                    enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}'
             elif mensagem_str[0] == '4':
                 for questao in sistema.get_questoes(mensagem_str[1]):
                     enviar = f'4|{questao}'
@@ -349,7 +368,21 @@ def main():
                 turma = mensagem_str[1]
                 enviar = f'5'
                 for atividade in sistema.get_atividades_turma(turma):
-                    enviar += f',{atividade[0]}-{atividade[1]}-{atividade[2]}'
+                    enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}-{atividade[3]}'
+                print(f'Atividades da turma {turma} enviadas')
+            elif mensagem_str[0] == '6':
+                titulo = mensagem_str[1]
+                descricao = mensagem_str[2]
+                materia = mensagem_str[3]
+                turma = mensagem_str[4]
+                id = sistema.cadastrar_atividade(
+                    titulo, descricao, materia, turma)
+                lista_questoes = [num.split('/') for num in mensagem_str[5:]]
+                for questao in lista_questoes:
+                    sistema.cadastrar_questao(
+                        id, questao[1], 'a', questao[2], questao[3], questao[4], questao[5], questao[6])
+                enviar = '6'
+                print(f'Atividade {titulo} cadastrada')
             elif mensagem_str[0] == '0':
                 print(f'Usuário {sistema.usuario} deslogou')
                 sistema.logout()
@@ -378,7 +411,8 @@ if __name__ == "__main__":
     sistema = SistemaEducacional()
     while main():
         pass
-    # for q in sistema.get_questoes(2):
-    #     print(q)
-    # print(sistema.get_atividades('Matemática'))
+    # sistema.login('julio@example.com', '1234')
+    # print(sistema.get_atividades_turma('1A'))
+    # print(sistema.cadastrar_atividade('Atividade 2', 'Atividade 2', 1, 1))
+    # print(sistema.get_atividades_turma('1A'))
     sistema.fechar_bd()

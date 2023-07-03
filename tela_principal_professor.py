@@ -17,14 +17,7 @@ class Ui_TelaPrincipalProfessor(object):
         TelaPrincipalProfessor.resize(900, 580)
         TelaPrincipalProfessor.setMinimumSize(QtCore.QSize(900, 580))
         TelaPrincipalProfessor.setMaximumSize(QtCore.QSize(900, 580))
-        TelaPrincipalProfessor.setStyleSheet(
-            "background-color: rgb(30, 30, 30);")
-        qtRectangle = TelaPrincipalProfessor.frameGeometry()
-        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
-        qtRectangle.moveCenter(centerPoint)
-        TelaPrincipalProfessor.move(qtRectangle.topLeft())
-        self.pages = {}
-        self.turmas = {}
+        TelaPrincipalProfessor.setStyleSheet("background-color: rgb(30, 30, 30);")
         self.conteudo = QtWidgets.QFrame(TelaPrincipalProfessor)
         self.conteudo.setGeometry(QtCore.QRect(290, -10, 600, 581))
         self.conteudo.setStyleSheet("background-color: rgb(30, 30, 30);")
@@ -35,294 +28,202 @@ class Ui_TelaPrincipalProfessor(object):
         self.stackedWidget.setGeometry(QtCore.QRect(20, 20, 580, 580))
         self.stackedWidget.setStyleSheet("background-color: rgb(33, 33, 33);")
         self.stackedWidget.setObjectName("stackedWidget")
-        self.page_recepcao = QtWidgets.QWidget()
-        self.page_recepcao.setObjectName("page_recepcao")
-        self.stackedWidget.addWidget(self.page_recepcao)
-        self.botao_logoff = QtWidgets.QPushButton(TelaPrincipalProfessor)
-        self.botao_logoff.setGeometry(QtCore.QRect(10, 10, 40, 20))
-        self.botao_logoff.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.botao_logoff.setStyleSheet("border-radius: 10px;\n"
-                                        "background-color: blue;")
-        self.botao_logoff.setObjectName("botao_logoff")
-        self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 300, 361))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout = QtWidgets.QVBoxLayout(
-            self.scrollAreaWidgetContents)
-        self.scrollArea = QtWidgets.QScrollArea(TelaPrincipalProfessor)
-        self.scrollArea.setGeometry(QtCore.QRect(0, 210, 300, 361))
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.scrollArea.sizePolicy().hasHeightForWidth())
-        self.scrollArea.setSizePolicy(sizePolicy)
-        self.scrollArea.setMinimumSize(QtCore.QSize(300, 330))
-        self.scrollArea.setStyleSheet("border: none;\n"
-                                      "background-color: rgb(30, 30, 30);")
-        self.scrollArea.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        self.scrollArea.setHorizontalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
-        self.scrollArea.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.AdjustIgnored)
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollArea.setAlignment(
-            QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
-        self.scrollArea.setObjectName("scrollArea")
-#         self.turma_1A = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-#         font = QtGui.QFont()
-#         font.setPointSize(24)
-#         self.turma_1A.setFont(font)
-#         self.turma_1A.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-#         self.turma_1A.setStyleSheet("border-radius: 10px;\n"
-# "background-color: rgb(252, 88, 20);")
-#         self.turma_1A.setObjectName("turma_1A")
-#         self.verticalLayout.addWidget(self.turma_1A)
-#         self.turma_1B = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-#         font = QtGui.QFont()
-#         font.setPointSize(24)
-#         self.turma_1B.setFont(font)
-#         self.turma_1B.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-#         self.turma_1B.setStyleSheet("border-radius: 10px;\n"
-# "background-color: rgb(252, 88, 20);")
-#         self.turma_1B.setObjectName("turma_1B")
-#         self.verticalLayout.addWidget(self.turma_1B)
-#         self.turma_2A = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-#         font = QtGui.QFont()
-#         font.setPointSize(24)
-#         self.turma_2A.setFont(font)
-#         self.turma_2A.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-#         self.turma_2A.setStyleSheet("border-radius: 10px;\n"
-# "background-color: rgb(252, 88, 20);")
-#         self.turma_2A.setObjectName("turma_2A")
-#         self.verticalLayout.addWidget(self.turma_2A)
-#         self.turma_3A = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
-#         font = QtGui.QFont()
-#         font.setPointSize(24)
-#         self.turma_3A.setFont(font)
-#         self.turma_3A.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-#         self.turma_3A.setStyleSheet("border-radius: 10px;\n"
-# "background-color: rgb(252, 88, 20);")
-#         self.turma_3A.setObjectName("turma_3A")
-#         self.verticalLayout.addWidget(self.turma_3A)
-#         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-#         self.verticalLayout.addItem(spacerItem2)
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.botao_sair = QtWidgets.QPushButton(TelaPrincipalProfessor)
-        self.botao_sair.setGeometry(QtCore.QRect(240, 10, 40, 20))
-        self.botao_sair.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.botao_sair.setStyleSheet("border-radius: 10px;\n"
-                                      "background-color: red;")
-        self.botao_sair.setObjectName("botao_sair")
-        self.logo_escola = QtWidgets.QLabel(TelaPrincipalProfessor)
-        self.logo_escola.setGeometry(QtCore.QRect(60, 30, 180, 180))
-        self.logo_escola.setPixmap(QtGui.QPixmap("img/logo-escola.png"))
-        self.logo_escola.setScaledContents(True)
-        self.logo_escola.setAlignment(QtCore.Qt.AlignCenter)
-        self.logo_escola.setObjectName("logo_escola")
-
-        self._translate = QtCore.QCoreApplication.translate
-        self.retranslateUi(TelaPrincipalProfessor)
-        self.stackedWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(TelaPrincipalProfessor)
-
-    def add_pagina(self, nome):
-        self.pages[nome] = QtWidgets.QWidget()
-        self.pages[nome].setObjectName(nome)
-        self.novas_atividades = QtWidgets.QLabel(self.pages[nome])
+        self.page = QtWidgets.QWidget()
+        self.page.setObjectName("page")
+        self.novas_atividades = QtWidgets.QLabel(self.page)
         self.novas_atividades.setGeometry(QtCore.QRect(10, 10, 511, 40))
         font = QtGui.QFont()
         font.setPointSize(24)
         self.novas_atividades.setFont(font)
         self.novas_atividades.setStyleSheet("color: white;")
         self.novas_atividades.setObjectName("novas_atividades")
-        self.line = QtWidgets.QFrame(self.pages[nome])
+        self.line = QtWidgets.QFrame(self.page)
         self.line.setGeometry(QtCore.QRect(10, 50, 560, 7))
+        self.line.setStyleSheet("")
         self.line.setFrameShadow(QtWidgets.QFrame.Plain)
         self.line.setLineWidth(5)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setObjectName("line")
-        self.scrollArea_2 = QtWidgets.QScrollArea(self.pages[nome])
+        self.scrollArea_2 = QtWidgets.QScrollArea(self.page)
         self.scrollArea_2.setGeometry(QtCore.QRect(10, 60, 561, 221))
         self.scrollArea_2.setStyleSheet("border: none;")
-        self.scrollArea_2.setVerticalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOn)
-        self.scrollArea_2.setHorizontalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea_2.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scrollArea_2.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(
-            QtCore.QRect(0, 0, 544, 221))
-        self.scrollAreaWidgetContents_2.setObjectName(
-            "scrollAreaWidgetContents_2")
-        self.gridLayout = QtWidgets.QGridLayout(
-            self.scrollAreaWidgetContents_2)
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 544, 221))
+        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
+        self.gridLayout = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout.setObjectName("gridLayout")
-        self.botao_atividade1 = QtWidgets.QPushButton(
-            self.scrollAreaWidgetContents_2)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem, 0, 2, 1, 1)
+        self.botao_atividade1 = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.botao_atividade1.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.botao_atividade1.sizePolicy().hasHeightForWidth())
         self.botao_atividade1.setSizePolicy(sizePolicy)
         self.botao_atividade1.setMinimumSize(QtCore.QSize(120, 150))
         self.botao_atividade1.setMaximumSize(QtCore.QSize(120, 150))
-        self.botao_atividade1.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_atividade1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_atividade1.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.botao_atividade1.setAutoFillBackground(False)
         self.botao_atividade1.setStyleSheet("border-radius: 10px;\n"
-                                            "background-color: rgb(217, 217, 217);\n"
-                                            "background-image: url(img/lista.png);\n"
-                                            "background-repeat: no-repeat;\n"
-                                            "background-position: center center;")
+"background-color: rgb(217, 217, 217);\n"
+"background-image: url(:/img/lista.png);\n"
+"background-repeat: no-repeat;\n"
+"background-position: center center;")
+        self.botao_atividade1.setText("")
         self.botao_atividade1.setObjectName("botao_atividade1")
         self.gridLayout.addWidget(self.botao_atividade1, 0, 0, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 1, 0, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem1, 0, 3, 1, 1)
-        self.botao_atividade2 = QtWidgets.QPushButton(
-            self.scrollAreaWidgetContents_2)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem1, 1, 0, 1, 1)
+        self.botao_atividade2 = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.botao_atividade2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.botao_atividade2.sizePolicy().hasHeightForWidth())
         self.botao_atividade2.setSizePolicy(sizePolicy)
         self.botao_atividade2.setMinimumSize(QtCore.QSize(120, 150))
         self.botao_atividade2.setMaximumSize(QtCore.QSize(120, 150))
-        self.botao_atividade2.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_atividade2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_atividade2.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.botao_atividade2.setAutoFillBackground(False)
         self.botao_atividade2.setStyleSheet("border-radius: 10px;\n"
-                                            "background-color: rgb(217, 217, 217);\n"
-                                            "background-image: url(img/lista.png);\n"
-                                            "background-repeat: no-repeat;\n"
-                                            "background-position: center center;")
+"background-color: rgb(217, 217, 217);\n"
+"background-image: url(:/img/lista.png);\n"
+"background-repeat: no-repeat;\n"
+"background-position: center center;")
+        self.botao_atividade2.setText("")
         self.botao_atividade2.setObjectName("botao_atividade2")
         self.gridLayout.addWidget(self.botao_atividade2, 0, 1, 1, 1)
-        self.botao_add_atividade = QtWidgets.QPushButton(
-            self.scrollAreaWidgetContents_2)
-        self.botao_add_atividade.setMinimumSize(QtCore.QSize(50, 50))
-        self.botao_add_atividade.setMaximumSize(QtCore.QSize(50, 50))
-        font = QtGui.QFont()
-        font.setPointSize(32)
-        self.botao_add_atividade.setFont(font)
-        self.botao_add_atividade.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.botao_add_atividade.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.botao_add_atividade.setStyleSheet("border: 3px solid rgb(7, 66, 22);\n"
-                                               "border-radius: 25px;\n"
-                                               "background-color: rgb(255, 255, 255);")
-        self.botao_add_atividade.setObjectName("botao_add_atividade")
-        self.gridLayout.addWidget(self.botao_add_atividade, 0, 2, 1, 1)
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
-        self.botao_fechar = QtWidgets.QPushButton(self.pages[nome])
+        self.botao_fechar = QtWidgets.QPushButton(self.page)
         self.botao_fechar.setGeometry(QtCore.QRect(530, 10, 40, 40))
         font = QtGui.QFont()
         font.setPointSize(24)
         self.botao_fechar.setFont(font)
-        self.botao_fechar.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_fechar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_fechar.setStyleSheet("background-color: rgb(255, 0, 0);")
         self.botao_fechar.setObjectName("botao_fechar")
-        self.stackedWidget.addWidget(self.pages[nome])
+        self.botao_add_atividade = QtWidgets.QPushButton(self.page)
+        self.botao_add_atividade.setGeometry(QtCore.QRect(170, 10, 40, 40))
+        self.botao_add_atividade.setMinimumSize(QtCore.QSize(40, 40))
+        self.botao_add_atividade.setMaximumSize(QtCore.QSize(50, 50))
+        font = QtGui.QFont()
+        font.setPointSize(32)
+        self.botao_add_atividade.setFont(font)
+        self.botao_add_atividade.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_add_atividade.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.botao_add_atividade.setStyleSheet("border: 3px solid rgb(7, 66, 22);\n"
+"border-radius: 20px;\n"
+"background-color: rgb(255, 255, 255);")
+        self.botao_add_atividade.setObjectName("botao_add_atividade")
+        self.stackedWidget.addWidget(self.page)
+        self.page_recepcao = QtWidgets.QWidget()
+        self.page_recepcao.setObjectName("page_recepcao")
+        self.stackedWidget.addWidget(self.page_recepcao)
+        self.botao_logoff = QtWidgets.QPushButton(TelaPrincipalProfessor)
+        self.botao_logoff.setGeometry(QtCore.QRect(10, 10, 40, 20))
+        self.botao_logoff.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_logoff.setStyleSheet("border-radius: 10px;\n"
+"background-color: blue;")
+        self.botao_logoff.setObjectName("botao_logoff")
+        self.scrollArea = QtWidgets.QScrollArea(TelaPrincipalProfessor)
+        self.scrollArea.setGeometry(QtCore.QRect(0, 210, 300, 361))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
+        self.scrollArea.setSizePolicy(sizePolicy)
+        self.scrollArea.setMinimumSize(QtCore.QSize(300, 330))
+        self.scrollArea.setStyleSheet("border: none;\n"
+"background-color: rgb(30, 30, 30);")
+        self.scrollArea.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 300, 361))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.stackedWidget.addWidget(self.pages[nome])
-
-        def alterar_pagina():
-            if self.stackedWidget.currentWidget().objectName() == nome:
-                return
-            elif self.stackedWidget.currentWidget().objectName() != "page_recepcao":
-                self.turmas[self.stackedWidget.currentWidget().objectName()].setStyleSheet("""
-                        QPushButton {
-                            border-radius: 10px;
-                            background-color: rgb(252, 88, 20);
-                        }
-                    """
-                                                                                           )
-            self.stackedWidget.setCurrentWidget(self.pages[nome])
-            self.turmas[nome].setStyleSheet("""
-                    QPushButton {
-                        border-radius: 10px;
-                        background-color: rgb(255, 229, 0);
-                    }
-                """
-                                            )
-
-        def fechar_pagina():
-            self.stackedWidget.setCurrentWidget(self.page_recepcao)
-            self.turmas[nome].setStyleSheet("""
-                    QPushButton {
-                        border-radius: 10px;
-                        background-color: rgb(252, 88, 20);
-                    }
-                """
-                                            )
-        self.turmas[nome].clicked.connect(alterar_pagina)
-        self.botao_fechar.clicked.connect(fechar_pagina)
-        self.stackedWidget.setCurrentWidget(self.page_recepcao)
-        self.novas_atividades.setText(self._translate(
-            "TelaPrincipalProfessor", "Atividades"))
-        self.botao_add_atividade.setText(
-            self._translate("TelaPrincipalProfessor", "+"))
-        self.botao_fechar.setText(
-            self._translate("TelaPrincipalProfessor", "X"))
-
-    def add_turma(self, nome):
-        self.turmas[nome] = QtWidgets.QPushButton(
-            self.scrollAreaWidgetContents)
+        self.turma_1A = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
         font = QtGui.QFont()
         font.setPointSize(24)
-        self.turmas[nome].setFont(font)
-        self.turmas[nome].setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.turmas[nome].setStyleSheet("border-radius: 10px;\n"
-                                        "background-color: rgb(252, 88, 20);")
-        self.turmas[nome].setObjectName(nome)
-        self.verticalLayout.addWidget(self.turmas[nome])
-        self.turmas[nome].setText(
-            self._translate("TelaPrincipalProfessor", nome))
-        self.add_pagina(nome)
-
-    def inserir_espacamento(self):
-        spacerItem2 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.turma_1A.setFont(font)
+        self.turma_1A.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.turma_1A.setStyleSheet("border-radius: 10px;\n"
+"background-color: rgb(252, 88, 20);")
+        self.turma_1A.setObjectName("turma_1A")
+        self.verticalLayout.addWidget(self.turma_1A)
+        self.turma_1B = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        font = QtGui.QFont()
+        font.setPointSize(24)
+        self.turma_1B.setFont(font)
+        self.turma_1B.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.turma_1B.setStyleSheet("border-radius: 10px;\n"
+"background-color: rgb(252, 88, 20);")
+        self.turma_1B.setObjectName("turma_1B")
+        self.verticalLayout.addWidget(self.turma_1B)
+        self.turma_2A = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        font = QtGui.QFont()
+        font.setPointSize(24)
+        self.turma_2A.setFont(font)
+        self.turma_2A.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.turma_2A.setStyleSheet("border-radius: 10px;\n"
+"background-color: rgb(252, 88, 20);")
+        self.turma_2A.setObjectName("turma_2A")
+        self.verticalLayout.addWidget(self.turma_2A)
+        self.turma_3A = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        font = QtGui.QFont()
+        font.setPointSize(24)
+        self.turma_3A.setFont(font)
+        self.turma_3A.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.turma_3A.setStyleSheet("border-radius: 10px;\n"
+"background-color: rgb(252, 88, 20);")
+        self.turma_3A.setObjectName("turma_3A")
+        self.verticalLayout.addWidget(self.turma_3A)
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.botao_sair = QtWidgets.QPushButton(TelaPrincipalProfessor)
+        self.botao_sair.setGeometry(QtCore.QRect(240, 10, 40, 20))
+        self.botao_sair.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_sair.setStyleSheet("border-radius: 10px;\n"
+"background-color: red;")
+        self.botao_sair.setObjectName("botao_sair")
+        self.logo_escola = QtWidgets.QLabel(TelaPrincipalProfessor)
+        self.logo_escola.setGeometry(QtCore.QRect(60, 30, 180, 180))
+        self.logo_escola.setStyleSheet("background-size: contain;")
+        self.logo_escola.setText("")
+        self.logo_escola.setPixmap(QtGui.QPixmap(":/img/logo-escola.png"))
+        self.logo_escola.setScaledContents(True)
+        self.logo_escola.setAlignment(QtCore.Qt.AlignCenter)
+        self.logo_escola.setObjectName("logo_escola")
 
-    def limpar_paginas(self):
-        for pagina in self.pages:
-            self.stackedWidget.removeWidget(self.pages[pagina])
-            self.pages[pagina].deleteLater()
-        self.pages = {}
-
-    def limpar_turmas(self):
-        for turma in self.turmas:
-            self.verticalLayout.removeWidget(self.turmas[turma])
-            self.turmas[turma].deleteLater()
-        self.turmas = {}
-        self.verticalLayout.removeItem(self.verticalLayout.itemAt(0))
+        self.retranslateUi(TelaPrincipalProfessor)
+        self.stackedWidget.setCurrentIndex(0)
+        QtCore.QMetaObject.connectSlotsByName(TelaPrincipalProfessor)
 
     def retranslateUi(self, TelaPrincipalProfessor):
         _translate = QtCore.QCoreApplication.translate
-        TelaPrincipalProfessor.setWindowTitle(
-            _translate("TelaPrincipalProfessor", "Tela Principal"))
-        self.botao_logoff.setText(_translate(
-            "TelaPrincipalProfessor", "Logoff"))
+        TelaPrincipalProfessor.setWindowTitle(_translate("TelaPrincipalProfessor", "Form"))
+        self.novas_atividades.setText(_translate("TelaPrincipalProfessor", "Atividades"))
+        self.botao_fechar.setText(_translate("TelaPrincipalProfessor", "X"))
+        self.botao_add_atividade.setText(_translate("TelaPrincipalProfessor", "+"))
+        self.botao_logoff.setText(_translate("TelaPrincipalProfessor", "Logoff"))
+        self.turma_1A.setText(_translate("TelaPrincipalProfessor", "Turma 1A"))
+        self.turma_1B.setText(_translate("TelaPrincipalProfessor", "Turma 1B"))
+        self.turma_2A.setText(_translate("TelaPrincipalProfessor", "Turma 2A"))
+        self.turma_3A.setText(_translate("TelaPrincipalProfessor", "Turma 3A"))
         self.botao_sair.setText(_translate("TelaPrincipalProfessor", "Sair"))
-# import img_rc
+import img_rc
 
 
 if __name__ == "__main__":
@@ -331,17 +232,5 @@ if __name__ == "__main__":
     TelaPrincipalProfessor = QtWidgets.QWidget()
     ui = Ui_TelaPrincipalProfessor()
     ui.setupUi(TelaPrincipalProfessor)
-    ui.add_turma("Turma-1A")
-    ui.add_turma("Turma-1B")
-    ui.add_turma("Turma-2A")
-    ui.add_turma("Turma-3A")
-    ui.add_turma("Turma-3B")
-    ui.inserir_espacamento()
-    # ui.limpar_materias()
-    # ui.limpar_paginas()
-    # ui.add_materia("Inglês")
-    # ui.add_materia("Física")
-    # ui.add_materia("Geografia")
-    # ui.inserir_espacamento()
     TelaPrincipalProfessor.show()
     sys.exit(app.exec_())
