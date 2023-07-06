@@ -82,7 +82,7 @@ class Ui_TelaPrincipalProfessor(object):
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TelaPrincipalProfessor)
 
-    def add_pagina(self, nome_turma, materia_id, turma_id, atividades, funcao_criar_pagina_atividade=None):
+    def add_pagina(self, nome_turma, materia_id, turma_id, atividades=None, funcao_criar_pagina_atividade=None):
         self.paginas[nome_turma] = PaginaTurma(nome_turma, materia_id, turma_id, self.scrollAreaWidgetContents, self.verticalLayout, self._translate, atividades, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
 
         def alterar_pagina():
@@ -238,93 +238,93 @@ class Ui_TelaPrincipalProfessor(object):
     #     self.botao_fechar.setText(
     #         self._translate("TelaPrincipalProfessor", "X"))
 
-    def add_botao(self, nome, atividades, funcao_criar_pagina_atividade=None, pilha_paginas=None):
-        def add_botao_funcao():
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'] = QtWidgets.QPushButton(
-                self.scrollArea_pages[nome])
-            sizePolicy = QtWidgets.QSizePolicy(
-                QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-            sizePolicy.setHorizontalStretch(0)
-            sizePolicy.setVerticalStretch(0)
-            sizePolicy.setHeightForWidth(
-                self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].sizePolicy().hasHeightForWidth())
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setSizePolicy(
-                sizePolicy)
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setMinimumSize(
-                QtCore.QSize(120, 150))
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setMaximumSize(
-                QtCore.QSize(120, 150))
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setCursor(
-                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setLayoutDirection(
-                QtCore.Qt.LeftToRight)
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setAutoFillBackground(
-                False)
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setStyleSheet("border-radius: 10px;\n"
-                                                                                     "background-color: rgb(217, 217, 217);\n"
-                                                                                     "background-image: url(img/lista.png);\n"
-                                                                                     "background-repeat: no-repeat;\n"
-                                                                                     "background-position: center center;")
-            self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setObjectName(
-                f"botao_atividade{self.indice_scroll[nome]}")
-            self.gridLayout[nome].addWidget(
-                self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'], self.indice_scroll[nome] // 4, self.indice_scroll[nome] % 4, 1, 1)
-            if funcao_criar_pagina_atividade and pilha_paginas:
-                self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].clicked.connect(
-                    funcao_criar_pagina_atividade(atividades[2].split('-')[3], atividades[3].split('-')[2]))
-            self.indice_scroll[nome] += 1
-        return add_botao_funcao
+    # def add_botao(self, nome, atividades, funcao_criar_pagina_atividade=None, pilha_paginas=None):
+    #     def add_botao_funcao():
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'] = QtWidgets.QPushButton(
+    #             self.scrollArea_pages[nome])
+    #         sizePolicy = QtWidgets.QSizePolicy(
+    #             QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+    #         sizePolicy.setHorizontalStretch(0)
+    #         sizePolicy.setVerticalStretch(0)
+    #         sizePolicy.setHeightForWidth(
+    #             self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].sizePolicy().hasHeightForWidth())
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setSizePolicy(
+    #             sizePolicy)
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setMinimumSize(
+    #             QtCore.QSize(120, 150))
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setMaximumSize(
+    #             QtCore.QSize(120, 150))
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setCursor(
+    #             QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setLayoutDirection(
+    #             QtCore.Qt.LeftToRight)
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setAutoFillBackground(
+    #             False)
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setStyleSheet("border-radius: 10px;\n"
+    #                                                                                  "background-color: rgb(217, 217, 217);\n"
+    #                                                                                  "background-image: url(img/lista.png);\n"
+    #                                                                                  "background-repeat: no-repeat;\n"
+    #                                                                                  "background-position: center center;")
+    #         self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].setObjectName(
+    #             f"botao_atividade{self.indice_scroll[nome]}")
+    #         self.gridLayout[nome].addWidget(
+    #             self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'], self.indice_scroll[nome] // 4, self.indice_scroll[nome] % 4, 1, 1)
+    #         if funcao_criar_pagina_atividade and pilha_paginas:
+    #             self.botoes_atividades[f'novo_{self.indice_scroll[nome]}'].clicked.connect(
+    #                 funcao_criar_pagina_atividade(atividades[2].split('-')[3], atividades[3].split('-')[2]))
+    #         self.indice_scroll[nome] += 1
+    #     return add_botao_funcao
 
-    def add_botoes(self, nome, atividades, funcao_criar_pagina_atividade=None, pilha_paginas=None):
-        for i, titulo in enumerate(atividades):
-            self.botoes_atividades[titulo] = QtWidgets.QPushButton(
-                self.scrollAreaWidgetContents_pages[nome])
-            sizePolicy = QtWidgets.QSizePolicy(
-                QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-            sizePolicy.setHorizontalStretch(0)
-            sizePolicy.setVerticalStretch(0)
-            sizePolicy.setHeightForWidth(
-                self.botoes_atividades[titulo].sizePolicy().hasHeightForWidth())
-            self.botoes_atividades[titulo].setSizePolicy(sizePolicy)
-            self.botoes_atividades[titulo].setMinimumSize(
-                QtCore.QSize(120, 150))
-            self.botoes_atividades[titulo].setMaximumSize(
-                QtCore.QSize(120, 150))
-            self.botoes_atividades[titulo].setCursor(
-                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.botoes_atividades[titulo].setLayoutDirection(
-                QtCore.Qt.LeftToRight)
-            self.botoes_atividades[titulo].setAutoFillBackground(False)
-            self.botoes_atividades[titulo].setStyleSheet("border-radius: 10px;\n"
-                                                         "background-color: rgb(217, 217, 217);\n"
-                                                         "background-image: url(img/lista.png);\n"
-                                                         "background-repeat: no-repeat;\n"
-                                                         "background-position: center center;")
-            self.botoes_atividades[titulo].setObjectName(
-                f"botao_atividade{i}")
-            self.gridLayout[nome].addWidget(
-                self.botoes_atividades[titulo], i // 4, i % 4, 1, 1)
-            if funcao_criar_pagina_atividade and pilha_paginas:
-                self.botoes_atividades[titulo].clicked.connect(funcao_criar_pagina_atividade(atividades[i].split(
-                    '-')[2], atividades[i].split('-')[3], id_atividade=atividades[i].split('-')[0]))
-            self.indice_scroll[nome] = i + 1
+    # def add_botoes(self, nome, atividades, funcao_criar_pagina_atividade=None, pilha_paginas=None):
+    #     for i, titulo in enumerate(atividades):
+    #         self.botoes_atividades[titulo] = QtWidgets.QPushButton(
+    #             self.scrollAreaWidgetContents_pages[nome])
+    #         sizePolicy = QtWidgets.QSizePolicy(
+    #             QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+    #         sizePolicy.setHorizontalStretch(0)
+    #         sizePolicy.setVerticalStretch(0)
+    #         sizePolicy.setHeightForWidth(
+    #             self.botoes_atividades[titulo].sizePolicy().hasHeightForWidth())
+    #         self.botoes_atividades[titulo].setSizePolicy(sizePolicy)
+    #         self.botoes_atividades[titulo].setMinimumSize(
+    #             QtCore.QSize(120, 150))
+    #         self.botoes_atividades[titulo].setMaximumSize(
+    #             QtCore.QSize(120, 150))
+    #         self.botoes_atividades[titulo].setCursor(
+    #             QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+    #         self.botoes_atividades[titulo].setLayoutDirection(
+    #             QtCore.Qt.LeftToRight)
+    #         self.botoes_atividades[titulo].setAutoFillBackground(False)
+    #         self.botoes_atividades[titulo].setStyleSheet("border-radius: 10px;\n"
+    #                                                      "background-color: rgb(217, 217, 217);\n"
+    #                                                      "background-image: url(img/lista.png);\n"
+    #                                                      "background-repeat: no-repeat;\n"
+    #                                                      "background-position: center center;")
+    #         self.botoes_atividades[titulo].setObjectName(
+    #             f"botao_atividade{i}")
+    #         self.gridLayout[nome].addWidget(
+    #             self.botoes_atividades[titulo], i // 4, i % 4, 1, 1)
+    #         if funcao_criar_pagina_atividade and pilha_paginas:
+    #             self.botoes_atividades[titulo].clicked.connect(funcao_criar_pagina_atividade(atividades[i].split(
+    #                 '-')[2], atividades[i].split('-')[3], id_atividade=atividades[i].split('-')[0]))
+    #         self.indice_scroll[nome] = i + 1
 
-    def add_turma(self, nome_turma, atividades, pilha_paginas=None, funcao_criar_pagina_atividade=None):
-        self.turmas[nome_turma] = QtWidgets.QPushButton(
-            self.scrollAreaWidgetContents)
-        font = QtGui.QFont()
-        font.setPointSize(24)
-        self.turmas[nome_turma].setFont(font)
-        self.turmas[nome_turma].setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.turmas[nome_turma].setStyleSheet("border-radius: 10px;\n"
-                                              "background-color: rgb(252, 88, 20);")
-        self.turmas[nome_turma].setObjectName(nome_turma)
-        self.verticalLayout.addWidget(self.turmas[nome_turma])
-        self.turmas[nome_turma].setText(
-            self._translate("TelaPrincipalProfessor", nome_turma))
-        self.add_pagina(nome_turma, atividades, pilha_paginas=pilha_paginas,
-                        funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
+    # def add_turma(self, nome_turma, atividades, pilha_paginas=None, funcao_criar_pagina_atividade=None):
+    #     self.turmas[nome_turma] = QtWidgets.QPushButton(
+    #         self.scrollAreaWidgetContents)
+    #     font = QtGui.QFont()
+    #     font.setPointSize(24)
+    #     self.turmas[nome_turma].setFont(font)
+    #     self.turmas[nome_turma].setCursor(
+    #         QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+    #     self.turmas[nome_turma].setStyleSheet("border-radius: 10px;\n"
+    #                                           "background-color: rgb(252, 88, 20);")
+    #     self.turmas[nome_turma].setObjectName(nome_turma)
+    #     self.verticalLayout.addWidget(self.turmas[nome_turma])
+    #     self.turmas[nome_turma].setText(
+    #         self._translate("TelaPrincipalProfessor", nome_turma))
+    #     self.add_pagina(nome_turma, atividades, pilha_paginas=pilha_paginas,
+    #                     funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
 
     def inserir_espacamento(self):
         spacerItem2 = QtWidgets.QSpacerItem(

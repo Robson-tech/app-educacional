@@ -75,10 +75,10 @@ class Diretor(Usuario):
 
 
 class Professor(Usuario):
-    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materia, id_materia, salario=0):
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materia, id_materia, salario=1320):
         super().__init__(id, email, senha, nome, sobrenome,
                          nascimento, data_cadastro, ultimo_login)
-        self._materia = (materia, id_materia)
+        self._materia = {'id': id_materia, 'nome': materia}
         self._salario = salario
         self._turmas = []
 
@@ -98,6 +98,9 @@ class Professor(Usuario):
     def turmas(self):
         return self._turmas
 
+    def add_turma(self, turma):
+        self._turmas.append(turma)
+
     def validar_email(self, email):
         if email.find("@") != -1:
             return True
@@ -109,9 +112,6 @@ class Professor(Usuario):
             return True
         else:
             return False
-
-    def add_turma(self, turma):
-        self._turmas.append(turma)
 
 
 class Aluno(Usuario):
@@ -151,10 +151,21 @@ class Atividade:
         self._professor_id = professor_id
         self._questoes = questoes
 
+    def __str__(self):
+        return f'{self._id}-{self._nome}-{self._descricao}-{self._materia_id}-{self._turma_id}-{self._professor_id}'
+
+    @property
+    def nome(self):
+        return self._nome
+    
+    @property
+    def descricao(self):
+        return self._descricao
+
     @property
     def questoes(self):
         return self._questoes
-    
+
     def add_questao(self, questao):
         self._questoes.append(questao)
 

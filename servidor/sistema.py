@@ -1,7 +1,7 @@
 import socket
 import threading
 import mysql.connector as mysql
-from modelos import Professor, Aluno, Questao
+from modelos import Professor, Aluno, Atividade, Questao
 
 
 tabelas = {}
@@ -200,14 +200,14 @@ class SistemaEducacional:
             return False
 
     def login_professor(self, usuario):
-        self._sql = "SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.professores.salario, sistema_educacional.materias.nome, sistema_educacional.materias.id FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.professores ON sistema_educacional.usuarios.id = sistema_educacional.professores.usuario_id INNER JOIN sistema_educacional.materias ON sistema_educacional.professores.id = sistema_educacional.materias.professores_id WHERE usuario_id = %s"
+        self._sql = "SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.materias.nome, sistema_educacional.materias.id, sistema_educacional.professores.salario FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.professores ON sistema_educacional.usuarios.id = sistema_educacional.professores.usuario_id INNER JOIN sistema_educacional.materias ON sistema_educacional.professores.id = sistema_educacional.materias.professores_id WHERE usuario_id = %s"
         self._val = (usuario[0],)
         self._cursor.execute(self._sql, self._val)
         consulta = self._cursor.fetchone()
         if consulta:
             professor = Professor(
-                consulta[0], usuario[1], usuario[2], usuario[3], usuario[4],
-                usuario[5], usuario[6], usuario[7], consulta[8], consulta[9], consulta[10]
+                consulta[0], consulta[1], consulta[2], consulta[3], consulta[4],
+                consulta[5], consulta[6], consulta[7], consulta[8], consulta[9], salario=consulta[10]
             )
             self._usuario = professor
             for turma in self.get_turmas_professor():
@@ -260,10 +260,63 @@ class SistemaEducacional:
         return self._cursor.fetchall()
 
     def get_atividades_turma(self, turma):
-        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id, sistema_educacional.atividades.materia_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id AND sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.turmas.nome = %s"
-        self._val = (turma,)
+        if isinstance(self.usuario, Professor):
+            self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.descricao, sistema_educacional.atividades.materia_id, sistema_educacional.atividades.turma_id, sistema_educacional.turmas_professores.professor_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas INNER JOIN sistema_educacional.materias INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id AND sistema_educacional.atividades.materia_id = sistema_educacional.materias.id AND sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id WHERE sistema_educacional.turmas.nome = %s AND sistema_educacional.turmas_professores.professor_id = %s"
+            self._val = (turma, self.usuario.id)
+            self._cursor.execute(self._sql, self._val)
+            lista_atividades = []
+            for atividade in self._cursor.fetchall():
+                lista_atividades.append(Atividade(*atividade))
+            return lista_atividades
+
+    def cadastrar_atividade(self, nome, descricao, materia, turma, id):
+        retorno = False
+        if id:
+            self._sql = "UPDATE sistema_educacional.atividades SET nome = %s, descricao = %s, materia_id = %s, turma_id = %s WHERE id = %s"
+            self._val = (nome, descricao, materia, turma, id)
+            try:
+                self._cursor.execute(self._sql, self._val)
+                self._mydb.commit()
+                retorno = id
+            except Exception as e:
+                print(str(e))
+                retorno = False
+        else:
+            self._sql = "INSERT INTO sistema_educacional.atividades (nome, descricao, materia_id, turma_id) VALUES (%s, %s, %s, %s)"
+            self._val = (nome, descricao, materia, turma)
+            try:
+                self._cursor.execute(self._sql, self._val)
+                self._mydb.commit()
+                retorno = self._cursor.lastrowid
+            except Exception as e:
+                print(str(e))
+                retorno = False
+        return retorno
+    
+    def get_atividade(self, id_atividade):
+        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.descricao, sistema_educacional.atividades.materia_id, sistema_educacional.atividades.turma_id, sistema_educacional.turmas_professores.professor_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas INNER JOIN sistema_educacional.materias INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id AND sistema_educacional.atividades.materia_id = sistema_educacional.materias.id AND sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id WHERE sistema_educacional.atividades.id = %s"
+        self._val = (id_atividade,)
         self._cursor.execute(self._sql, self._val)
-        return self._cursor.fetchall()
+        atividade = self._cursor.fetchone()
+        return Atividade(*atividade)
+
+    def cadastrar_questao(self, id, atividade, enunciado, resposta, a, b, c, d, e):
+        if id:
+            self._sql = "UPDATE sistema_educacional.questoes SET atividade_id = %s, enunciado = %s, resposta = %s, letra_a = %s, letra_b = %s, letra_c = %s, letra_d = %s, letra_e = %s WHERE id = %s"
+            self._val = (atividade, enunciado, resposta, a, b, c, d, e, id)
+            try:
+                self._cursor.execute(self._sql, self._val)
+                self._mydb.commit()
+                return
+            except Exception as e:
+                print(str(e))
+        self._sql = "INSERT INTO sistema_educacional.questoes (atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        self._val = (atividade, enunciado, resposta, a, b, c, d, e)
+        try:
+            self._cursor.execute(self._sql, self._val)
+            self._mydb.commit()
+        except Exception as e:
+            print(str(e))
 
     def get_questoes(self, id_atividade):
         self._sql = "SELECT sistema_educacional.questoes.id, sistema_educacional.questoes.atividade_id, sistema_educacional.questoes.enunciado, sistema_educacional.questoes.resposta, sistema_educacional.questoes.letra_a, sistema_educacional.questoes.letra_b, sistema_educacional.questoes.letra_c, sistema_educacional.questoes.letra_d, sistema_educacional.questoes.letra_e FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
@@ -273,22 +326,6 @@ class SistemaEducacional:
         for questao in self._cursor.fetchall():
             questoes.append(Questao(*questao))
         return questoes
-
-    def cadastrar_atividade(self, nome, descricao, materia, turma):
-        self._sql = "INSERT INTO sistema_educacional.atividades (nome, descricao, materia_id, turma_id) VALUES (%s, %s, %s, %s)"
-        self._val = (nome, descricao, materia, turma)
-        try:
-            self._cursor.execute(self._sql, self._val)
-        except:
-            return False
-        self._mydb.commit()
-        return self._cursor.lastrowid
-
-    def cadastrar_questao(self, atividade, enunciado, resposta, a, b, c, d, e):
-        self._sql = "INSERT INTO sistema_educacional.questoes (atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        self._val = (atividade, enunciado, resposta, a, b, c, d, e)
-        self._cursor.execute(self._sql, self._val)
-        self._mydb.commit()
 
     def logout(self):
         self._usuario = None
@@ -323,7 +360,7 @@ class MyThread(threading.Thread):
                     senha = mensagem_str[2]
                     if self.sistema.login(email, senha):
                         if isinstance(self.sistema.usuario, Professor):
-                            enviar = f'1|{self.sistema.usuario.materia[1]}'
+                            enviar = f"1|{self.sistema.usuario.materia['id']}"
                             for turma in self.sistema.usuario.turmas:
                                 enviar += f'|{turma[0]}-{turma[1]}'
                             print(
@@ -370,30 +407,38 @@ class MyThread(threading.Thread):
                         enviar = f'4|{questao}'
                         self.client_socket.send(enviar.encode())
                         self.client_socket.recv(1024)
-                    self.client_socket.send('0'.encode())
+                    atividade = self.sistema.get_atividade(mensagem_str[1])
+                    self.client_socket.send(f'0|{atividade}'.encode())
                     continue
                 elif mensagem_str[0] == '5':
                     turma = mensagem_str[1]
                     enviar = f'5'
                     for atividade in self.sistema.get_atividades_turma(turma):
-                        enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}-{atividade[3]}'
+                        enviar += f'|{atividade}'
                 elif mensagem_str[0] == '6':
-                    titulo = mensagem_str[1]
-                    descricao = mensagem_str[2]
-                    materia = mensagem_str[3]
-                    turma = mensagem_str[4]
+                    atividade_id = mensagem_str[1] if mensagem_str[1] != '-1' else None
+                    titulo = mensagem_str[2]
+                    descricao = mensagem_str[3]
+                    materia = mensagem_str[4]
+                    turma = mensagem_str[5]
                     id = self.sistema.cadastrar_atividade(
-                        titulo, descricao, materia, turma)
+                        titulo, descricao, materia, turma, atividade_id)
                     if not id:
                         self.client_socket.send('-6'.encode())
                         print(
                             f'Erro ao cadastrar atividade em {self.client_address}')
                         continue
                     else:
-                        lista_questoes = [num.split('/')
-                                          for num in mensagem_str[5:]]
+                        try:
+                            lista_questoes = [num.split('/')
+                                            for num in mensagem_str[6:]]
+                        except:
+                            self.client_socket.send('-6'.encode())
+                            print(
+                                f'Erro ao cadastrar atividade em {self.client_address}')
+                            continue
                         for questao in lista_questoes:
-                            self.sistema.cadastrar_questao(
+                            self.sistema.cadastrar_questao(questao[0],
                                 id, questao[1], 'a', questao[2], questao[3], questao[4], questao[5], questao[6])
                         enviar = '6'
                         print(
@@ -419,7 +464,7 @@ class MyThread(threading.Thread):
 
 
 def main():
-    host = 'localhost'
+    host = '10.180.41.189'
     port = 5000
     addr = (host, port)
     serv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -445,4 +490,5 @@ if __name__ == "__main__":
     main()
     # sistema = SistemaEducacional()
     # sistema.login('julio@example.com', '1234')
-    # print(sistema.get_turmas_professor())
+    # for atividade in sistema.get_atividades_turma('3A'):
+    #     print(atividade)

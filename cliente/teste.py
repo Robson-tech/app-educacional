@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class PaginaTurma(QtWidgets.QWidget):
-    def __init__(self, nome_turma, materia_id, turma_id, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate, atividades_turma, funcao_criar_pagina_atividade=None):
+    def __init__(self, nome_turma, materia_id, turma_id, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate, atividades_turma=None, funcao_criar_pagina_atividade=None):
         super().__init__()
         self.label_novas_atividades = QtWidgets.QLabel(self)
         self.linha_horizontal = QtWidgets.QFrame(self)
@@ -14,10 +14,10 @@ class PaginaTurma(QtWidgets.QWidget):
         self.botao_add_atividade = QtWidgets.QPushButton(self)
         self.botao_fechar = QtWidgets.QPushButton(self)
         self.add_botao_turma_lateral(nome_turma, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate)
-        self.add_modificacoes(nome_turma, materia_id, turma_id, atividades_turma, _translate, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
+        self.add_modificacoes(nome_turma, materia_id, turma_id, _translate, atividades_turma, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
         self.botao_add_atividade.clicked.connect(self.funcao_botao_add_atividade(nome_turma, materia_id, turma_id, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade))
     
-    def add_modificacoes(self, nome_turma, materia_id, turma_id, atividades_turma, _translate, funcao_criar_pagina_atividade=None):
+    def add_modificacoes(self, nome_turma, materia_id, turma_id, _translate, atividades_turma=None, funcao_criar_pagina_atividade=None):
         self.setObjectName(nome_turma)
         self.label_novas_atividades.setGeometry(QtCore.QRect(10, 10, 511, 40))
         font_label_novas_atividades = QtGui.QFont()
@@ -42,7 +42,6 @@ class PaginaTurma(QtWidgets.QWidget):
         self.gridLayout.setObjectName("pagina_gridLayout")
         if atividades_turma:
             self.add_botoes_atividade(atividades_turma, materia_id, turma_id, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
-        self.botao_add_atividade = QtWidgets.QPushButton(self)
         self.botao_add_atividade.setGeometry(QtCore.QRect(170, 10, 40, 40))
         self.botao_add_atividade.setMinimumSize(QtCore.QSize(40, 40))
         self.botao_add_atividade.setMaximumSize(QtCore.QSize(50, 50))
@@ -70,76 +69,76 @@ class PaginaTurma(QtWidgets.QWidget):
         self.botao_fechar.setText(
             _translate("TelaPrincipalProfessor", "X"))
 
-    def funcao_botao_add_atividade(self, nome_atividade, materia_id, turma_id, funcao_criar_pagina_atividade=None):
-        def botao_add_atividade_funcao():
-            self.botao_atividade[nome_atividade] = QtWidgets.QPushButton(
+    def funcao_botao_add_atividade(self, atividade, materia_id, turma_id, funcao_criar_pagina_atividade=None):
+        def funcao_botao_add_atividade():
+            self.botao_atividade[atividade] = QtWidgets.QPushButton(
                 self.scrollArea)
             sizePolicy = QtWidgets.QSizePolicy(
                 QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
             sizePolicy.setHorizontalStretch(0)
             sizePolicy.setVerticalStretch(0)
             sizePolicy.setHeightForWidth(
-                self.botao_atividade[nome_atividade].sizePolicy().hasHeightForWidth())
-            self.botao_atividade[nome_atividade].setSizePolicy(
+                self.botao_atividade[atividade].sizePolicy().hasHeightForWidth())
+            self.botao_atividade[atividade].setSizePolicy(
                 sizePolicy)
-            self.botao_atividade[nome_atividade].setMinimumSize(
+            self.botao_atividade[atividade].setMinimumSize(
                 QtCore.QSize(120, 150))
-            self.botao_atividade[nome_atividade].setMaximumSize(
+            self.botao_atividade[atividade].setMaximumSize(
                 QtCore.QSize(120, 150))
-            self.botao_atividade[nome_atividade].setCursor(
+            self.botao_atividade[atividade].setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.botao_atividade[nome_atividade].setLayoutDirection(
+            self.botao_atividade[atividade].setLayoutDirection(
                 QtCore.Qt.LeftToRight)
-            self.botao_atividade[nome_atividade].setAutoFillBackground(
+            self.botao_atividade[atividade].setAutoFillBackground(
                 False)
-            self.botao_atividade[nome_atividade].setStyleSheet("border-radius: 10px;\n"
+            self.botao_atividade[atividade].setStyleSheet("border-radius: 10px;\n"
                                                                                      "background-color: rgb(217, 217, 217);\n"
                                                                                      "background-image: url(img/lista.png);\n"
                                                                                      "background-repeat: no-repeat;\n"
                                                                                      "background-position: center center;")
-            self.botao_atividade[nome_atividade].setObjectName(nome_atividade)
+            self.botao_atividade[atividade].setObjectName(atividade)
             if self.ultimo_botao_atividade[1] == 3:
                 self.ultimo_botao_atividade = (self.ultimo_botao_atividade[0] + 1, 0)
             else:
                 self.ultimo_botao_atividade = (self.ultimo_botao_atividade[0], self.ultimo_botao_atividade[1] + 1)
             self.gridLayout.addWidget(
-                self.botao_atividade[nome_atividade], self.ultimo_botao_atividade[0], self.ultimo_botao_atividade[1], 1, 1)
+                self.botao_atividade[atividade], self.ultimo_botao_atividade[0], self.ultimo_botao_atividade[1], 1, 1)
             if funcao_criar_pagina_atividade:
-                self.botao_atividade[nome_atividade].clicked.connect(
+                self.botao_atividade[atividade].clicked.connect(
                     funcao_criar_pagina_atividade(materia_id, turma_id))
-        return botao_add_atividade_funcao
+        return funcao_botao_add_atividade
 
     def add_botoes_atividade(self, atividades_turma, materia_id, turma_id, funcao_criar_pagina_atividade=None):
-        for i, nome_atividade in enumerate(atividades_turma):
-            self.botao_atividade[nome_atividade] = QtWidgets.QPushButton(
+        for i, atividade in enumerate(atividades_turma):
+            self.botao_atividade[atividade.nome] = QtWidgets.QPushButton(
                 self.scrollAreaWidgetContents)
             sizePolicy = QtWidgets.QSizePolicy(
                 QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
             sizePolicy.setHorizontalStretch(0)
             sizePolicy.setVerticalStretch(0)
             sizePolicy.setHeightForWidth(
-                self.botao_atividade[nome_atividade].sizePolicy().hasHeightForWidth())
-            self.botao_atividade[nome_atividade].setSizePolicy(sizePolicy)
-            self.botao_atividade[nome_atividade].setMinimumSize(
+                self.botao_atividade[atividade.nome].sizePolicy().hasHeightForWidth())
+            self.botao_atividade[atividade.nome].setSizePolicy(sizePolicy)
+            self.botao_atividade[atividade.nome].setMinimumSize(
                 QtCore.QSize(120, 150))
-            self.botao_atividade[nome_atividade].setMaximumSize(
+            self.botao_atividade[atividade.nome].setMaximumSize(
                 QtCore.QSize(120, 150))
-            self.botao_atividade[nome_atividade].setCursor(
+            self.botao_atividade[atividade.nome].setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.botao_atividade[nome_atividade].setLayoutDirection(
+            self.botao_atividade[atividade.nome].setLayoutDirection(
                 QtCore.Qt.LeftToRight)
-            self.botao_atividade[nome_atividade].setAutoFillBackground(False)
-            self.botao_atividade[nome_atividade].setStyleSheet("border-radius: 10px;\n"
+            self.botao_atividade[atividade.nome].setAutoFillBackground(False)
+            self.botao_atividade[atividade.nome].setStyleSheet("border-radius: 10px;\n"
                                                          "background-color: rgb(217, 217, 217);\n"
                                                          "background-image: url(img/lista.png);\n"
                                                          "background-repeat: no-repeat;\n"
                                                          "background-position: center center;")
-            self.botao_atividade[nome_atividade].setObjectName(
+            self.botao_atividade[atividade.nome].setObjectName(
                 f"botao_atividade{i}")
             self.gridLayout.addWidget(
-                self.botao_atividade[nome_atividade], i // 4, i % 4, 1, 1)
+                self.botao_atividade[atividade.nome], i // 4, i % 4, 1, 1)
             if funcao_criar_pagina_atividade:
-                self.botao_atividade[nome_atividade].clicked.connect(funcao_criar_pagina_atividade(materia_id, turma_id, id_atividade=atividades_turma[i].split('-')[0]))
+                self.botao_atividade[atividade.nome].clicked.connect(funcao_criar_pagina_atividade(materia_id, turma_id, id_atividade=atividade.id))
             self.ultimo_botao_atividade[0] = i // 4
             self.ultimo_botao_atividade[1] = i % 4
     

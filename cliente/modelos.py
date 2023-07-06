@@ -8,6 +8,21 @@ class Atividade:
         self._professor_id = professor_id
         self._questoes = questoes
 
+    def __str__(self):
+        return f'{self._id},{self._nome},{self._descricao},{self._materia_id},{self._turma_id},{self._professor_id}'
+    
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def nome(self):
+        return self._nome
+    
+    @property
+    def descricao(self):
+        return self._descricao
+
     @property
     def questoes(self):
         return self._questoes
@@ -56,3 +71,8 @@ class Questao:
             return True
         else:
             return False
+
+
+if __name__ == '__main__':
+    atividade = Atividade(1, 'função afim', 'atividade de função', 1, 1, 1)
+    print(atividade.nome)
