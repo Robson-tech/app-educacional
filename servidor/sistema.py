@@ -1,3 +1,5 @@
+import socket
+import threading
 import mysql.connector as mysql
 from modelos import Professor, Aluno, Questao
 
@@ -105,7 +107,8 @@ class SistemaEducacional:
             host="localhost",
             user="root",
             password="1234",
-            auth_plugin='mysql_native_password'
+            auth_plugin='mysql_native_password',
+            consume_results=True
         )
         self._cursor = self._mydb.cursor()
         self._sql = "CREATE DATABASE IF NOT EXISTS sistema_educacional"
@@ -197,17 +200,17 @@ class SistemaEducacional:
             return False
 
     def login_professor(self, usuario):
-        self._sql = "SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.professores.salario FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.professores ON sistema_educacional.usuarios.id = sistema_educacional.professores.usuario_id WHERE usuario_id = %s"
+        self._sql = "SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.professores.salario, sistema_educacional.materias.nome, sistema_educacional.materias.id FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.professores ON sistema_educacional.usuarios.id = sistema_educacional.professores.usuario_id INNER JOIN sistema_educacional.materias ON sistema_educacional.professores.id = sistema_educacional.materias.professores_id WHERE usuario_id = %s"
         self._val = (usuario[0],)
         self._cursor.execute(self._sql, self._val)
         consulta = self._cursor.fetchone()
         if consulta:
             professor = Professor(
                 consulta[0], usuario[1], usuario[2], usuario[3], usuario[4],
-                usuario[5], usuario[6], usuario[7], consulta[8]
+                usuario[5], usuario[6], usuario[7], consulta[8], consulta[9], consulta[10]
             )
             self._usuario = professor
-            for turma in sistema.get_turmas_professor():
+            for turma in self.get_turmas_professor():
                 professor.add_turma(turma)
             self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
             self._val = (usuario[0],)
@@ -245,10 +248,10 @@ class SistemaEducacional:
 
     def get_turmas_professor(self):
         if isinstance(self.usuario, Professor):
-            self._sql = "SELECT sistema_educacional.turmas.nome FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores INNER JOIN sistema_educacional.professores ON sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id AND sistema_educacional.turmas_professores.professor_id = sistema_educacional.professores.id WHERE sistema_educacional.professores.usuario_id = %s"
+            self._sql = "SELECT sistema_educacional.turmas.nome, sistema_educacional.turmas.id FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id INNER JOIN sistema_educacional.professores ON sistema_educacional.turmas_professores.professor_id = sistema_educacional.professores.id WHERE sistema_educacional.professores.usuario_id = %s"
             self._val = (self.usuario.id,)
             self._cursor.execute(self._sql, self._val)
-            return [x[0] for x in self._cursor.fetchall()]
+            return [[turma[0], turma[1]] for turma in self._cursor.fetchall()]
 
     def get_atividades_materia(self, materia):
         self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
@@ -282,13 +285,137 @@ class SistemaEducacional:
         return self._cursor.lastrowid
 
     def cadastrar_questao(self, atividade, enunciado, resposta, a, b, c, d, e):
-        pass
+        self._sql = "INSERT INTO sistema_educacional.questoes (atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        self._val = (atividade, enunciado, resposta, a, b, c, d, e)
+        self._cursor.execute(self._sql, self._val)
+        self._mydb.commit()
 
     def logout(self):
         self._usuario = None
 
     def fechar_bd(self):
         self._mydb.close()
+
+
+class MyThread(threading.Thread):
+    def __init__(self, client_address, serv_socket, client_socket):
+        threading.Thread.__init__(self)
+        self.name = None
+        self.sistema = SistemaEducacional()
+        self.client_address = client_address
+        self.client_socket = client_socket
+        self.serv_socket = serv_socket
+        print(f'Nova conexão, endereço: {self.client_address}')
+
+    def run(self):
+        enviar = '1'
+        for materia in self.sistema.materias:
+            enviar += f'|{materia}'
+        self.client_socket.send(enviar.encode())
+        while True:
+            try:
+                mensagem = self.client_socket.recv(4096)
+                mensagem_str = mensagem.decode().split('|')
+                enviar = ''
+
+                if mensagem_str[0] == '1':
+                    email = mensagem_str[1]
+                    senha = mensagem_str[2]
+                    if self.sistema.login(email, senha):
+                        if isinstance(self.sistema.usuario, Professor):
+                            enviar = f'1|{self.sistema.usuario.materia[1]}'
+                            for turma in self.sistema.usuario.turmas:
+                                enviar += f'|{turma[0]}-{turma[1]}'
+                            print(
+                                f'Professor {self.sistema.usuario} logou em {self.client_address}')
+                        else:
+                            enviar = '2'
+                            print(
+                                f'Aluno {self.sistema.usuario} logou em {self.client_address}')
+                    else:
+                        enviar = '0'
+                        print(f'Erro no login em {self.client_address}')
+                elif mensagem_str[0] == '2':
+                    email = mensagem_str[1]
+                    senha = mensagem_str[2]
+                    nome = mensagem_str[3]
+                    sobrenome = mensagem_str[4]
+                    nascimento = mensagem_str[5]
+                    if mensagem_str[-1] == 'a':
+                        turma = mensagem_str[6]
+                        if self.sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma):
+                            enviar = '2'
+                            print(
+                                f'Aluno {self.sistema.usuario} cadastrado no sistema em {self.client_address}')
+                        else:
+                            enviar = '0'
+                            print(
+                                f'Erro ao cadastrar aluno no sistema em {self.client_address}')
+                    else:
+                        if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
+                            enviar = '2'
+                            print(
+                                f'Professor {self.sistema.usuario} cadastrado no sistema em {self.client_address}')
+                        else:
+                            enviar = '0'
+                            print(
+                                f'Erro ao cadastrar professor no sistema em {self.client_address}')
+                elif mensagem_str[0] == '3':
+                    materia = mensagem_str[1]
+                    enviar = f'3'
+                    for atividade in self.sistema.get_atividades_materia(materia):
+                        enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}'
+                elif mensagem_str[0] == '4':
+                    for questao in self.sistema.get_questoes(mensagem_str[1]):
+                        enviar = f'4|{questao}'
+                        self.client_socket.send(enviar.encode())
+                        self.client_socket.recv(1024)
+                    self.client_socket.send('0'.encode())
+                    continue
+                elif mensagem_str[0] == '5':
+                    turma = mensagem_str[1]
+                    enviar = f'5'
+                    for atividade in self.sistema.get_atividades_turma(turma):
+                        enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}-{atividade[3]}'
+                elif mensagem_str[0] == '6':
+                    titulo = mensagem_str[1]
+                    descricao = mensagem_str[2]
+                    materia = mensagem_str[3]
+                    turma = mensagem_str[4]
+                    id = self.sistema.cadastrar_atividade(
+                        titulo, descricao, materia, turma)
+                    if not id:
+                        self.client_socket.send('-6'.encode())
+                        print(
+                            f'Erro ao cadastrar atividade em {self.client_address}')
+                        continue
+                    else:
+                        lista_questoes = [num.split('/')
+                                          for num in mensagem_str[5:]]
+                        for questao in lista_questoes:
+                            self.sistema.cadastrar_questao(
+                                id, questao[1], 'a', questao[2], questao[3], questao[4], questao[5], questao[6])
+                        enviar = '6'
+                        print(
+                            f'Atividade {titulo} cadastrada em {self.client_address}')
+                elif mensagem_str[0] == '0':
+                    print(
+                        f'Usuário {self.sistema.usuario} deslogou em {self.client_address}')
+                    self.sistema.logout()
+                elif mensagem_str[0] == '-1':
+                    print(f'Conexão com {self.client_address} finalizada')
+                    self.client_socket.close()
+                    return False
+                else:
+                    raise Exception(
+                        f'Conexão com {self.client_address} finalizada inesperadamente')
+
+                self.client_socket.send(enviar.encode())
+            except Exception as e:
+                print(str(e))
+                self.client_socket.close()
+                self.sistema.fechar_bd()
+                break
 
 
 def main():
@@ -299,120 +426,23 @@ def main():
     serv_socket.bind(addr)
     serv_socket.listen(10)
     print('Aguardando conexão...')
-    con, cliente = serv_socket.accept()
-    enviar = '1'
-    for materia in sistema.materias:
-        enviar += f'|{materia}'
-    con.send(enviar.encode())
-    print('Conectado')
-    print('Aguardando interação...')
-
     while True:
         try:
-            mensagem = con.recv(4096)
-            mensagem_str = mensagem.decode().split('|')
-            enviar = ''
-            # print(mensagem_str)
-
-            if mensagem_str[0] == '1':
-                email = mensagem_str[1]
-                senha = mensagem_str[2]
-                if sistema.login(email, senha):
-                    if isinstance(sistema.usuario, Professor):
-                        enviar = '1'
-                        for turma in sistema.usuario.turmas:
-
-                            enviar += f'|{turma}'
-                        print(f'Professor {sistema.usuario} logou')
-                    else:
-                        enviar = '2'
-                        print(f'Aluno {sistema.usuario} logou')
-                else:
-                    enviar = '0'
-                    print('Erro no login')
-            elif mensagem_str[0] == '2':
-                email = mensagem_str[1]
-                senha = mensagem_str[2]
-                nome = mensagem_str[3]
-                sobrenome = mensagem_str[4]
-                nascimento = mensagem_str[5]
-                if mensagem_str[-1] == 'a':
-                    turma = mensagem_str[6]
-                    if sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma):
-                        enviar = '2'
-                        print(f'Aluno {sistema.usuario} cadastrado no sistema')
-                    else:
-                        enviar = '0'
-                        print('Erro ao cadastrar aluno no sistema')
-                else:
-                    if sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
-                        enviar = '2'
-                        print(
-                            f'Professor {sistema.usuario} cadastrado no sistema')
-                    else:
-                        enviar = '0'
-                        print('Erro ao cadastrar professor no sistema')
-            elif mensagem_str[0] == '3':
-                materia = mensagem_str[1]
-                enviar = f'3'
-                for atividade in sistema.get_atividades_materia(materia):
-                    enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}'
-            elif mensagem_str[0] == '4':
-                for questao in sistema.get_questoes(mensagem_str[1]):
-                    enviar = f'4|{questao}'
-                    con.send(enviar.encode())
-                    con.recv(1024)
-                con.send('0'.encode())
-                continue
-            elif mensagem_str[0] == '5':
-                turma = mensagem_str[1]
-                enviar = f'5'
-                for atividade in sistema.get_atividades_turma(turma):
-                    enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}-{atividade[3]}'
-                print(f'Atividades da turma {turma} enviadas')
-            elif mensagem_str[0] == '6':
-                titulo = mensagem_str[1]
-                descricao = mensagem_str[2]
-                materia = mensagem_str[3]
-                turma = mensagem_str[4]
-                id = sistema.cadastrar_atividade(
-                    titulo, descricao, materia, turma)
-                lista_questoes = [num.split('/') for num in mensagem_str[5:]]
-                for questao in lista_questoes:
-                    sistema.cadastrar_questao(
-                        id, questao[1], 'a', questao[2], questao[3], questao[4], questao[5], questao[6])
-                enviar = '6'
-                print(f'Atividade {titulo} cadastrada')
-            elif mensagem_str[0] == '0':
-                print(f'Usuário {sistema.usuario} deslogou')
-                sistema.logout()
-            elif mensagem_str[0] == '-1':
-                print('Conexão finalizada pelo cliente')
-                con.close()
-                serv_socket.close()
-                return False
-            else:
-                raise Exception(
-                    'Conexão finalizada inesperadamente pelo cliente')
-
-            con.send(enviar.encode())
+            client_socket, client_address = serv_socket.accept()
+            my_thread = MyThread(client_address, serv_socket, client_socket)
+            my_thread.start()
+        except KeyboardInterrupt:
+            print('Servidor encerrado')
+            serv_socket.close()
+            break
         except Exception as e:
             print(str(e))
-            con.close()
             serv_socket.close()
             break
 
-    return True
-
 
 if __name__ == "__main__":
-    import socket
-
-    sistema = SistemaEducacional()
-    while main():
-        pass
+    main()
+    # sistema = SistemaEducacional()
     # sistema.login('julio@example.com', '1234')
-    # print(sistema.get_atividades_turma('1A'))
-    # print(sistema.cadastrar_atividade('Atividade 2', 'Atividade 2', 1, 1))
-    # print(sistema.get_atividades_turma('1A'))
-    sistema.fechar_bd()
+    # print(sistema.get_turmas_professor())

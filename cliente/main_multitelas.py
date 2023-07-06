@@ -47,13 +47,13 @@ class Main(QMainWindow, Ui_Main):
         self.setupUi(self)
 
         '''Modificadores'''
-        # self.sistema = SistemaEducacional()
         ip = 'localhost'
         port = 5000
         addr = ((ip, port))
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(addr)
         self.materias = self.client_socket.recv(1024).decode()
+
         self.tela_login.botao_login.clicked.connect(self.botao_login)
         self.tela_login.botao_cadastro.clicked.connect(self.botao_cadastrar)
         self.tela_cadastro.alunos_botao_voltar.clicked.connect(
@@ -118,7 +118,7 @@ class Main(QMainWindow, Ui_Main):
             self.QtStack.setCurrentWidget(novo)
         return ir_para_pagina_atividade
 
-    def criar_pagina_atividade_turma(self, materia_id=None, turma_id=None, id_atividade=None):
+    def criar_pagina_atividade_turma(self, materia_id, turma_id, id_atividade=None):
         titulo = len(self.stack) + 1
         self.atividades_turma[titulo] = Ui_AtividadeProfessor()
         novo = QtWidgets.QWidget()
@@ -145,7 +145,7 @@ class Main(QMainWindow, Ui_Main):
         if mensagem.split('|')[0] == '6':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode()
-
+            
             if resposta and resposta == '6':
                 return True
         return False
@@ -201,10 +201,14 @@ class Main(QMainWindow, Ui_Main):
             resposta = self.enviar_login(mensagem)
             if resposta:
                 if resposta[0] == '1':
-                    for turma in resposta.split('|')[1:]:
+                    materia_id = resposta.split('|')[1]
+                    for turma in resposta.split('|')[2:]:
+                        turma_id = turma.split('-')[1]
                         atividades = self.pegar_atividades_turma(turma)
-                        self.tela_principal_professor.add_turma(
-                            f'Turma-{turma.upper()}', atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
+                        if not atividades:
+                            atividades = None
+                        self.tela_principal_professor.add_pagina(
+                            f'Turma-{turma.upper()}', materia_id, turma_id, atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
                     self.tela_principal_professor.inserir_espacamento()
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':

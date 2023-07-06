@@ -75,11 +75,16 @@ class Diretor(Usuario):
 
 
 class Professor(Usuario):
-    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, salario=0):
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materia, id_materia, salario=0):
         super().__init__(id, email, senha, nome, sobrenome,
                          nascimento, data_cadastro, ultimo_login)
+        self._materia = (materia, id_materia)
         self._salario = salario
         self._turmas = []
+
+    @property
+    def materia(self):
+        return self._materia
 
     @property
     def salario(self):
