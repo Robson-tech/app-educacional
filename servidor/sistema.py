@@ -266,7 +266,7 @@ class SistemaEducacional:
         return self._cursor.fetchall()
 
     def get_questoes(self, id_atividade):
-        self._sql = "SELECT sistema_educacional.questoes.id, sistema_educacional.questoes.atividade_id, sistema_educacional.questoes.resposta, sistema_educacional.questoes.letra_a, sistema_educacional.questoes.letra_b, sistema_educacional.questoes.letra_c, sistema_educacional.questoes.letra_d, sistema_educacional.questoes.letra_e, sistema_educacional.questoes.enunciado FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
+        self._sql = "SELECT sistema_educacional.questoes.id, sistema_educacional.questoes.atividade_id, sistema_educacional.questoes.enunciado, sistema_educacional.questoes.resposta, sistema_educacional.questoes.letra_a, sistema_educacional.questoes.letra_b, sistema_educacional.questoes.letra_c, sistema_educacional.questoes.letra_d, sistema_educacional.questoes.letra_e FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
         self._val = (id_atividade,)
         self._cursor.execute(self._sql, self._val)
         questoes = []

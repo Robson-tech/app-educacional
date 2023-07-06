@@ -338,13 +338,6 @@ class Ui_TelaPrincipalProfessor(object):
             self.paginas[pagina].deleteLater()
         self.paginas = {}
 
-    def limpar_turmas(self):
-        for turma in self.turmas:
-            self.verticalLayout.removeWidget(self.turmas[turma])
-            self.turmas[turma].deleteLater()
-        self.turmas = {}
-        self.verticalLayout.removeItem(self.verticalLayout.itemAt(0))
-
     def retranslateUi(self, TelaPrincipalProfessor):
         _translate = QtCore.QCoreApplication.translate
         TelaPrincipalProfessor.setWindowTitle(
