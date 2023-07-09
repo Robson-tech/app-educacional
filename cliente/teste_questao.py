@@ -2,8 +2,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class AtividadeQuestao(QtWidgets.QGroupBox):
-    def __init__(self, scrollAreaWidgetContents, num, enunciado, alternativas, questao_id=None):
+    def __init__(self, scrollAreaWidgetContents, num, enunciado=None, alternativas=None, questao_id=None):
         super().__init__(scrollAreaWidgetContents)
+        self.questao_id = questao_id
         self.setMinimumSize(QtCore.QSize(825, 300))
         self.setMaximumSize(QtCore.QSize(825, 16777215))
         self.setStyleSheet("background-color: rgb(52, 161, 50);")
@@ -17,6 +18,7 @@ class AtividadeQuestao(QtWidgets.QGroupBox):
         self.num_questao.setStyleSheet("border-radius: 15px;\n"
 "background-color: rgb(252, 88, 20);")
         self.num_questao.setAlignment(QtCore.Qt.AlignCenter)
+        self.num_questao.setText(str(num))
         self.num_questao.setObjectName("num_questao")
         self.input_enunciado = QtWidgets.QLineEdit(self)
         self.input_enunciado.setGeometry(QtCore.QRect(50, 20, 761, 81))
@@ -57,24 +59,21 @@ class AtividadeQuestao(QtWidgets.QGroupBox):
         self.selecao = {}
         self.selecao['A'] = QtWidgets.QRadioButton(self)
         self.selecao['A'].setGeometry(QtCore.QRect(30, 140, 16, 16))
-        self.selecao['A'].setText("")
         self.selecao['A'].setObjectName("selecao_A")
         self.selecao['B'] = QtWidgets.QRadioButton(self)
         self.selecao['B'].setGeometry(QtCore.QRect(30, 170, 16, 16))
-        self.selecao['B'].setText("")
         self.selecao['B'].setObjectName("selecao_B")
         self.selecao['C'] = QtWidgets.QRadioButton(self)
         self.selecao['C'].setGeometry(QtCore.QRect(30, 200, 16, 16))
-        self.selecao['C'].setText("")
         self.selecao['C'].setObjectName("selecao_C")
         self.selecao['D'] = QtWidgets.QRadioButton(self)
         self.selecao['D'].setGeometry(QtCore.QRect(30, 230, 16, 16))
-        self.selecao['D'].setText("")
         self.selecao['D'].setObjectName("selecao_D")
         self.selecao['E'] = QtWidgets.QRadioButton(self)
         self.selecao['E'].setGeometry(QtCore.QRect(30, 260, 16, 16))
-        self.selecao['E'].setText("")
         self.selecao['E'].setObjectName("selecao_E")
-        self.input_enunciado.setText(enunciado)
-        for i, letra in enumerate(self.input_letra):
-            self.input_letra[letra].setText(alternativas[i])
+        if enunciado:
+            self.input_enunciado.setText(enunciado)
+        if alternativas:
+            for i, letra in enumerate(self.input_letra):
+                self.input_letra[letra].setText(alternativas[i])

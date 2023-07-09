@@ -1,7 +1,7 @@
 class Atividade:
-    def __init__(self, id, nome, descricao, materia_id, turma_id, professor_id, questoes=None):
+    def __init__(self, id, titulo, descricao, materia_id, turma_id, professor_id, questoes=None):
         self._id = id
-        self._nome = nome
+        self._titulo = titulo
         self._descricao = descricao
         self._materia_id = materia_id
         self._turma_id = turma_id
@@ -16,12 +16,20 @@ class Atividade:
         return self._id
 
     @property
-    def nome(self):
-        return self._nome
+    def titulo(self):
+        return self._titulo
     
     @property
     def descricao(self):
         return self._descricao
+    
+    @property
+    def materia_id(self):
+        return self._materia_id
+    
+    @property
+    def turma_id(self):
+        return self._turma_id
 
     @property
     def questoes(self):
