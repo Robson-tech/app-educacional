@@ -83,11 +83,13 @@ class Ui_Main(QtWidgets.QWidget):
         atividade = self.get_atividade(id_atividade)
         if atividade:
             self.atividades_turma[titulo].setupUi(self.stack[-1], atividade)
-            self.atividades_turma[titulo].input_titulo.setText(atividade.titulo)
+            self.atividades_turma[titulo].input_titulo.setText(
+                atividade.titulo)
             self.atividades_turma[titulo].input_descricao.setText(
                 atividade.descricao)
         else:
-            self.atividades_turma[titulo].setupUi(self.stack[-1], Atividade(None, None, None, materia_id, turma_id, None, None))
+            self.atividades_turma[titulo].setupUi(
+                self.stack[-1], Atividade(None, None, None, materia_id, turma_id, None, None))
         self.QtStack.addWidget(self.stack[-1])
         self.atividades_turma[titulo].botao_publicar.clicked.connect(
             self.cadastrar_tarefa)
@@ -192,15 +194,6 @@ class Main(QMainWindow, Ui_Main):
         else:
             QMessageBox.about(self, "Erro", "Erro ao cadastrar tarefa")
 
-    def enviar_login(self, mensagem):
-        if mensagem.split('|')[0] == '1':
-            self.client_socket.send(mensagem.encode())
-            resposta = self.client_socket.recv(1024).decode()
-
-            if resposta and resposta != '0':
-                return resposta
-        return False
-
     def enviar_cadastro(self, mensagem):
         if mensagem.split('|')[0] == '2':
             self.client_socket.send(mensagem.encode())
@@ -208,6 +201,29 @@ class Main(QMainWindow, Ui_Main):
 
             if resposta and resposta == '2':
                 return True
+        return False
+
+    def botao_logoff(self):
+        mensagem = '0'
+        self.tela_principal_professor.limpar_paginas()
+        self.tela_principal_aluno.limpar_paginas()
+        self.tela_principal_aluno.limpar_materias()
+        self.client_socket.send(mensagem.encode())
+        self.QtStack.setCurrentIndex(0)
+
+    def botao_sair(self):
+        mensagem = '-1'
+        self.client_socket.send(mensagem.encode())
+        self.client_socket.close()
+        exit()
+
+    def enviar_login(self, mensagem):
+        if mensagem.split('|')[0] == '1':
+            self.client_socket.send(mensagem.encode())
+            resposta = self.client_socket.recv(1024).decode()
+
+            if resposta and resposta != '0':
+                return resposta
         return False
 
     def botao_login(self):
@@ -231,11 +247,12 @@ class Main(QMainWindow, Ui_Main):
                     self.tela_principal_professor.inserir_espacamento()
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':
-                    self.materias = self.client_socket.recv(1024).decode()
-                    for materia in self.materias.split('|')[1:]:
-                        atividades = self.pegar_atividades(materia)
+                    for materia in resposta.split('|')[1:]:
+                        materia_id = materia.split('-')[0]
+                        materia_nome = materia.split('-')[1]
+                        atividades = self.pegar_atividades(materia_id)
                         self.tela_principal_aluno.add_materia(
-                            materia.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
+                            materia_nome.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
                     self.QtStack.setCurrentIndex(2)
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")
@@ -288,18 +305,6 @@ class Main(QMainWindow, Ui_Main):
                 QMessageBox.about(self, "Erro", "Senhas não coincidem")
         else:
             QMessageBox.about(self, "Erro", "Preencha todos os campos")
-
-    def botao_logoff(self):
-        mensagem = '0'
-        self.tela_principal_professor.limpar_paginas()
-        self.client_socket.send(mensagem.encode())
-        self.QtStack.setCurrentIndex(0)
-
-    def botao_sair(self):
-        mensagem = '-1'
-        self.client_socket.send(mensagem.encode())
-        self.client_socket.close()
-        exit()
 
     def botao_cadastrar(self):
         self.QtStack.setCurrentIndex(1)

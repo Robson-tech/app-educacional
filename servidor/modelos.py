@@ -75,16 +75,29 @@ class Diretor(Usuario):
 
 
 class Professor(Usuario):
-    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materia, id_materia, salario=1320):
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materias=[], turmas=[], salario=1320):
         super().__init__(id, email, senha, nome, sobrenome,
                          nascimento, data_cadastro, ultimo_login)
-        self._materia = {'id': id_materia, 'nome': materia}
+        self._materias = materias
+        self._turmas = turmas
         self._salario = salario
-        self._turmas = []
 
     @property
-    def materia(self):
-        return self._materia
+    def materias(self):
+        enviar = '1'
+        for materia in self.materias:
+            enviar += f"|{materia}"
+        return enviar
+    
+    def add_materia(self, materia):
+        self._materias.append(materia)
+
+    @property
+    def turmas(self):
+        return self._turmas
+
+    def add_turma(self, turma):
+        self._turmas.append(turma)
 
     @property
     def salario(self):
@@ -93,13 +106,6 @@ class Professor(Usuario):
     @salario.setter
     def salario(self, salario):
         self._salario = salario
-
-    @property
-    def turmas(self):
-        return self._turmas
-
-    def add_turma(self, turma):
-        self._turmas.append(turma)
 
     def validar_email(self, email):
         if email.find("@") != -1:

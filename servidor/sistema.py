@@ -57,9 +57,16 @@ tabelas['turmas_professores'] = (
 tabelas['materias'] = (
     'CREATE TABLE IF NOT EXISTS sistema_educacional.materias ('
     'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'nome VARCHAR(255) NOT NULL,'
-    'professores_id INT NOT NULL,'
-    'FOREIGN KEY (professores_id) REFERENCES professores(id)'
+    'nome VARCHAR(255) NOT NULL'
+    ')'
+)
+tabelas['materias_professores'] = (
+    'CREATE TABLE IF NOT EXISTS sistema_educacional.materias_professores ('
+    'id INT AUTO_INCREMENT PRIMARY KEY,'
+    'materia_id INT NOT NULL,'
+    'professor_id INT NOT NULL,'
+    'FOREIGN KEY (materia_id) REFERENCES materias(id),'
+    'FOREIGN KEY (professor_id) REFERENCES professores(id)'
     ')'
 )
 tabelas['atividades'] = (
@@ -67,9 +74,10 @@ tabelas['atividades'] = (
     'id INT AUTO_INCREMENT PRIMARY KEY,'
     'nome VARCHAR(255) NOT NULL,'
     'descricao VARCHAR(255) NOT NULL,'
-    'materia_id INT NOT NULL,'
+    'professor_id INT NOT NULL,'
     'turma_id INT NOT NULL,'
-    'FOREIGN KEY (materia_id) REFERENCES materias(id)'
+    'FOREIGN KEY (professor_id) REFERENCES professores(id),'
+    'FOREIGN KEY (turma_id) REFERENCES turmas(id)'
     ')'
 )
 tabelas['questoes'] = (
@@ -126,10 +134,10 @@ class SistemaEducacional:
 
     @property
     def materias(self):
-        self._sql = "SELECT sistema_educacional.materias.nome FROM sistema_educacional.materias"
+        self._sql = "SELECT sistema_educacional.materias.id, sistema_educacional.materias.nome FROM sistema_educacional.materias"
         self._val = ()
         self._cursor.execute(self._sql, self._val)
-        return [x[0] for x in self._cursor.fetchall()]
+        return [(materia[0], materia[1]) for materia in self._cursor.fetchall()]
 
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
         if self.buscar(email):
@@ -253,9 +261,9 @@ class SistemaEducacional:
             self._cursor.execute(self._sql, self._val)
             return [[turma[0], turma[1]] for turma in self._cursor.fetchall()]
 
-    def get_atividades_materia(self, materia):
-        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.nome = %s"
-        self._val = (materia,)
+    def get_atividades_materia(self, materia_id):
+        self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.materias ON sistema_educacional.atividades.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias.id = %s"
+        self._val = (materia_id,)
         self._cursor.execute(self._sql, self._val)
         return self._cursor.fetchall()
 
@@ -287,7 +295,7 @@ class SistemaEducacional:
         except Exception as e:
             print('Erro ao cadastrar atividade:', str(e))
         return retorno
-    
+
     def get_atividade(self, id_atividade):
         try:
             id_atividade = int(id_atividade)
@@ -356,23 +364,23 @@ class MyThread(threading.Thread):
                     senha = mensagem_str[2]
                     if self.sistema.login(email, senha):
                         if isinstance(self.sistema.usuario, Professor):
-                            enviar = f"1|{self.sistema.usuario.materia['id']}"
+                            enviar = '1'
+                            for materia in self.sistema.materias:
+                                enviar += f"|{self.sistema.usuario.materias}"
                             for turma in self.sistema.usuario.turmas:
                                 enviar += f'|{turma[0]}-{turma[1]}'
                             print(
                                 f'Professor {self.sistema.usuario} logou em {self.client_address}')
-                        else:
+                        elif isinstance(self.sistema.usuario, Aluno):
                             enviar = '2'
+                            for materia in self.sistema.materias:
+                                enviar += f'|{materia[0]}-{materia[1]}'
                             print(
                                 f'Aluno {self.sistema.usuario} logou em {self.client_address}')
-                            self.client_socket.send(enviar.encode())
-                            enviar = '1'
-                            for materia in self.sistema.materias:
-                                enviar += f'|{materia}'
-                            self.client_socket.send(enviar.encode())
                     else:
                         enviar = '0'
                         print(f'Erro no login em {self.client_address}')
+                    self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '2':
                     email = mensagem_str[1]
                     senha = mensagem_str[2]
@@ -389,7 +397,7 @@ class MyThread(threading.Thread):
                             enviar = '0'
                             print(
                                 f'Erro ao cadastrar aluno no sistema em {self.client_address}')
-                    else:
+                    elif mensagem_str[-1] == 'p':
                         if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
                             enviar = '2'
                             print(
@@ -398,11 +406,13 @@ class MyThread(threading.Thread):
                             enviar = '0'
                             print(
                                 f'Erro ao cadastrar professor no sistema em {self.client_address}')
+                    self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '3':
-                    materia = mensagem_str[1]
+                    materia_id = mensagem_str[1]
                     enviar = f'3'
-                    for atividade in self.sistema.get_atividades_materia(materia):
+                    for atividade in self.sistema.get_atividades_materia(materia_id):
                         enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}'
+                    self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '4':
                     for questao in self.sistema.get_questoes(mensagem_str[1]):
                         enviar = f'4|{questao}'
@@ -410,18 +420,20 @@ class MyThread(threading.Thread):
                         self.client_socket.recv(1024)
                     atividade = self.sistema.get_atividade(mensagem_str[1])
                     self.client_socket.send(f'0|{atividade}'.encode())
-                    continue
                 elif mensagem_str[0] == '5':
                     turma = mensagem_str[1]
                     enviar = f'5'
                     for atividade in self.sistema.get_atividades_turma(turma):
                         enviar += f'|{atividade}'
+                    self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '6':
                     atividade_id = mensagem_str[1] if mensagem_str[1] != 'None' else None
                     titulo = mensagem_str[2] if mensagem_str[2] != 'None' else None
                     descricao = mensagem_str[3] if mensagem_str[3] != 'None' else None
-                    materia = int(mensagem_str[4]) if mensagem_str[4] != 'None' else None
-                    turma = int(mensagem_str[5]) if mensagem_str[5] != 'None' else None
+                    materia = int(
+                        mensagem_str[4]) if mensagem_str[4] != 'None' else None
+                    turma = int(
+                        mensagem_str[5]) if mensagem_str[5] != 'None' else None
                     id = self.sistema.cadastrar_atividade(
                         titulo, descricao, materia, turma, atividade_id)
                     if not id:
@@ -432,14 +444,15 @@ class MyThread(threading.Thread):
                     else:
                         try:
                             lista_questoes = [num.split('/')
-                                            for num in mensagem_str[6:]]
+                                              for num in mensagem_str[6:]]
                             for questao in lista_questoes:
-                                questao[0] = int(questao[0]) if questao[0] != 'None' else None
+                                questao[0] = int(
+                                    questao[0]) if questao[0] != 'None' else None
                                 self.sistema.cadastrar_questao(questao[0],
-                                    id, questao[1], 'a', questao[2], questao[3], questao[4], questao[5], questao[6])
-                            enviar = '6'
+                                                               id, questao[1], 'a', questao[2], questao[3], questao[4], questao[5], questao[6])
                             print(
                                 f'Atividade {titulo} cadastrada em {self.client_address}')
+                            self.client_socket.send('6'.encode())
                         except:
                             self.client_socket.send('-6'.encode())
                             print(
@@ -456,8 +469,6 @@ class MyThread(threading.Thread):
                 else:
                     raise Exception(
                         f'Conexão com {self.client_address} finalizada inesperadamente')
-
-                self.client_socket.send(enviar.encode())
             except Exception as e:
                 print(str(e))
                 self.client_socket.close()
@@ -492,5 +503,7 @@ if __name__ == "__main__":
     main()
     # sistema = SistemaEducacional()
     # sistema.login('julio@example.com', '1234')
-    # for atividade in sistema.get_atividades_turma('3A'):
-    #     print(atividade)
+    # enviar = '2'
+    # for materia in sistema.materias:
+    #     enviar += f'|{materia[0]}'
+    # print(enviar)
