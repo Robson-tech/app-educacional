@@ -259,6 +259,29 @@ class Main(QMainWindow, Ui_Main):
         else:
             QMessageBox.about(self, "Erro", "E-mail ou senha não preenchidos")
 
+    def botao_cadastrar_professor(self):
+        email = self.tela_cadastro.professores_caixa_email.text()
+        senha1 = self.tela_cadastro.professores_caixa_senha1.text()
+        senha2 = self.tela_cadastro.professores_caixa_senha2.text()
+        nome = self.tela_cadastro.professores_caixa_nome.text()
+        sobrenome = self.tela_cadastro.professores_caixa_sobrenome.text()
+        nascimento = self.tela_cadastro.professores_caixa_nascimento.text()
+        mensagem = f'2|{email}|{senha1}|{nome}|{sobrenome}|{nascimento}|p'
+        if email and senha1 and senha2 and nome and sobrenome and nascimento:
+            if senha1 == senha2:
+                if self.enviar_cadastro(mensagem):
+                    QMessageBox.about(
+                        self, "Sucesso", "Professor cadastrado com sucesso")
+                    self.limpar_campos()
+                    self.QtStack.setCurrentIndex(2)
+                else:
+                    QMessageBox.about(
+                        self, "Erro", "E-mail de usuário já cadastrado")
+            else:
+                QMessageBox.about(self, "Erro", "Senhas não coincidem")
+        else:
+            QMessageBox.about(self, "Erro", "Preencha todos os campos")
+
     def botao_cadastrar_aluno(self):
         email = self.tela_cadastro.alunos_caixa_email.text()
         senha1 = self.tela_cadastro.alunos_caixa_senha1.text()
@@ -273,29 +296,6 @@ class Main(QMainWindow, Ui_Main):
                 if self.enviar_cadastro(mensagem):
                     QMessageBox.about(
                         self, "Sucesso", "Aluno cadastrado com sucesso")
-                    self.limpar_campos()
-                    self.QtStack.setCurrentIndex(2)
-                else:
-                    QMessageBox.about(
-                        self, "Erro", "E-mail de usuário já cadastrado")
-            else:
-                QMessageBox.about(self, "Erro", "Senhas não coincidem")
-        else:
-            QMessageBox.about(self, "Erro", "Preencha todos os campos")
-
-    def botao_cadastrar_professor(self):
-        email = self.tela_cadastro.professores_caixa_email.text()
-        senha1 = self.tela_cadastro.professores_caixa_senha1.text()
-        senha2 = self.tela_cadastro.professores_caixa_senha2.text()
-        nome = self.tela_cadastro.professores_caixa_nome.text()
-        sobrenome = self.tela_cadastro.professores_caixa_sobrenome.text()
-        nascimento = self.tela_cadastro.professores_caixa_nascimento.text()
-        mensagem = f'2|{email}|{senha1}|{nome}|{sobrenome}|{nascimento}|p'
-        if email and senha1 and senha2 and nome and sobrenome and nascimento:
-            if senha1 == senha2:
-                if self.enviar_cadastro(mensagem):
-                    QMessageBox.about(
-                        self, "Sucesso", "Professor cadastrado com sucesso")
                     self.limpar_campos()
                     self.QtStack.setCurrentIndex(2)
                 else:
