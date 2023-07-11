@@ -158,7 +158,7 @@ class Atividade:
         self._pontuacao = 0
 
     def __str__(self):
-        return f'{self._id}-{self._titulo}-{self._descricao}-{self._materia_id}-{self._turma_id}-{self._professor_id}'
+        return f'{self._id}//{self._titulo}//{self._descricao}//{self._professor_id}//{self._turma_id}//{self._materia_id}//{self._respondidas}//{self._pontuacao}'
     
     def imprimir_questoes(self):
         for num, questao in self._questoes.items():
@@ -180,6 +180,14 @@ class Atividade:
     @property
     def descricao(self):
         return self._descricao
+    
+    @property
+    def turma_id(self):
+        return self._turma_id
+    
+    @property
+    def materia_id(self):
+        return self._materia_id
 
     @property
     def questoes(self):

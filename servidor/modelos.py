@@ -84,11 +84,17 @@ class Professor(Usuario):
         self._salario = salario
 
     def __str__(self):
-        return f'{self._id},{self._email},{self._senha},{self._nome},{self._sobrenome},{self._nascimento},{self._data_cadastro},{self._ultimo_login},salario={self._salario}'
+        return f'{self._id},{self._email},{self._senha},{self._nome},{self._sobrenome},{self._nascimento},{self._data_cadastro},{self._ultimo_login}'
 
     @property
     def materias(self):
         return self._materias_professor
+    
+    def get_materias_id(self):
+        enviar = ''
+        for materia in self._materias_professor:
+            enviar += f'{materia[0]},'
+        return enviar
 
     def add_materia(self, materia):
         self._materias_professor.append(materia)
@@ -276,8 +282,11 @@ class Atividade:
         self._respondidas = 0
         self._pontuacao = 0
 
+        if not self._descricao or self._descricao == '':
+            self._descricao = '0'
+
     def __str__(self):
-        return f'{self._id}//{self._titulo}//{self._descricao}//{self._professor_id}//{self._turma_id}//{self._materia_id}//{self._respondidas}//{self._pontuacao}'
+        return f'{self._id}//{self._titulo}//{self._descricao}//{self._professor_id}//{self._turma_id}//{self._materia_id}'
     
     def imprimir_questoes(self):
         for num, questao in self._questoes.items():
@@ -458,7 +467,7 @@ class Questao:
         self.respondida = False
 
     def __str__(self):
-        return f'{self.id}|{self.atividade_id}|{self.enunciado}|{self.resposta}|{self.letra_a}|{self.letra_b}|{self.letra_c}|{self.letra_d}|{self.letra_e}'
+        return f'{self.id}//{self.atividade_id}//{self.enunciado}//{self.resposta}//{self.letra_a}//{self.letra_b}//{self.letra_c}//{self.letra_d}//{self.letra_e}'
 
     @property
     def id(self):

@@ -41,6 +41,8 @@ class Ui_AtividadeProfessor(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(
             self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.input_titulo = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
         self.input_titulo.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
@@ -51,7 +53,19 @@ class Ui_AtividadeProfessor(object):
         self.input_titulo.setText("")
         self.input_titulo.setAlignment(QtCore.Qt.AlignCenter)
         self.input_titulo.setObjectName("input_titulo")
-        self.verticalLayout.addWidget(self.input_titulo)
+        self.horizontalLayout_3.addWidget(self.input_titulo)
+        self.input_materia = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.input_materia.setMinimumSize(QtCore.QSize(0, 50))
+        font = QtGui.QFont()
+        font.setPointSize(28)
+        self.input_materia.setFont(font)
+        self.input_materia.setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
+        self.input_materia.setText("")
+        self.input_materia.setAlignment(QtCore.Qt.AlignCenter)
+        self.input_materia.setObjectName("input_materia")
+        self.horizontalLayout_3.addWidget(self.input_materia)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.input_descricao = QtWidgets.QLineEdit(
             self.scrollAreaWidgetContents)
         self.input_descricao.setMinimumSize(QtCore.QSize(0, 100))
@@ -144,6 +158,8 @@ class Ui_AtividadeProfessor(object):
             "AtividadeProfessor", "Cadastrar Atividade"))
         self.input_titulo.setPlaceholderText(
             self._translate("AtividadeProfessor", "Título"))
+        self.input_materia.setPlaceholderText(
+            self._translate("Atividade", "Matéria"))
         self.input_descricao.setPlaceholderText(
             self._translate("AtividadeProfessor", "Descrição"))
         self.botao_add_questao.setText(

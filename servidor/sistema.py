@@ -408,7 +408,7 @@ class SistemaEducacional:
             print('Erro ao cadastrar atividade:', str(e))
         return retorno
 
-    def cadastrar_questao(self, atividade, enunciado, resposta, a, b, c, d, e, id=None):
+    def cadastrar_questao(self, atividade_id, enunciado, resposta, a, b, c, d, e, id=None):
         retorno = None
         try:
             if id:
@@ -416,16 +416,15 @@ class SistemaEducacional:
                 self._val = (enunciado, resposta, a, b, c, d, e, id)
                 self._cursor.execute(self._sql, self._val)
                 self._mydb.commit()
-                retorno = Questao(id, atividade, enunciado,
+                retorno = Questao(id, atividade_id, enunciado,
                                   resposta, a, b, c, d, e)
             else:
                 self._sql = "INSERT INTO sistema_educacional.questoes (atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                self._val = (atividade, enunciado, resposta, a, b, c, d, e)
-                print(atividade, enunciado, resposta, a, b, c, d, e)
+                self._val = (atividade_id, enunciado, resposta, a, b, c, d, e)
                 self._cursor.execute(self._sql, self._val)
                 self._mydb.commit()
                 retorno = Questao(self._cursor.lastrowid,
-                                  atividade, enunciado, resposta, a, b, c, d, e)
+                                  atividade_id, enunciado, resposta, a, b, c, d, e)
         except Exception as e:
             print('Erro ao cadastrar questão:', str(e))
         return retorno
@@ -448,11 +447,15 @@ class MyThread(threading.Thread):
         print(f'Nova conexão, endereço: {self.client_address}')
 
     def run(self):
+        enviar = '1|'
+        for materia in self.sistema.materias.values():
+            enviar += f'{materia.id}-{materia.nome},'
+        enviar += '0'
+        self.client_socket.send(enviar.encode())
         while True:
             try:
                 mensagem = self.client_socket.recv(4096)
                 mensagem_str = mensagem.decode().split('|')
-                enviar = ''
 
                 if mensagem_str[0] == '1':
                     login = mensagem_str[1].split(',')
@@ -460,12 +463,12 @@ class MyThread(threading.Thread):
                     senha = login[1]
                     if self.sistema.login(email, senha):
                         if isinstance(self.sistema.usuario, Professor):
-                            enviar = f'1|{self.sistema.usuario}'
+                            enviar = f'1|{self.sistema.usuario}|{self.sistema.usuario.get_materias_id()}0'
                             self.client_socket.send(enviar.encode())
                             enviar = '1|'
                             for materia in self.sistema.usuario.materias:
                                 enviar += f"{materia[0]},"
-                            enviar += '0'
+                            enviar += '0|'
                             for turma in self.sistema.usuario.turmas.values():
                                 enviar += f'{turma.id}-{turma.nome},'
                             print(
@@ -473,12 +476,9 @@ class MyThread(threading.Thread):
                         elif isinstance(self.sistema.usuario, Aluno):
                             enviar = f'2|{self.sistema.usuario}'
                             self.client_socket.send(enviar.encode())
-                            enviar = '2|'
-                            for materia in self.sistema.materias.values():
-                                enviar += f'{materia.id}-{materia.nome},'
+                            enviar = '2'
                             print(
                                 f'Aluno {self.sistema.usuario} logou em {self.client_address}')
-                        enviar += f'0|{self.sistema.usuario.id}'
                     else:
                         enviar = '0'
                         print(f'Erro no login em {self.client_address}')
@@ -526,7 +526,7 @@ class MyThread(threading.Thread):
                 elif mensagem_str[0] == '5':
                     turma = mensagem_str[1]
                     enviar = f'5'
-                    for atividade in self.sistema.get_atividades_turma(turma):
+                    for atividade in self.sistema.get_atividades_turma(turma).values():
                         enviar += f'|{atividade}'
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '6':
@@ -537,22 +537,21 @@ class MyThread(threading.Thread):
                         mensagem_str[4]) if mensagem_str[4] != 'None' else None
                     turma = int(
                         mensagem_str[5]) if mensagem_str[5] != 'None' else None
-                    id = self.sistema.cadastrar_atividade(
+                    nova = self.sistema.cadastrar_atividade(
                         titulo, descricao, materia, turma, atividade_id)
-                    if not id:
+                    if not nova:
                         self.client_socket.send('-6'.encode())
                         print(
                             f'Erro ao cadastrar atividade em {self.client_address}')
-                        continue
                     else:
                         try:
-                            lista_questoes = [num.split('/')
-                                              for num in mensagem_str[6:]]
-                            for questao in lista_questoes:
-                                questao[0] = int(
-                                    questao[0]) if questao[0] != 'None' else None
-                                self.sistema.cadastrar_questao(questao[0],
-                                                               id, questao[1], 'a', questao[2], questao[3], questao[4], questao[5], questao[6])
+                            for questao in mensagem_str[6:]:
+                                q = questao.split('//')
+                                if q[0] == 'None':
+                                    q[0] = None
+                                if not self.sistema.cadastrar_questao(
+                                    nova.id, q[1], 'a', q[2], q[3], q[4], q[5], q[6], id=q[0]):
+                                    raise Exception(f'Erro ao cadastrar questao em {self.client_address}')
                             print(
                                 f'Atividade {titulo} cadastrada em {self.client_address}')
                             self.client_socket.send('6'.encode())
@@ -560,7 +559,6 @@ class MyThread(threading.Thread):
                             self.client_socket.send('-6'.encode())
                             print(
                                 f'Erro ao cadastrar atividade em {self.client_address}')
-                            continue
                 elif mensagem_str[0] == '0':
                     print(
                         f'Usuário {self.sistema.usuario} deslogou em {self.client_address}')
@@ -719,6 +717,33 @@ if __name__ == "__main__":
     # teste.iniciar()
     # sistema = SistemaEducacional()
     # sistema.login('jose@example.com', '1111')
+
+    # print(sistema.usuario.get_materias_id())
+
+    # mensagem_str = '6|None|titulo|descricao|1|2|None//enuciado//1//2//3//4//5'.split(
+    #     '|')
+    # print(mensagem_str)
+    # atividade_id = mensagem_str[1] if mensagem_str[1] != 'None' else None
+    # titulo = mensagem_str[2] if mensagem_str[2] != 'None' else None
+    # descricao = mensagem_str[3] if mensagem_str[3] != 'None' else None
+    # materia = int(mensagem_str[4]) if mensagem_str[4] != 'None' else None
+    # turma = int(mensagem_str[5]) if mensagem_str[5] != 'None' else None
+    # nova = sistema.cadastrar_atividade(
+    #     titulo, descricao, materia, turma, atividade_id)
+    # if not nova:
+    #     pass
+    # else:
+    #     try:
+    #         for questao in mensagem_str[6:]:
+    #             q = questao.split('//')
+    #             if q[0] == 'None':
+    #                 q[0] = None
+    #             novaq = sistema.cadastrar_questao(
+    #                 nova.id, q[1], 'a', q[2], q[3], q[4], q[5], q[6], id=q[0])
+    #             print(novaq)
+    #     except:
+    #         pass
+
     # enviar = '2|'
     # for materia in sistema.materias.values():
     #     enviar += f'{materia.id}-{materia.nome},'
