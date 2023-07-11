@@ -75,7 +75,7 @@ class Ui_Main(QtWidgets.QWidget):
             self.QtStack.setCurrentWidget(novo)
         return ir_para_pagina_atividade
 
-    def criar_pagina_atividade_turma(self, turma_id, id_atividade=None):
+    def criar_pagina_atividade_turma(self, turma_id, materia_id, id_atividade=None):
         titulo = len(self.stack) + 1
         self.atividades_turma[titulo] = Ui_AtividadeProfessor()
         novo = QtWidgets.QWidget()
@@ -89,7 +89,7 @@ class Ui_Main(QtWidgets.QWidget):
                 atividade.descricao)
         else:
             self.atividades_turma[titulo].setupUi(
-                self.stack[-1], Atividade(None, None, None, None, turma_id, None, None))
+                self.stack[-1], Atividade(None, None, None, None, turma_id, materia_id, None))
         self.QtStack.addWidget(self.stack[-1])
         self.atividades_turma[titulo].botao_publicar.clicked.connect(
             self.cadastrar_tarefa)
@@ -110,7 +110,7 @@ class Main(QMainWindow, Ui_Main):
         self.setupUi(self)
 
         '''Modificadores'''
-        self._usuario_id = None
+        self._usuario = None
         ip = 'LOCALHOST'
         port = 5000
         addr = ((ip, port))
@@ -137,12 +137,12 @@ class Main(QMainWindow, Ui_Main):
             self.botao_sair)
 
     @property
-    def usuario_id(self):
-        return self._usuario_id
+    def usuario(self):
+        return self._usuario
 
-    @usuario_id.setter
-    def usuario_id(self, usuario_id):
-        self._usuario_id = usuario_id
+    @usuario.setter
+    def usuario(self, usuario_id):
+        self._usuario = usuario_id
 
     def pegar_atividades_materia(self, materia_id):
         self.client_socket.send(f'3|{materia_id}'.encode())
@@ -213,11 +213,11 @@ class Main(QMainWindow, Ui_Main):
 
     def botao_logoff(self):
         mensagem = '0'
+        self.usuario = None
         self.tela_principal_professor.limpar_paginas()
         self.tela_principal_aluno.limpar_paginas()
         self.tela_principal_aluno.limpar_materias()
         self.client_socket.send(mensagem.encode())
-        self.usuario_id = None
         self.QtStack.setCurrentIndex(0)
 
     def botao_sair(self):
@@ -230,7 +230,13 @@ class Main(QMainWindow, Ui_Main):
         if mensagem.split('|')[0] == '1':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode()
-
+            if resposta and resposta[0] == '1':
+                resposta = resposta.split('|')
+                self.usuario = Professor(*resposta[1].split(','))
+            elif resposta and resposta[0] == '2':
+                resposta = resposta.split('|')
+                self.usuario = Aluno(*resposta[1].split(','))
+            resposta = self.client_socket.recv(1024).decode()
             if resposta and resposta != '0':
                 return resposta.split('|')
         return False
@@ -252,7 +258,7 @@ class Main(QMainWindow, Ui_Main):
                         if not atividades:
                             atividades = None
                         self.tela_principal_professor.add_pagina(
-                            f'Turma-{turma_nome}', turma_id, atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
+                            f'Turma-{turma_nome}', turma_id, materia_id, atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
                     self.tela_principal_professor.inserir_espacamento()
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':

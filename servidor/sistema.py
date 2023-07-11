@@ -349,14 +349,14 @@ class SistemaEducacional:
 
     def login_aluno(self, usuario):
         try:
-            self._sql = "SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.alunos.pontuacao_geral FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.alunos ON sistema_educacional.usuarios.id = sistema_educacional.alunos.usuario_id WHERE usuario_id = %s"
+            self._sql = "SELECT sistema_educacional.alunos.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.alunos.turma_id, sistema_educacional.alunos.pontuacao_geral FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.alunos ON sistema_educacional.usuarios.id = sistema_educacional.alunos.usuario_id WHERE usuario_id = %s"
             self._val = (usuario[0],)
             self._cursor.execute(self._sql, self._val)
             consulta = self._cursor.fetchone()
             if consulta:
                 aluno = Aluno(
-                    usuario[0], usuario[1], usuario[2], usuario[3], usuario[4],
-                    usuario[5], usuario[6], usuario[7], consulta[8]
+                    consulta[0], consulta[1], consulta[2], consulta[3], consulta[4],
+                    consulta[5], consulta[6], consulta[7], consulta[8], consulta[9]
                 )
                 self._usuario = aluno
                 self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
@@ -460,6 +460,8 @@ class MyThread(threading.Thread):
                     senha = login[1]
                     if self.sistema.login(email, senha):
                         if isinstance(self.sistema.usuario, Professor):
+                            enviar = f'1|{self.sistema.usuario}'
+                            self.client_socket.send(enviar.encode())
                             enviar = '1|'
                             for materia in self.sistema.usuario.materias:
                                 enviar += f"{materia[0]},"
@@ -469,6 +471,8 @@ class MyThread(threading.Thread):
                             print(
                                 f'Professor {self.sistema.usuario} logou em {self.client_address}')
                         elif isinstance(self.sistema.usuario, Aluno):
+                            enviar = f'2|{self.sistema.usuario}'
+                            self.client_socket.send(enviar.encode())
                             enviar = '2|'
                             for materia in self.sistema.materias.values():
                                 enviar += f'{materia.id}-{materia.nome},'
@@ -617,10 +621,10 @@ class Teste:
                     if self.sistema.login(email, senha):
                         if isinstance(self.sistema.usuario, Professor):
                             print(
-                                f'Professor {self.sistema.usuario.nome} logado no sistema')
+                                f'Professor {self.sistema.usuario.email} logado no sistema')
                         elif isinstance(self.sistema.usuario, Aluno):
                             print(
-                                f'Aluno {self.sistema.usuario} logado no sistema')
+                                f'Aluno {self.sistema.usuario.email} logado no sistema')
                     else:
                         print('Erro no login')
                 elif opc == 2:

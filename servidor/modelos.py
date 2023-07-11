@@ -84,7 +84,7 @@ class Professor(Usuario):
         self._salario = salario
 
     def __str__(self):
-        return f'{self._id}\n{self._email}\n{self._senha}\n{self._nome}\n{self._sobrenome}\n{self._nascimento}\n{self._data_cadastro}\n{self._ultimo_login}\n{self._materias_professor}\n{self._turmas_professor}\n{self._atividades_professor}\n{self._salario}'
+        return f'{self._id},{self._email},{self._senha},{self._nome},{self._sobrenome},{self._nascimento},{self._data_cadastro},{self._ultimo_login},salario={self._salario}'
 
     @property
     def materias(self):
@@ -128,6 +128,9 @@ class Aluno(Usuario):
                          nascimento, data_cadastro, ultimo_login)
         self._turma = turma
         self._pontuacao = pontuacao
+
+    def __str__(self):
+        return f'{self._id},{self._email},{self._senha},{self._nome},{self._sobrenome},{self._nascimento},{self._data_cadastro},{self._ultimo_login},{self._turma},{self._pontuacao}'
 
     def validar_email(self, email):
         if email.find("@") != -1:
@@ -274,7 +277,7 @@ class Atividade:
         self._pontuacao = 0
 
     def __str__(self):
-        return f'{self._id}-{self._titulo}-{self._descricao}-{self._materia_id}-{self._turma_id}-{self._professor_id}'
+        return f'{self._id}//{self._titulo}//{self._descricao}//{self._professor_id}//{self._turma_id}//{self._materia_id}//{self._respondidas}//{self._pontuacao}'
     
     def imprimir_questoes(self):
         for num, questao in self._questoes.items():
@@ -500,6 +503,17 @@ if __name__ == "__main__":
         atividades_professor=[
             (1, 'Atividade 1', 'Descrição 1'), (2, 'Atividade 2', 'Descrição 2')],
     )
+    aluno = Aluno(
+        1,
+        'alisson@example.com',
+        '1111',
+        'Alisson',
+        'Rodrigo',
+        datetime.date(2010, 1, 1),
+        datetime.datetime.now(),
+        datetime.datetime.now(),
+        (1, '1A')
+    )
     questao = Questao(
         1,
         1,
@@ -533,4 +547,6 @@ if __name__ == "__main__":
             1: professor
         }
     )
-    turma.abrir(professor)
+    print(professor)
+    print(aluno)
+    # turma.abrir(professor)

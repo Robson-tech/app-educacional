@@ -82,7 +82,7 @@ class Ui_TelaPrincipalProfessor(object):
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TelaPrincipalProfessor)
 
-    def add_pagina(self, nome_turma, materia_id, turma_id, atividades=None, funcao_criar_pagina_atividade=None):
+    def add_pagina(self, nome_turma, turma_id, materia_id, atividades=None, funcao_criar_pagina_atividade=None):
         self.paginas[nome_turma] = PaginaTurma(nome_turma, materia_id, turma_id, self.scrollAreaWidgetContents,
                                                self.verticalLayout, self._translate, atividades, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
 

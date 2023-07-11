@@ -84,7 +84,7 @@ class Professor(Usuario):
         self._salario = salario
 
     def __str__(self):
-        return f'{self._id}\n{self._email}\n{self._senha}\n{self._nome}\n{self._sobrenome}\n{self._nascimento}\n{self._data_cadastro}\n{self._ultimo_login}\n{self._materias_professor}\n{self._turmas_professor}\n{self._atividades_professor}\n{self._salario}'
+        return f'{self._id},{self._email},{self._senha},{self._nome},{self._sobrenome},{self._nascimento},{self._data_cadastro},{self._ultimo_login},salario={self._salario}'
 
     @property
     def materias(self):
@@ -128,6 +128,9 @@ class Aluno(Usuario):
                          nascimento, data_cadastro, ultimo_login)
         self._turma = turma
         self._pontuacao = pontuacao
+
+    def __str__(self):
+        return f'{self._id},{self._email},{self._senha},{self._nome},{self._sobrenome},{self._nascimento},{self._data_cadastro},{self._ultimo_login},{self._turma},{self._pontuacao}'
 
     def validar_email(self, email):
         if email.find("@") != -1:
