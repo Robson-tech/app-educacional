@@ -76,7 +76,7 @@ class Ui_Main(QtWidgets.QWidget):
             self.QtStack.setCurrentWidget(novo)
         return ir_para_pagina_atividade
 
-    def criar_pagina_atividade_turma(self, turma_id, materia, atividade=None):
+    def criar_pagina_atividade_turma(self, turma_id, materia=None, atividade=None):
         titulo = len(self.stack) + 1
         self.atividades_turma[titulo] = Ui_AtividadeProfessor()
         novo = QtWidgets.QWidget()
@@ -121,6 +121,7 @@ class Main(QMainWindow, Ui_Main):
         for materia in resposta[1].split(',')[:-1]:
             materia_id = materia.split('-')[0]
             materia_nome = materia.split('-')[1]
+            print(materia_id, materia_nome)
             self._materias[materia_nome] = materia_id
             atividades = self.pegar_atividades_materia(materia_id)
             self.tela_principal_aluno.add_materia(
@@ -167,6 +168,8 @@ class Main(QMainWindow, Ui_Main):
         atividades = self.client_socket.recv(4096).decode().split('|')
         lista_atividades = []
         for atividade in atividades[1:]:
+            atividade_campos = atividade.split('//')[:6]
+            questoes_campos = atividade.split('//')[6:]
             lista_atividades.append(Atividade(*atividade.split('//')))
         return lista_atividades
 
@@ -187,10 +190,10 @@ class Main(QMainWindow, Ui_Main):
         descricao = self.atividades_turma[
             self.QtStack.currentIndex() + 1].input_descricao.text()
         materia = self.atividades_turma[
-            self.QtStack.currentIndex() + 1].input_materia
+            self.QtStack.currentIndex() + 1].input_materia.text().capitalize()
         turma_id = self.atividades_turma[
             self.QtStack.currentIndex() + 1].atividade.turma_id
-        if materia.lower() in self.materias.keys():
+        if materia in self.materias.keys():
             materia_id = self.materias[materia]
             mensagem = f'6|{atividade_id}|{titulo}|{descricao}|{materia_id}|{turma_id}'
             for num, questao in enumerate(self.atividades_turma[self.QtStack.currentIndex() + 1].questoes):
@@ -209,12 +212,15 @@ class Main(QMainWindow, Ui_Main):
                 id_questao = self.atividades_turma[self.QtStack.currentIndex(
                 ) + 1].questoes[num].questao_id
                 mensagem += f'|{id_questao}//{enunciado}//{a}//{b}//{c}//{d}//{e}'
+            print(mensagem)
             if self.enviar_cadastro_atividade(mensagem):
                 self.criar_pagina_atividade_turma(turma_id, materia)
                 QMessageBox.about(self, "Sucesso", "Tarefa cadastrada com sucesso")
                 self.QtStack.setCurrentIndex(3)
             else:
                 QMessageBox.about(self, "Erro", "Erro ao cadastrar tarefa")
+        else:
+            QMessageBox.about(self, "Erro", "Matéria não encontrada")
 
     def enviar_cadastro(self, mensagem):
         if mensagem.split('|')[0] == '2':
@@ -267,6 +273,7 @@ class Main(QMainWindow, Ui_Main):
                         turma_nome = turma.split('-')[1]
                         atividades = self.pegar_atividades_materia_turma(
                             turma_id)
+                        print(atividades)
                         if not atividades:
                             atividades = None
                         self.tela_principal_professor.add_pagina(

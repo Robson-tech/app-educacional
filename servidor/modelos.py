@@ -286,7 +286,7 @@ class Atividade:
             self._descricao = '0'
 
     def __str__(self):
-        return f'{self._id}//{self._titulo}//{self._descricao}//{self._professor_id}//{self._turma_id}//{self._materia_id}'
+        return f'{self._id}//{self._titulo}//{self._descricao}//{self._professor_id}//{self._turma_id}//{self._materia_id}{self.get_questoes()}'
     
     def imprimir_questoes(self):
         for num, questao in self._questoes.items():
@@ -316,6 +316,12 @@ class Atividade:
     @property
     def questoes(self):
         return self._questoes
+    
+    def get_questoes(self):
+        enviar = ''
+        for questao in self._questoes.values():
+            enviar += f'//{questao}'
+        return enviar
 
     def add_questao(self, questao):
         self._questoes[len(self._questoes) * -1] = questao
@@ -467,7 +473,7 @@ class Questao:
         self.respondida = False
 
     def __str__(self):
-        return f'{self.id}//{self.atividade_id}//{self.enunciado}//{self.resposta}//{self.letra_a}//{self.letra_b}//{self.letra_c}//{self.letra_d}//{self.letra_e}'
+        return f'{self.id};;{self.atividade_id};;{self.enunciado};;{self.resposta};;{self.letra_a};;{self.letra_b};;{self.letra_c};;{self.letra_d};;{self.letra_e}'
 
     @property
     def id(self):

@@ -550,8 +550,9 @@ class MyThread(threading.Thread):
                                 if q[0] == 'None':
                                     q[0] = None
                                 if not self.sistema.cadastrar_questao(
-                                    nova.id, q[1], 'a', q[2], q[3], q[4], q[5], q[6], id=q[0]):
-                                    raise Exception(f'Erro ao cadastrar questao em {self.client_address}')
+                                        nova.id, q[1], 'a', q[2], q[3], q[4], q[5], q[6], id=q[0]):
+                                    raise Exception(
+                                        f'Erro ao cadastrar questao em {self.client_address}')
                             print(
                                 f'Atividade {titulo} cadastrada em {self.client_address}')
                             self.client_socket.send('6'.encode())
@@ -711,12 +712,19 @@ class Teste:
 
 
 if __name__ == "__main__":
-    servidor = Servidor()
-    servidor.iniciar()
+    # servidor = Servidor()
+    # servidor.iniciar()
     # teste = Teste()
     # teste.iniciar()
-    # sistema = SistemaEducacional()
-    # sistema.login('jose@example.com', '1111')
+    sistema = SistemaEducacional()
+    sistema.login('jose@example.com', '1111')
+    enviar = f'5'
+    for atividade in sistema.get_atividades_turma(1).values():
+        enviar += f'|{atividade}'
+    atividade_campos = enviar.split('//')[:6]
+    questoes_campos = enviar.split('//')[6:]
+    print(atividade_campos)
+    print(questoes_campos)
 
     # print(sistema.usuario.get_materias_id())
 
