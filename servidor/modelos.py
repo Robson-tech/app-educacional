@@ -75,43 +75,31 @@ class Diretor(Usuario):
 
 
 class Professor(Usuario):
-    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materias_professor=[], turmas_professor=[], atividades_professor=[], salario=1320):
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materias_professor=[], turmas_professor={}, atividades_professor={}, salario=1320):
         super().__init__(id, email, senha, nome, sobrenome,
                          nascimento, data_cadastro, ultimo_login)
         self._materias_professor = materias_professor
         self._turmas_professor = turmas_professor
         self._atividades_professor = atividades_professor
         self._salario = salario
-    
+
     def __str__(self):
         return f'{self._id}\n{self._email}\n{self._senha}\n{self._nome}\n{self._sobrenome}\n{self._nascimento}\n{self._data_cadastro}\n{self._ultimo_login}\n{self._materias_professor}\n{self._turmas_professor}\n{self._atividades_professor}\n{self._salario}'
 
     @property
     def materias(self):
-        enviar = ''
-        for materia in self._materias_professor:
-            enviar += f"|{materia[0]}-{materia[1]}"
-        return enviar
-    
+        return self._materias_professor
+
     def add_materia(self, materia):
         self._materias_professor.append(materia)
 
     @property
     def turmas(self):
-        enviar = ''
-        for turma in self._turmas_professor:
-            enviar += f'|{turma[0]}-{turma[1]}'
-        return enviar
-
-    def add_turma(self, turma):
-        self._turmas_professor.append(turma)
-
+        return self._turmas_professor
+    
     @property
     def atividades(self):
-        enviar = ''
-        for atividade in self._atividades_professor:
-            enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}'
-        return enviar
+        return self._atividades_professor
 
     @property
     def salario(self):
@@ -155,7 +143,7 @@ class Aluno(Usuario):
 
 
 class Materia:
-    def __init__(self, id, nome, atividades=[], professores=[]):
+    def __init__(self, id, nome, atividades={}, professores=[]):
         self._id = id
         self._nome = nome.capitalize()
         self._atividades = atividades
@@ -167,7 +155,7 @@ class Materia:
     @property
     def id(self):
         return self._id
-    
+
     @property
     def nome(self):
         return self._nome
@@ -175,24 +163,106 @@ class Materia:
     @property
     def atividades(self):
         return self._atividades
-    
-    def add_atividade(self, atividade):
-        self._atividades.append(atividade)
-    
-    def abrir(self):
-        for num, atividade in enumerate(self._atividades):
+
+    # def add_atividade(self, atividade):
+    #     self._atividades.append(atividade)
+
+    def abrir(self, usuario):
+        for num, atividade in self._atividades.items():
             print(f'{num} - {atividade.titulo}')
         opc = int(input('Digite o número da atividade: '))
         while opc:
-            if opc < 0 or opc > len(self._atividades):
+            try:
+                if self._atividades[opc].questoes:
+                    self._atividades[opc].abrir(usuario)
+                    for num, atividade in self._atividades.items():
+                        print(f'{num} - {atividade.titulo}')
+                    print('0 - Sair')
+                else:
+                    print('Atividade sem questões')
+                opc = int(input('Digite o número da atividade: '))
+            except KeyError:
                 print('Atividade não encontrada')
                 opc = int(input('Digite o número da atividade: '))
+
+
+class Turma:
+    def __init__(self, id, nome, num_sala, atividades={}, alunos={}, professores={}):
+        self._id = id
+        self._nome = nome
+        self._num_sala = num_sala
+        self._atividades = atividades
+        self._alunos = alunos
+        self._professores = professores
+
+    def __str__(self):
+        return f'{self._id}-{self._nome}'
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def nome(self):
+        return self._nome
+
+    @property
+    def atividades(self):
+        return self._atividades
+
+    @property
+    def alunos(self):
+        return self._alunos
+
+    @property
+    def professores(self):
+        return self._professores
+
+    # def add_aluno(self, aluno):
+    #     self._alunos.append(aluno)
+
+    def abrir(self, sistema):
+        for num, atividade in self._atividades.items():
+            print(f'{num} - {atividade.titulo}')
+        print(
+            '+ - Adicionar atividade\n'
+            '- - Remover atividade\n'
+            '0 - Sair'
+        )
+        opc = input('Digite a opção: ')
+        opc = int(opc) if opc.isdigit() else opc
+        while opc:
+            if opc == '+':
+                nova = None
+                while not nova:
+                    titulo = input('Digite o título da atividade: ')
+                    descricao = input('Digite a descrição da atividade: ')
+                    print('Materias:')
+                    for materia in sistema.usuario.materias:
+                        print(f'{materia[0]} - {materia[1].capitalize()}')
+                    materia_id = int(input('Digite o id da matéria: '))
+                    if materia_id in [materia[0] for materia in sistema.usuario.materias]:
+                        nova = sistema.cadastrar_atividade(titulo, descricao, self.id, materia_id)
+                    else:
+                        print('Matéria não encontrada')
+                    if nova:
+                        self._atividades[nova.id] = nova
+            elif opc == '-':
+                pass
             else:
-                self._atividades[opc].abrir()
+                try:
+                    self._atividades[opc].abrir(sistema)
+                except KeyError:
+                    print('Atividade não encontrada')
+            for num, atividade in self._atividades.items():
+                print(f'{num} - {atividade.titulo}')
+            print('0 - Sair')
+            opc = input('Digite a opção: ')
+            opc = int(opc) if opc.isdigit() else opc
 
 
 class Atividade:
-    def __init__(self, id, titulo, descricao, professor_id, turma_id, materia_id, questoes=[]):
+    def __init__(self, id, titulo, descricao, professor_id, turma_id, materia_id, questoes={}):
         self._id = id
         self._titulo = titulo
         self._descricao = descricao
@@ -201,10 +271,20 @@ class Atividade:
         self._materia_id = materia_id
         self._questoes = questoes
         self._respondidas = 0
+        self._pontuacao = 0
 
     def __str__(self):
         return f'{self._id}-{self._titulo}-{self._descricao}-{self._materia_id}-{self._turma_id}-{self._professor_id}'
     
+    def imprimir_questoes(self):
+        for num, questao in self._questoes.items():
+            print(f'{num} - {questao.enunciado}')
+            print(f'A) {questao.letra_a}')
+            print(f'B) {questao.letra_b}')
+            print(f'C) {questao.letra_c}')
+            print(f'D) {questao.letra_d}')
+            print(f'E) {questao.letra_e}')
+
     @property
     def id(self):
         return self._id
@@ -212,32 +292,153 @@ class Atividade:
     @property
     def titulo(self):
         return self._titulo
-    
+
     @property
     def descricao(self):
         return self._descricao
+    
+    @property
+    def turma_id(self):
+        return self._turma_id
 
     @property
     def questoes(self):
         return self._questoes
 
     def add_questao(self, questao):
-        self._questoes.append(questao)
+        self._questoes[len(self._questoes) * -1] = questao
 
-    def abrir(self):
-        for num, questao in enumerate(self._questoes):
-            print(f'{num+1} - {questao.enunciado}')
-            print(f'A) {questao.letra_a}')
-            print(f'B) {questao.letra_b}')
-            print(f'C) {questao.letra_c}')
-            print(f'D) {questao.letra_d}')
-            print(f'E) {questao.letra_e}')
-        while self._respondidas < len(self._questoes):
-            num, resposta = input('Digite o número da questão e a resposta: ').split()
-            if not questao[num-1].respondida:
-                questao[num-1].validar_resposta(resposta)
-            else:
-                print('Questão já respondida')
+    def remover_questao(self, num):
+        try:
+            self._questoes.pop(num)
+        except KeyError:
+            print('Questão não encontrada')
+
+    def editar_questao(self, num):
+        try:
+            print(
+                f'{num} - {self._questoes[num].enunciado}\n'
+                f'A) {self._questoes[num].letra_a}\n'
+                f'B) {self._questoes[num].letra_b}\n'
+                f'C) {self._questoes[num].letra_c}\n'
+                f'D) {self._questoes[num].letra_d}\n'
+                f'E) {self._questoes[num].letra_e}\n'
+                '1 - Enunciado\n'
+                '2 - Resposta\n'
+                'a - Alternativa A\n'
+                'b - Alternativa B\n'
+                'c - Alternativa C\n'
+                'd - Alternativa D\n'
+                'e - Alternativa E\n'
+                '0 - Sair'
+            )
+            opc = input('Digite a opção: ')
+            opc = int(opc) if opc.isdigit() else opc
+            while opc:
+                if opc == 1:
+                    enunciado = input('Digite o enunciado: ')
+                    self._questoes[num].enunciado = enunciado
+                elif opc == 2:
+                    resposta = input('Digite a resposta: ')
+                    self._questoes[num].resposta = resposta
+                elif opc.isalpha() and opc.lower() == 'a':
+                    letra_a = input('Digite a alternativa A: ')
+                    self._questoes[num].letra_a = letra_a
+                elif opc.isalpha() and opc.lower() == 'b':
+                    letra_b = input('Digite a alternativa B: ')
+                    self._questoes[num].letra_b = letra_b
+                elif opc.isalpha() and opc.lower() == 'c':
+                    letra_c = input('Digite a alternativa C: ')
+                    self._questoes[num].letra_c = letra_c
+                elif opc.isalpha() and opc.lower() == 'd':
+                    letra_d = input('Digite a alternativa D: ')
+                    self._questoes[num].letra_d = letra_d
+                elif opc.isalpha() and opc.lower() == 'e':
+                    letra_e = input('Digite a alternativa E: ')
+                    self._questoes[num].letra_e = letra_e
+                else:
+                    print('Opção inválida')
+                print(
+                    '1 - Enunciado\n'
+                    '2 - Resposta\n'
+                    'a - Alternativa A\n'
+                    'b - Alternativa B\n'
+                    'c - Alternativa C\n'
+                    'd - Alternativa D\n'
+                    'e - Alternativa E\n'
+                    '0 - Sair'
+                )
+                opc = input('Digite a opção: ')
+                opc = int(opc) if opc.isdigit() else opc
+        except KeyError:
+            print('Questão não encontrada')
+
+    def resetar(self):
+        self._respondidas = 0
+        self._pontuacao = 0
+        for questao in self._questoes.values():
+            questao.respondida = False
+
+    def abrir(self, sistema):
+        if isinstance(sistema.usuario, Aluno):
+            self.imprimir_questoes()
+            print('0 - Sair')
+            while self._respondidas < len(self._questoes):
+                try:
+                    num, resposta = input(
+                        'Digite o número da questão e a resposta: ').split()
+                    num = int(num)
+                    if not self._questoes[num].respondida:
+                        if self._questoes[num].validar_resposta(resposta):
+                            self._pontuacao += 1
+                        self._respondidas += 1
+                    else:
+                        print('Questão já respondida')
+                except ValueError:
+                    print('Digite um número e uma letra')
+                except KeyError:
+                    print('Questão não encontrada')
+            print(f'Você acertou {self._pontuacao} questões')
+            self.resetar()
+        elif isinstance(sistema.usuario, Professor):
+            self.imprimir_questoes()
+            print(
+                '1 - Adicionar questão\n'
+                '2 - Remover questão\n'
+                '3 - Editar questão\n'
+                '0 - Sair'
+            )
+            opc = int(input('Digite a opção: '))
+            while opc:
+                if opc == 1:
+                    nova = None
+                    while not nova:
+                        enunciado = input('Digite o enunciado: ')
+                        resposta = input('Digite a resposta: ')
+                        letra_a = input('Digite a alternativa A: ')
+                        letra_b = input('Digite a alternativa B: ')
+                        letra_c = input('Digite a alternativa C: ')
+                        letra_d = input('Digite a alternativa D: ')
+                        letra_e = input('Digite a alternativa E: ')
+                        nova = sistema.cadastrar_questao(self.id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e)
+                        if nova:
+                            self.add_questao(nova)
+                elif opc == 2:
+                    num = int(input('Digite o número da questão: '))
+                    self.remover_questao(num)
+                elif opc == 3:
+                    num = int(input('Digite o número da questão: '))
+                    self.editar_questao(num)
+                else:
+                    print('Opção inválida')
+                self.imprimir_questoes()
+                print(
+                    '1 - Adicionar questão\n'
+                    '2 - Remover questão\n'
+                    '3 - Editar questão\n'
+                    '0 - Sair'
+                )
+                opc = int(input('Digite a opção: '))
 
 
 class Questao:
@@ -267,6 +468,10 @@ class Questao:
     @property
     def resposta(self):
         return self._resposta
+    
+    @resposta.setter
+    def resposta(self, resposta):
+        self._resposta = resposta
 
     def validar_resposta(self, resposta):
         if not self.respondida:
@@ -281,5 +486,51 @@ class Questao:
 
 
 if __name__ == "__main__":
-    u = Professor("jorge@example.com", "jorge1234",
-                  "jorge", "luis", "2003-09-01")
+    professor = Professor(
+        1,
+        'rafael@example.com',
+        '123456',
+        'Rafael',
+        'Santos',
+        datetime.date(1999, 1, 1),
+        datetime.datetime.now(),
+        datetime.datetime.now(),
+        materias_professor=[(1, 'Matemática'), (2, 'Português')],
+        turmas_professor=[(1, '1A'), (2, '1B')],
+        atividades_professor=[
+            (1, 'Atividade 1', 'Descrição 1'), (2, 'Atividade 2', 'Descrição 2')],
+    )
+    questao = Questao(
+        1,
+        1,
+        '(FCC) Qual é a velocidade escalar média, em km//h, de uma pessoa que percorre a pé 1200 m em 20 min?',
+        'a',
+        '4,8',
+        '3,6',
+        '2,7',
+        '2,1',
+        '1,2',
+    )
+    atividade = Atividade(
+        1,
+        'Atividade 1',
+        'Descrição 1',
+        1,
+        1,
+        1,
+        questoes={
+            1: questao
+        }
+    )
+    turma = Turma(
+        1,
+        '1A',
+        1,
+        atividades={
+            1: atividade
+        },
+        professores={
+            1: professor
+        }
+    )
+    turma.abrir(professor)

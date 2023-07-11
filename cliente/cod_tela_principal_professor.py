@@ -143,7 +143,7 @@ class Ui_TelaPrincipalProfessor(object):
 
 
 class PaginaTurma(QtWidgets.QWidget):
-    def __init__(self, nome_turma, materia_id, turma_id, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate, atividades_turma=None, funcao_criar_pagina_atividade=None):
+    def __init__(self, nome_turma, turma_id, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate, atividades_turma=None, funcao_criar_pagina_atividade=None):
         super().__init__()
         self.setObjectName(nome_turma)
         self.label_novas_atividades = QtWidgets.QLabel(self)
@@ -207,7 +207,7 @@ class PaginaTurma(QtWidgets.QWidget):
                 self.botao_atividade[atividade.titulo], i // 4, i % 4, 1, 1)
             if funcao_criar_pagina_atividade:
                 self.botao_atividade[atividade.titulo].clicked.connect(
-                    funcao_criar_pagina_atividade(materia_id, turma_id, id_atividade=atividade.id))
+                    funcao_criar_pagina_atividade(turma_id, id_atividade=atividade.id))
             self.ultimo_botao_atividade[0] = i // 4
             self.ultimo_botao_atividade[1] = i % 4
             if self.ultimo_botao_atividade[1] == 3:
@@ -242,7 +242,7 @@ class PaginaTurma(QtWidgets.QWidget):
         self.add_botao_turma_lateral(
             nome_turma, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate)
         self.botao_add_atividade.clicked.connect(self.botao_add_nova_atividade_funcao(
-            materia_id, turma_id, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade))
+            turma_id, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade))
 
         self.label_novas_atividades.setText(_translate(
             "TelaPrincipalProfessor", "Atividades"))
@@ -251,7 +251,7 @@ class PaginaTurma(QtWidgets.QWidget):
         self.botao_fechar.setText(
             _translate("TelaPrincipalProfessor", "X"))
 
-    def botao_add_nova_atividade_funcao(self, materia_id, turma_id, funcao_criar_pagina_atividade=None):
+    def botao_add_nova_atividade_funcao(self, turma_id, funcao_criar_pagina_atividade=None):
         def botao_add_nova_atividade_funcao():
             num = len(self.botao_atividade)
             self.botao_atividade[num] = QtWidgets.QPushButton(
@@ -290,7 +290,7 @@ class PaginaTurma(QtWidgets.QWidget):
                     self.ultimo_botao_atividade[0], self.ultimo_botao_atividade[1] + 1]
             if funcao_criar_pagina_atividade:
                 self.botao_atividade[num].clicked.connect(
-                    funcao_criar_pagina_atividade(materia_id, turma_id))
+                    funcao_criar_pagina_atividade(turma_id))
         return botao_add_nova_atividade_funcao
 
     def add_botao_turma_lateral(self, nome_turma, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate):

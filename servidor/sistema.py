@@ -1,7 +1,7 @@
 import socket
 import threading
 import mysql.connector as mysql
-from modelos import Professor, Aluno, Materia, Atividade, Questao
+from modelos import Professor, Aluno, Materia, Turma, Atividade, Questao
 
 
 tabelas = {}
@@ -145,68 +145,120 @@ class SistemaEducacional:
         self._sql = "SELECT * FROM sistema_educacional.materias"
         self._val = ()
         self._cursor.execute(self._sql, self._val)
-        materias = []
+        materias = {}
         for materia in self._cursor.fetchall():
             atividades = self.get_atividades_materia(materia[0])
-            for atividade in atividades:
-                questoes = self.get_questoes_atividade(atividade.id)
-                for q in questoes:
-                    atividade.add_questao(q)
-            materias.append(Materia(*materia, atividades))
+            materias.update({materia[0]: Materia(*materia, atividades)})
         return materias
 
     def get_turmas(self):
         self._sql = "SELECT * FROM sistema_educacional.turmas"
         self._val = ()
         self._cursor.execute(self._sql, self._val)
-        return self._cursor.fetchall()
+        turmas = {}
+        for turma in self._cursor.fetchall():
+            atividades = self.get_atividades_turma(turma[0])
+            alunos = self.get_alunos_turma(turma[0])
+            professores = self.get_professores_turma(turma[0])
+            turmas.update(
+                {turma[0]: Turma(*turma, atividades, alunos, professores)})
+        return turmas
 
-    def get_turmas_professor(self):
-        if isinstance(self.usuario, Professor):
-            self._sql = "SELECT sistema_educacional.turmas.nome, sistema_educacional.turmas.id FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id INNER JOIN sistema_educacional.professores ON sistema_educacional.turmas_professores.professor_id = sistema_educacional.professores.id WHERE sistema_educacional.professores.usuario_id = %s"
-            self._val = (self.usuario.id,)
-            self._cursor.execute(self._sql, self._val)
-            return [[turma[0], turma[1]] for turma in self._cursor.fetchall()]
-
-    def get_atividades_materia(self, materia_id):
-        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE materia_id = %s"
-        self._val = (materia_id,)
+    def get_alunos_turma(self, turma_id):
+        self._sql = "SELECT sistema_educacional.alunos.id, sistema_educacional.usuarios.nome FROM sistema_educacional.alunos INNER JOIN sistema_educacional.usuarios ON sistema_educacional.alunos.usuario_id = sistema_educacional.usuarios.id WHERE sistema_educacional.alunos.turma_id = %s"
+        self._val = (turma_id,)
         self._cursor.execute(self._sql, self._val)
-        atividades_materia = []
-        for atividade in self._cursor.fetchall():
-            atividades_materia.append(Atividade(*atividade))
-        return atividades_materia
+        alunos = {}
+        for aluno in self._cursor.fetchall():
+            alunos.update({aluno[0]: aluno})
+        return alunos
 
-    def get_atividades_turma(self, turma):
-        if isinstance(self.usuario, Professor):
-            self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.descricao, sistema_educacional.atividades.materia_id, sistema_educacional.atividades.turma_id, sistema_educacional.turmas_professores.professor_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas INNER JOIN sistema_educacional.materias INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id AND sistema_educacional.atividades.materia_id = sistema_educacional.materias.id AND sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id WHERE sistema_educacional.turmas.nome = %s AND sistema_educacional.turmas_professores.professor_id = %s"
-            self._val = (turma, self.usuario.id)
-            self._cursor.execute(self._sql, self._val)
-            lista_atividades = []
-            for atividade in self._cursor.fetchall():
-                lista_atividades.append(Atividade(*atividade))
-            return lista_atividades
+    def get_professores_turma(self, turma_id):
+        self._sql = "SELECT sistema_educacional.professores.id, sistema_educacional.usuarios.nome FROM sistema_educacional.professores INNER JOIN sistema_educacional.usuarios ON sistema_educacional.professores.usuario_id = sistema_educacional.usuarios.id INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.professores.id = sistema_educacional.turmas_professores.professor_id WHERE sistema_educacional.turmas_professores.turma_id = %s"
+        self._val = (turma_id,)
+        self._cursor.execute(self._sql, self._val)
+        professores = {}
+        for professor in self._cursor.fetchall():
+            professores.update({professor[0]: professor})
+        return professores
 
     def get_atividade(self, id_atividade):
-        try:
-            id_atividade = int(id_atividade)
-            self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.descricao, sistema_educacional.atividades.materia_id, sistema_educacional.atividades.turma_id, sistema_educacional.turmas_professores.professor_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.turmas INNER JOIN sistema_educacional.materias INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.atividades.turma_id = sistema_educacional.turmas.id AND sistema_educacional.atividades.materia_id = sistema_educacional.materias.id AND sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id WHERE sistema_educacional.atividades.id = %s"
-            self._val = (id_atividade,)
-            self._cursor.execute(self._sql, self._val)
-            atividade = self._cursor.fetchone()
-            return Atividade(*atividade)
-        except Exception as e:
-            print('Erro ao acessar atividades:', str(e))
+        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.id = %s"
+        self._val = (id_atividade,)
+        self._cursor.execute(self._sql, self._val)
+        atividade = self._cursor.fetchone()
+        if atividade:
+            questoes = self.get_questoes_atividade(atividade[0])
+            return Atividade(*atividade, questoes)
+        else:
             return None
 
     def get_questoes_atividade(self, id_atividade):
         self._sql = "SELECT * FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
         self._val = (id_atividade,)
         self._cursor.execute(self._sql, self._val)
-        questoes_atividade = []
+        questoes_atividade = {}
         for questao in self._cursor.fetchall():
-            questoes_atividade.append(Questao(*questao))
+            questoes_atividade.update({questao[0]: Questao(*questao)})
         return questoes_atividade
+
+    def get_atividades_professor(self, professor_id):
+        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.professor_id = %s"
+        self._val = (professor_id,)
+        self._cursor.execute(self._sql, self._val)
+        lista_atividades = {}
+        for atividade in self._cursor.fetchall():
+            questoes = self.get_questoes_atividade(atividade[0])
+            lista_atividades.update(
+                {atividade[0]: Atividade(*atividade, questoes)})
+        return lista_atividades
+
+    def get_atividades_turma_professor(self, turma_id, professor_id):
+        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.turma_id = %s AND sistema_educacional.atividades.professor_id = %s"
+        self._val = (turma_id, professor_id)
+        self._cursor.execute(self._sql, self._val)
+        lista_atividades = {}
+        for atividade in self._cursor.fetchall():
+            questoes = self.get_questoes_atividade(atividade[0])
+            lista_atividades.update(
+                {atividade[0]: Atividade(*atividade, questoes)})
+        return lista_atividades
+
+    def get_turmas_professor(self, professor_id):
+        self._sql = "SELECT sistema_educacional.turmas.id, sistema_educacional.turmas.nome, sistema_educacional.turmas.num_sala FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores WHERE sistema_educacional.turmas_professores.professor_id = %s AND sistema_educacional.turmas_professores.turma_id = sistema_educacional.turmas.id"
+        self._val = (professor_id,)
+        self._cursor.execute(self._sql, self._val)
+        turmas = {}
+        for turma in self._cursor.fetchall():
+            atividades = self.get_atividades_turma_professor(
+                turma[0], professor_id)
+            alunos = self.get_alunos_turma(turma[0])
+            professores = self.get_professores_turma(turma[0])
+            turmas.update(
+                {turma[0]: Turma(*turma, atividades, alunos, professores)})
+        return turmas
+
+    def get_atividades_materia(self, materia_id):
+        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE materia_id = %s"
+        self._val = (materia_id,)
+        self._cursor.execute(self._sql, self._val)
+        atividades_materia = {}
+        for atividade in self._cursor.fetchall():
+            questoes = self.get_questoes_atividade(atividade[0])
+            atividades_materia.update(
+                {atividade[0]: Atividade(*atividade, questoes)})
+        return atividades_materia
+
+    def get_atividades_turma(self, turma_id):
+        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.turma_id = %s"
+        self._val = (turma_id,)
+        self._cursor.execute(self._sql, self._val)
+        lista_atividades = {}
+        for atividade in self._cursor.fetchall():
+            questoes = self.get_questoes_atividade(atividade[0])
+            lista_atividades.update(
+                {atividade[0]: Atividade(*atividade, questoes)})
+        return lista_atividades
 
     def buscar(self, email):
         try:
@@ -269,23 +321,17 @@ class SistemaEducacional:
 
     def login_professor(self, usuario):
         try:
-            self._sql = "SELECT * FROM sistema_educacional.professores WHERE usuario_id = %s"
+            self._sql = "SELECT * FROM sistema_educacional.professores WHERE sistema_educacional.professores.usuario_id = %s"
             self._val = (usuario[0],)
             self._cursor.execute(self._sql, self._val)
             consulta = self._cursor.fetchone()
             if consulta:
-                self._sql = "SELECT sistema_educacional.materias.id, sistema_educacional.materias.nome FROM sistema_educacional.materias INNER JOIN sistema_educacional.materias_professores ON sistema_educacional.materias.id = sistema_educacional.materias_professores.materia_id INNER JOIN sistema_educacional.professores ON sistema_educacional.materias_professores.professor_id = sistema_educacional.professores.id WHERE sistema_educacional.professores.usuario_id = %s"
-                self._val = (usuario[0],)
+                self._sql = "SELECT sistema_educacional.materias.id, sistema_educacional.materias.nome FROM sistema_educacional.materias INNER JOIN sistema_educacional.materias_professores ON sistema_educacional.materias_professores.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias_professores.professor_id = %s"
+                self._val = (consulta[0],)
                 self._cursor.execute(self._sql, self._val)
                 materias = self._cursor.fetchall()
-                self._sql = "SELECT sistema_educacional.turmas.id, sistema_educacional.turmas.nome FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.turmas.id = sistema_educacional.turmas_professores.turma_id INNER JOIN sistema_educacional.professores ON sistema_educacional.turmas_professores.professor_id = sistema_educacional.professores.id WHERE sistema_educacional.professores.usuario_id = %s"
-                self._val = (usuario[0],)
-                self._cursor.execute(self._sql, self._val)
-                turmas = self._cursor.fetchall()
-                self._sql = "SELECT sistema_educacional.atividades.id, sistema_educacional.atividades.nome, sistema_educacional.atividades.turma_id FROM sistema_educacional.atividades INNER JOIN sistema_educacional.professores ON sistema_educacional.atividades.professor_id = sistema_educacional.professores.id WHERE sistema_educacional.professores.usuario_id = %s"
-                self._val = (usuario[0],)
-                self._cursor.execute(self._sql, self._val)
-                atividades = self._cursor.fetchall()
+                turmas = self.get_turmas_professor(consulta[0])
+                atividades = self.get_atividades_professor(consulta[0])
                 professor = Professor(
                     consulta[0], usuario[1], usuario[2], usuario[3], usuario[4], usuario[5],
                     usuario[6], usuario[7], materias, turmas, atividades, consulta[2]
@@ -341,42 +387,45 @@ class SistemaEducacional:
         else:
             return False
 
-    def cadastrar_atividade(self, nome, descricao, materia, turma, id):
-        retorno = False
-        print(self.usuario)
+    def cadastrar_atividade(self, nome, descricao, materia, turma, id=None):
+        retorno = None
         try:
             if id:
                 self._sql = "UPDATE sistema_educacional.atividades SET nome = %s, descricao = %s, materia_id = %s, turma_id = %s WHERE id = %s"
                 self._val = (nome, descricao, materia, turma, id)
                 self._cursor.execute(self._sql, self._val)
                 self._mydb.commit()
-                retorno = id
+                retorno = Atividade(id, nome, descricao,
+                                    self.usuario.id, turma, materia)
             else:
                 self._sql = "INSERT INTO sistema_educacional.atividades (nome, descricao, professor_id, turma_id, materia_id) VALUES (%s, %s, %s, %s, %s)"
                 self._val = (nome, descricao, self.usuario.id, turma, materia)
                 self._cursor.execute(self._sql, self._val)
                 self._mydb.commit()
-                retorno = self._cursor.lastrowid
+                retorno = Atividade(
+                    self._cursor.lastrowid, nome, descricao, self.usuario.id, turma, materia)
         except Exception as e:
             print('Erro ao cadastrar atividade:', str(e))
         return retorno
 
     def cadastrar_questao(self, atividade, enunciado, resposta, a, b, c, d, e, id=None):
-        retorno = False
+        retorno = None
         try:
             if id:
                 self._sql = "UPDATE sistema_educacional.questoes SET enunciado = %s, resposta = %s, letra_a = %s, letra_b = %s, letra_c = %s, letra_d = %s, letra_e = %s WHERE id = %s"
                 self._val = (enunciado, resposta, a, b, c, d, e, id)
                 self._cursor.execute(self._sql, self._val)
                 self._mydb.commit()
-                retorno = id
+                retorno = Questao(id, atividade, enunciado,
+                                  resposta, a, b, c, d, e)
             else:
                 self._sql = "INSERT INTO sistema_educacional.questoes (atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 self._val = (atividade, enunciado, resposta, a, b, c, d, e)
                 print(atividade, enunciado, resposta, a, b, c, d, e)
                 self._cursor.execute(self._sql, self._val)
                 self._mydb.commit()
-                retorno = self._cursor.lastrowid
+                retorno = Questao(self._cursor.lastrowid,
+                                  atividade, enunciado, resposta, a, b, c, d, e)
         except Exception as e:
             print('Erro ao cadastrar questão:', str(e))
         return retorno
@@ -406,35 +455,39 @@ class MyThread(threading.Thread):
                 enviar = ''
 
                 if mensagem_str[0] == '1':
-                    email = mensagem_str[1]
-                    senha = mensagem_str[2]
+                    login = mensagem_str[1].split(',')
+                    email = login[0]
+                    senha = login[1]
                     if self.sistema.login(email, senha):
                         if isinstance(self.sistema.usuario, Professor):
-                            enviar = '1'
-                            for materia in self.sistema.materias:
-                                enviar += f"|{self.sistema.usuario.materias}"
-                            for turma in self.sistema.usuario.turmas:
-                                enviar += f'|{turma[0]}-{turma[1]}'
+                            enviar = '1|'
+                            for materia in self.sistema.usuario.materias:
+                                enviar += f"{materia[0]},"
+                            enviar += '0'
+                            for turma in self.sistema.usuario.turmas.values():
+                                enviar += f'{turma.id}-{turma.nome},'
                             print(
                                 f'Professor {self.sistema.usuario} logou em {self.client_address}')
                         elif isinstance(self.sistema.usuario, Aluno):
-                            enviar = '2'
-                            for materia in self.sistema.materias:
-                                enviar += f'|{materia[0]}-{materia[1]}'
+                            enviar = '2|'
+                            for materia in self.sistema.materias.values():
+                                enviar += f'{materia.id}-{materia.nome},'
                             print(
                                 f'Aluno {self.sistema.usuario} logou em {self.client_address}')
+                        enviar += f'0|{self.sistema.usuario.id}'
                     else:
                         enviar = '0'
                         print(f'Erro no login em {self.client_address}')
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '2':
-                    email = mensagem_str[1]
-                    senha = mensagem_str[2]
-                    nome = mensagem_str[3]
-                    sobrenome = mensagem_str[4]
-                    nascimento = mensagem_str[5]
-                    if mensagem_str[-1] == 'a':
-                        turma = mensagem_str[6]
+                    cadastrar = mensagem_str[1:].split(',')
+                    email = cadastrar[0]
+                    senha = cadastrar[1]
+                    nome = cadastrar[2]
+                    sobrenome = cadastrar[3]
+                    nascimento = cadastrar[4]
+                    if cadastrar[-1] == 'a':
+                        turma = cadastrar[5]
                         if self.sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma):
                             enviar = '2'
                             print(
@@ -443,7 +496,7 @@ class MyThread(threading.Thread):
                             enviar = '0'
                             print(
                                 f'Erro ao cadastrar aluno no sistema em {self.client_address}')
-                    elif mensagem_str[-1] == 'p':
+                    elif cadastrar[-1] == 'p':
                         if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
                             enviar = '2'
                             print(
@@ -456,11 +509,11 @@ class MyThread(threading.Thread):
                 elif mensagem_str[0] == '3':
                     materia_id = mensagem_str[1]
                     enviar = f'3'
-                    for atividade in self.sistema.get_atividades_materia(materia_id):
-                        enviar += f'|{atividade[0]}-{atividade[1]}-{atividade[2]}'
+                    for atividade in self.sistema.get_atividades_materia(materia_id).values():
+                        enviar += f'|{atividade.id}-{atividade.titulo}-{atividade.turma_id}'
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '4':
-                    for questao in self.sistema.get_questoes_atividade(mensagem_str[1]):
+                    for questao in self.sistema.get_questoes_atividade(mensagem_str[1]).values():
                         enviar = f'4|{questao}'
                         self.client_socket.send(enviar.encode())
                         self.client_socket.recv(1024)
@@ -522,193 +575,191 @@ class MyThread(threading.Thread):
                 break
 
 
-def main():
-    host = 'LOCALHOST'
-    port = 5000
-    addr = (host, port)
-    serv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    serv_socket.bind(addr)
-    serv_socket.listen(10)
-    print('Aguardando conexão...')
-    while True:
-        try:
-            client_socket, client_address = serv_socket.accept()
-            my_thread = MyThread(client_address, serv_socket, client_socket)
-            my_thread.start()
-        except KeyboardInterrupt:
-            print('Servidor encerrado')
-            serv_socket.close()
-            break
-        except Exception as e:
-            print(str(e))
-            serv_socket.close()
-            break
+class Servidor:
+    def __init__(self):
+        self.host = 'LOCALHOST'
+        self.port = 5000
+        self.addr = (self.host, self.port)
+        self.serv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serv_socket.bind(self.addr)
+        self.serv_socket.listen(10)
+        print('Aguardando conexão...')
+
+    def iniciar(self):
+        while True:
+            try:
+                client_socket, client_address = self.serv_socket.accept()
+                my_thread = MyThread(
+                    client_address, self.serv_socket, client_socket)
+                my_thread.start()
+            except KeyboardInterrupt:
+                print('Servidor encerrado')
+                self.serv_socket.close()
+                break
+            except Exception as e:
+                print(str(e))
+                self.serv_socket.close()
+                break
 
 
-def teste():
-    sistema = SistemaEducacional()
-    opc = 1
-    while opc:
-        try:
-            if opc == 1:
-                print('Login')
-                email = input('E-mail: ')
-                senha = input('Senha: ')
-                if sistema.login(email, senha):
-                    if isinstance(sistema.usuario, Professor):
-                        print(
-                            f'Professor {sistema.usuario.nome} logado no sistema')
-                    elif isinstance(sistema.usuario, Aluno):
-                        print(f'Aluno {sistema.usuario} logado no sistema')
-                else:
-                    print('Erro no login')
-            elif opc == 2:
-                print(
-                    'Cadastro\n'
-                    '1 - Professor\n'
-                    '2 - Aluno\n'
-                    '0 - Voltar'
-                )
-                opc = int(input())
-                email = input('E-mail: ')
-                senha1 = input('Senha: ')
-                senha2 = input('Confirme a senha: ')
-                nome = input('Nome: ')
-                sobrenome = input('Sobrenome: ')
-                nascimento = input('Data de nascimento: ')
-                if senha1 == senha2:
-                    if opc == 1:
-                        if sistema.cadastrar_professor(
-                            email, senha1, nome, sobrenome, nascimento
-                        ):
+class Teste:
+    def __init__(self):
+        self.sistema = SistemaEducacional()
+
+    def iniciar(self):
+        opc = 1
+        while opc:
+            try:
+                if opc == 1:
+                    print('Login')
+                    email = input('E-mail: ')
+                    senha = input('Senha: ')
+                    if self.sistema.login(email, senha):
+                        if isinstance(self.sistema.usuario, Professor):
                             print(
-                                f'Professor {sistema.usuario} cadastrado no sistema')
-                        else:
-                            print('Erro ao cadastrar professor')
-                    elif opc == 2:
-                        turma = input('Turma: ')
-                        if sistema.cadastrar_aluno(
-                            email, senha1, nome, sobrenome, nascimento, turma
-                        ):
+                                f'Professor {self.sistema.usuario.nome} logado no sistema')
+                        elif isinstance(self.sistema.usuario, Aluno):
                             print(
-                                f'Aluno {sistema.usuario} cadastrado no sistema')
-                        else:
-                            print('Erro ao cadastrar aluno')
-            if sistema.usuario:
-                if isinstance(sistema.usuario, Professor):
+                                f'Aluno {self.sistema.usuario} logado no sistema')
+                    else:
+                        print('Erro no login')
+                elif opc == 2:
                     print(
-                        '1 - Listar atividades\n'
-                        '2 - Listar matérias\n'
-                        '3 - Listar turmas\n'
-                        '4 - Cadastrar atividade\n'
-                        '0 - Sair'
+                        'Cadastro\n'
+                        '1 - Professor\n'
+                        '2 - Aluno\n'
+                        '0 - Voltar'
                     )
                     opc = int(input())
-                    while opc:
+                    email = input('E-mail: ')
+                    senha1 = input('Senha: ')
+                    senha2 = input('Confirme a senha: ')
+                    nome = input('Nome: ')
+                    sobrenome = input('Sobrenome: ')
+                    nascimento = input('Data de nascimento: ')
+                    if senha1 == senha2:
                         if opc == 1:
-                            for atividade in sistema.usuario.atividades.split('|'):
-                                print(atividade)
-                        elif opc == 2:
-                            for materia in sistema.usuario.materias.split('|'):
-                                print(materia)
-                        elif opc == 3:
-                            for turma in sistema.usuario.turmas.split('|'):
-                                print(turma)
-                        elif opc == 4:
-                            turma = int(input('Turma: '))
-                            materia = int(input('Matéria: '))
-                            titulo = input('Título: ')
-                            descricao = input('Descrição: ')
-                            id_atividade = sistema.cadastrar_atividade(
-                                titulo, descricao, materia, turma, None
-                            )
-                            print(id_atividade)
-                            if id_atividade:
-                                enunciado = input('Enunciado (0 para sair): ')
-                                while enunciado != '0':
-                                    resposta = input('Resposta: ')
-                                    a = input('a) ')
-                                    b = input('b) ')
-                                    c = input('c) ')
-                                    d = input('d) ')
-                                    e = input('e) ')
-                                    if sistema.cadastrar_questao(
-                                        id_atividade, enunciado, resposta, a, b, c, d, e
-                                    ):
-                                        print('Questão cadastrada')
-                                    else:
-                                        print('Erro ao cadastrar questão')
-                                    enunciado = input(
-                                        'Enunciado (0 para sair): ')
+                            if self.sistema.cadastrar_professor(
+                                email, senha1, nome, sobrenome, nascimento
+                            ):
+                                print(
+                                    f'Professor {self.sistema.usuario} cadastrado no sistema')
                             else:
-                                print('Erro ao cadastrar atividade')
-                        print(
-                            '1 - Listar atividades\n'
-                            '2 - Listar matérias\n'
-                            '3 - Listar turmas\n'
-                            '4 - Cadastrar atividade\n'
-                            '0 - Sair'
-                        )
-                        opc = int(input())
-                elif isinstance(sistema.usuario, Aluno):
-                    print(
-                        '1 - Listar matérias\n'
-                        '2 - Listar atividades\n'
-                        '3 - Responder atividade\n'
-                        '0 - Sair'
-                    )
-                    opc = int(input())
-                    while opc:
-                        if opc == 1:
-                            for materia in sistema.usuario.materias.split('|'):
-                                print(materia)
+                                print('Erro ao cadastrar professor')
                         elif opc == 2:
-                            for atividade in sistema.usuario.atividades.split('|'):
-                                print(atividade)
-                        elif opc == 3:
-                            id_atividade = int(input('Atividade: '))
-                            atividade = sistema.get_atividade(id_atividade)
-                            if atividade:
-                                questoes = sistema.get_questoes_atividade(
-                                    id_atividade)
-                                for questao in questoes:
-                                    print(questao)
-                                    resposta = input('Resposta: ')
-                                sistema.cadastrar_resposta(
-                                    id_atividade, sistema.usuario.id, resposta)
+                            turma = input('Turma: ')
+                            if self.sistema.cadastrar_aluno(
+                                email, senha1, nome, sobrenome, nascimento, turma
+                            ):
+                                print(
+                                    f'Aluno {self.sistema.usuario} cadastrado no sistema')
                             else:
-                                print('Atividade não encontrada')
-                        print(
-                            '1 - Listar matérias\n'
-                            '2 - Listar atividades\n'
-                            '3 - Responder atividade\n'
-                            '0 - Sair'
-                        )
+                                print('Erro ao cadastrar aluno')
+                if self.sistema.usuario:
+                    if isinstance(self.sistema.usuario, Professor):
+                        for num, turma in self.sistema.usuario.turmas.items():
+                            print(f'{turma.id} - {turma.nome}')
+                        print('0 - Sair')
                         opc = int(input())
-            else:
+                        while opc:
+                            try:
+                                if self.sistema.turmas[opc].atividades:
+                                    self.sistema.turmas[opc].abrir(
+                                        self.sistema)
+                                    for num, turma in self.sistema.usuario.turmas.items():
+                                        print(f'{turma.id} - {turma.nome}')
+                                    print('0 - Sair')
+                                else:
+                                    print('Turma sem atividades')
+                                opc = int(input())
+                            except KeyError:
+                                print('Opção inválida')
+                                opc = int(input())
+                    elif isinstance(self.sistema.usuario, Aluno):
+                        for num, materia in self.sistema.materias.items():
+                            print(f'{num} - {materia.nome}')
+                        print('0 - Sair')
+                        opc = int(input())
+                        while opc:
+                            try:
+                                if self.sistema.materias[opc].atividades:
+                                    self.sistema.materias[opc].abrir(
+                                        self.sistema.usuario)
+                                    for num, materia in self.sistema.materias.items():
+                                        print(f'{num} - {materia.nome}')
+                                    print('0 - Sair')
+                                else:
+                                    print('Matéria sem atividades')
+                                opc = int(input())
+                            except KeyError:
+                                print('Opção inválida')
+                                opc = int(input())
                 print(
+                    'Tela inicial\n'
                     '1 - Entrar\n'
                     '2 - Cadastrar\n'
                     '0 - Fechar'
                 )
                 opc = int(input())
-        except Exception as e:
-            print(str(e))
-        except KeyboardInterrupt:
-            sistema.logout()
-            sistema.fechar_bd()
-            print('\nEncerrado')
-            break
+            except KeyboardInterrupt:
+                self.sistema.logout()
+                self.sistema.fechar_bd()
+                print('\nEncerrado')
+                break
 
 
 if __name__ == "__main__":
-    # main()
-    # teste()
-    sistema = SistemaEducacional()
-    # print(sistema.get_questoes_atividade(9))
-    for materia in sistema.materias:
-        print(materia)
-        for atividade in materia.atividades:
-            print('\t',atividade)
-            for questao in atividade.questoes:
-                print('\t\t',questao)
+    servidor = Servidor()
+    servidor.iniciar()
+    # teste = Teste()
+    # teste.iniciar()
+    # sistema = SistemaEducacional()
+    # sistema.login('jose@example.com', '1111')
+    # enviar = '2|'
+    # for materia in sistema.materias.values():
+    #     enviar += f'{materia.id}-{materia.nome},'
+    # enviar += '0|'
+    # print(enviar)
+
+    # enviar = '1|'
+    # for materia in sistema.usuario.materias:
+    #     enviar += f"{materia[0]},"
+    # enviar += '0|'
+    # for turma in sistema.usuario.turmas.values():
+    #     enviar += f'{turma.id}-{turma.nome},'
+    # enviar += '0|'
+    # print(enviar)
+
+    # for materia in sistema.usuario.materias:
+    #     print(materia)
+
+    # for turma in sistema.get_turmas_professor().values():
+    #     print(turma.nome)
+
+    # for turma in sistema.turmas.values():
+    #     print(turma.professores)
+
+    # for num, materia in sistema.materias.items():
+    #     print(f'{num} - {materia.nome}')
+    #     for atividade in materia.atividades:
+    #         print('\t', atividade)
+    #     for questao in atividade.questoes:
+    #         print('\t\t',questao)
+
+    # for num, materia in sistema.materias.items():
+    #     print(f'{num} - {materia.nome}')
+    # print('0 - Sair')
+    # opc = int(input())
+    # while opc:
+    #     try:
+    #         if sistema.materias[opc].atividades:
+    #             sistema.materias[opc].abrir()
+    #             for num, materia in sistema.materias.items():
+    #                 print(f'{num} - {materia.nome}')
+    #             print('0 - Sair')
+    #         else:
+    #             print('Matéria sem atividades')
+    #         opc = int(input())
+    #     except KeyError:
+    #         print('Opção inválida')
+    #         opc = int(input())

@@ -8,7 +8,7 @@ from cod_tela_atividade_aluno import Ui_TelaAtividade
 from cod_tela_atividade_professor import Ui_AtividadeProfessor
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
-from modelos import Atividade, Questao
+from modelos import Professor, Aluno, Atividade, Questao
 # pyuic5 -x tela_principal_professor.ui -o tela_principal_professor.py
 
 
@@ -75,7 +75,7 @@ class Ui_Main(QtWidgets.QWidget):
             self.QtStack.setCurrentWidget(novo)
         return ir_para_pagina_atividade
 
-    def criar_pagina_atividade_turma(self, materia_id, turma_id, id_atividade=None):
+    def criar_pagina_atividade_turma(self, turma_id, id_atividade=None):
         titulo = len(self.stack) + 1
         self.atividades_turma[titulo] = Ui_AtividadeProfessor()
         novo = QtWidgets.QWidget()
@@ -89,7 +89,7 @@ class Ui_Main(QtWidgets.QWidget):
                 atividade.descricao)
         else:
             self.atividades_turma[titulo].setupUi(
-                self.stack[-1], Atividade(None, None, None, materia_id, turma_id, None, None))
+                self.stack[-1], Atividade(None, None, None, None, turma_id, None, None))
         self.QtStack.addWidget(self.stack[-1])
         self.atividades_turma[titulo].botao_publicar.clicked.connect(
             self.cadastrar_tarefa)
@@ -110,7 +110,7 @@ class Main(QMainWindow, Ui_Main):
         self.setupUi(self)
 
         '''Modificadores'''
-        self._usuario = None
+        self._usuario_id = None
         ip = 'LOCALHOST'
         port = 5000
         addr = ((ip, port))
@@ -136,12 +136,20 @@ class Main(QMainWindow, Ui_Main):
         self.tela_principal_professor.botao_sair.clicked.connect(
             self.botao_sair)
 
-    def pegar_atividades(self, nome):
-        self.client_socket.send(f'3|{nome}'.encode())
+    @property
+    def usuario_id(self):
+        return self._usuario_id
+
+    @usuario_id.setter
+    def usuario_id(self, usuario_id):
+        self._usuario_id = usuario_id
+
+    def pegar_atividades_materia(self, materia_id):
+        self.client_socket.send(f'3|{materia_id}'.encode())
         atividades = self.client_socket.recv(1024).decode()
         return atividades.split('|')[1:]
 
-    def pegar_atividades_turma(self, nome_turma):
+    def pegar_atividades_materia_turma(self, nome_turma):
         self.client_socket.send(f'5|{nome_turma}'.encode())
         atividades = self.client_socket.recv(4096).decode()
         lista_atividades = []
@@ -209,6 +217,7 @@ class Main(QMainWindow, Ui_Main):
         self.tela_principal_aluno.limpar_paginas()
         self.tela_principal_aluno.limpar_materias()
         self.client_socket.send(mensagem.encode())
+        self.usuario_id = None
         self.QtStack.setCurrentIndex(0)
 
     def botao_sair(self):
@@ -223,37 +232,39 @@ class Main(QMainWindow, Ui_Main):
             resposta = self.client_socket.recv(1024).decode()
 
             if resposta and resposta != '0':
-                return resposta
+                return resposta.split('|')
         return False
 
     def botao_login(self):
         email = self.tela_login.caixa_email.text()
         senha = self.tela_login.caixa_senha.text()
-        mensagem = f'1|{email}|{senha}'
+        mensagem = f'1|{email},{senha}'
 
         if email and senha:
             resposta = self.enviar_login(mensagem)
             if resposta:
                 if resposta[0] == '1':
-                    materia_id = resposta.split('|')[1]
-                    for turma in resposta.split('|')[2:]:
-                        turma_nome = turma.split('-')[0]
-                        turma_id = turma.split('-')[1]
-                        atividades = self.pegar_atividades_turma(turma_nome)
+                    for turma in resposta[2].split(',')[:-1]:
+                        turma_id = turma.split('-')[0]
+                        turma_nome = turma.split('-')[1]
+                        atividades = self.pegar_atividades_materia_turma(
+                            turma_nome)
                         if not atividades:
                             atividades = None
                         self.tela_principal_professor.add_pagina(
-                            f'Turma-{turma_nome}', materia_id, turma_id, atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
+                            f'Turma-{turma_nome}', turma_id, atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
                     self.tela_principal_professor.inserir_espacamento()
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':
-                    for materia in resposta.split('|')[1:]:
+                    for materia in resposta[1].split(',')[:-1]:
                         materia_id = materia.split('-')[0]
                         materia_nome = materia.split('-')[1]
-                        atividades = self.pegar_atividades(materia_id)
+                        atividades = self.pegar_atividades_materia(materia_id)
                         self.tela_principal_aluno.add_materia(
                             materia_nome.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
+                    self.tela_principal_aluno.inserir_espacamento()
                     self.QtStack.setCurrentIndex(2)
+                self.usuario_id = resposta[-1]
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")
         else:
@@ -266,7 +277,7 @@ class Main(QMainWindow, Ui_Main):
         nome = self.tela_cadastro.professores_caixa_nome.text()
         sobrenome = self.tela_cadastro.professores_caixa_sobrenome.text()
         nascimento = self.tela_cadastro.professores_caixa_nascimento.text()
-        mensagem = f'2|{email}|{senha1}|{nome}|{sobrenome}|{nascimento}|p'
+        mensagem = f'2|{email},{senha1},{nome},{sobrenome},{nascimento},p'
         if email and senha1 and senha2 and nome and sobrenome and nascimento:
             if senha1 == senha2:
                 if self.enviar_cadastro(mensagem):
@@ -290,7 +301,7 @@ class Main(QMainWindow, Ui_Main):
         sobrenome = self.tela_cadastro.alunos_caixa_sobrenome.text()
         nascimento = self.tela_cadastro.alunos_caixa_nascimento.text()
         turma = self.tela_cadastro.alunos_caixa_turma.text()
-        mensagem = f'2|{email}|{senha1}|{nome}|{sobrenome}|{nascimento}|{turma}|a'
+        mensagem = f'2|{email},{senha1},{nome},{sobrenome},{nascimento},{turma},a'
         if email and senha1 and senha2 and nome and sobrenome and nascimento:
             if senha1 == senha2:
                 if self.enviar_cadastro(mensagem):
