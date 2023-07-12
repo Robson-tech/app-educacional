@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from teste_questao import AtividadeQuestao
 from modelos import Atividade, Questao
 
 
@@ -34,16 +33,18 @@ class Ui_AtividadeProfessor(object):
             QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
-        self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(
+        self.scrollAreaWidgetContents_principal = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents_principal.setGeometry(
             QtCore.QRect(0, -38, 843, 577))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents_principal.setObjectName(
+            "scrollAreaWidgetContents_principal")
         self.verticalLayout = QtWidgets.QVBoxLayout(
-            self.scrollAreaWidgetContents)
+            self.scrollAreaWidgetContents_principal)
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.input_titulo = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.input_titulo = QtWidgets.QLineEdit(
+            self.scrollAreaWidgetContents_principal)
         self.input_titulo.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
         font.setPointSize(28)
@@ -54,7 +55,8 @@ class Ui_AtividadeProfessor(object):
         self.input_titulo.setAlignment(QtCore.Qt.AlignCenter)
         self.input_titulo.setObjectName("input_titulo")
         self.horizontalLayout_3.addWidget(self.input_titulo)
-        self.input_materia = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.input_materia = QtWidgets.QLineEdit(
+            self.scrollAreaWidgetContents_principal)
         self.input_materia.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
         font.setPointSize(28)
@@ -66,23 +68,23 @@ class Ui_AtividadeProfessor(object):
         self.input_materia.setObjectName("input_materia")
         self.horizontalLayout_3.addWidget(self.input_materia)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
-        self.input_descricao = QtWidgets.QLineEdit(
-            self.scrollAreaWidgetContents)
-        self.input_descricao.setMinimumSize(QtCore.QSize(0, 100))
+        self.input_descricao = QtWidgets.QPlainTextEdit(
+            self.scrollAreaWidgetContents_principal)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.input_descricao.setFont(font)
         self.input_descricao.setStyleSheet(
             "background-color: rgb(255, 255, 255);")
-        self.input_descricao.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.input_descricao.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.input_descricao.setTabChangesFocus(True)
         self.input_descricao.setObjectName("input_descricao")
         self.verticalLayout.addWidget(self.input_descricao)
         self.questoes = {}
         spacerItem = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents_principal)
         self.botao_voltar = QtWidgets.QPushButton(AtividadeProfessor)
         self.botao_voltar.setGeometry(QtCore.QRect(0, 0, 41, 41))
         font = QtGui.QFont()
@@ -126,7 +128,8 @@ class Ui_AtividadeProfessor(object):
         for q in atividade.questoes.values() if atividade and atividade.questoes else []:
             num = len(self.questoes)
             self.questoes[num] = AtividadeQuestao(
-                self.scrollAreaWidgetContents, num + 1, q.enunciado, [q.letra_a, q.letra_b, q.letra_c, q.letra_d, q.letra_e], q.id)
+                self.scrollAreaWidgetContents_principal, q.enunciado, [q.letra_a, q.letra_b, q.letra_c, q.letra_d, q.letra_e], q.id)
+            self.questoes[num].num_questao.setText(str(num + 1))
             self.verticalLayout.addWidget(self.questoes[num])
 
         self._translate = QtCore.QCoreApplication.translate
@@ -138,7 +141,8 @@ class Ui_AtividadeProfessor(object):
     def botao_add_nova_questao_funcao(self):
         num = len(self.questoes)
         self.questoes[num] = AtividadeQuestao(
-            self.scrollAreaWidgetContents, num + 1)
+            self.scrollAreaWidgetContents_principal)
+        self.questoes[num].num_questao.setText(str(num + 1))
         self.questoes[num].input_enunciado.setPlaceholderText(
             self._translate("AtividadeProfessor", "Enunciado"))
         self.questoes[num].input_letra['A'].setPlaceholderText(
@@ -169,15 +173,139 @@ class Ui_AtividadeProfessor(object):
         self.botao_voltar.setText(self._translate("Atividade", "←"))
 
 
+class AtividadeQuestao(QtWidgets.QGroupBox):
+    def __init__(self, scrollAreaWidgetContents_principal, enunciado=None, alternativas=None, questao_id=None):
+        super().__init__(scrollAreaWidgetContents_principal)
+        self.questao_id = questao_id
+        self.setMinimumSize(QtCore.QSize(835, 300))
+        self.setMaximumSize(QtCore.QSize(835, 16777215))
+        self.setStyleSheet("background-color: rgb(52, 161, 50);")
+        self.setTitle("")
+        self.setObjectName("questao")
+        self.gridLayout_principal = QtWidgets.QGridLayout(self)
+        self.gridLayout_principal.setObjectName("gridLayout_principal")
+        self.num_questao = QtWidgets.QLabel(self)
+        self.num_questao.setMinimumSize(QtCore.QSize(30, 30))
+        self.num_questao.setMaximumSize(QtCore.QSize(30, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.num_questao.setFont(font)
+        self.num_questao.setStyleSheet("border-radius: 15px;\n"
+                                       "background-color: rgb(252, 88, 20);")
+        self.num_questao.setAlignment(QtCore.Qt.AlignCenter)
+        self.num_questao.setObjectName("num_questao")
+        self.gridLayout_principal.addWidget(self.num_questao, 0, 0, 1, 1)
+        self.label = QtWidgets.QLabel(self)
+        self.label.setMinimumSize(QtCore.QSize(0, 30))
+        self.label.setMaximumSize(QtCore.QSize(16777215, 30))
+        self.label.setText("")
+        self.label.setObjectName("label")
+        self.gridLayout_principal.addWidget(self.label, 0, 1, 1, 1)
+        self.num_questao = QtWidgets.QLabel(self)
+        self.num_questao.setMinimumSize(QtCore.QSize(30, 30))
+        self.num_questao.setMaximumSize(QtCore.QSize(30, 30))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.num_questao.setFont(font)
+        self.num_questao.setStyleSheet("border-radius: 15px;\n"
+                                       "background-color: rgb(252, 88, 20);")
+        self.num_questao.setAlignment(QtCore.Qt.AlignCenter)
+        self.num_questao.setObjectName("num_questao")
+        self.gridLayout_principal.addWidget(self.num_questao, 0, 0, 1, 1)
+        self.input_enunciado = QtWidgets.QPlainTextEdit(self)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.input_enunciado.setFont(font)
+        self.input_enunciado.setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
+        self.input_enunciado.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.input_enunciado.setTabChangesFocus(True)
+        self.input_enunciado.setObjectName("input_enunciado")
+        self.gridLayout_principal.addWidget(self.input_enunciado, 1, 1, 1, 1)
+        # inicio
+        self.input_letra = {}
+        self.selecao = {}
+        font_input_letra = QtGui.QFont()
+        font_input_letra.setPointSize(12)
+        self.gridLayout_alternativas = QtWidgets.QGridLayout()
+        self.gridLayout_alternativas.setObjectName("gridLayout_alternativas")
+        self.input_letra['A'] = QtWidgets.QLineEdit(self)
+        self.input_letra['A'].setFont(font_input_letra)
+        self.input_letra['A'].setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
+        self.input_letra['A'].setText("")
+        self.input_letra['A'].setObjectName("input_A")
+        self.input_letra['B'] = QtWidgets.QLineEdit(self)
+        self.input_letra['B'].setFont(font_input_letra)
+        self.input_letra['B'].setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
+        self.input_letra['B'].setText("")
+        self.input_letra['B'].setObjectName("input_B")
+        self.input_letra['C'] = QtWidgets.QLineEdit(self)
+        self.input_letra['C'].setFont(font_input_letra)
+        self.input_letra['C'].setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
+        self.input_letra['C'].setText("")
+        self.input_letra['C'].setObjectName("input_C")
+        self.input_letra['D'] = QtWidgets.QLineEdit(self)
+        self.input_letra['D'].setFont(font_input_letra)
+        self.input_letra['D'].setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
+        self.input_letra['D'].setText("")
+        self.input_letra['D'].setObjectName("input_D")
+        self.input_letra['E'] = QtWidgets.QLineEdit(self)
+        self.input_letra['E'].setFont(font_input_letra)
+        self.input_letra['E'].setStyleSheet(
+            "background-color: rgb(255, 255, 255);")
+        self.input_letra['E'].setText("")
+        self.input_letra['E'].setObjectName("input_E")
+        self.selecao['A'] = QtWidgets.QRadioButton(self)
+        self.selecao['A'].setText("")
+        self.selecao['A'].setObjectName("selecao_A")
+        self.selecao['B'] = QtWidgets.QRadioButton(self)
+        self.selecao['B'].setText("")
+        self.selecao['B'].setObjectName("selecao_B")
+        self.selecao['C'] = QtWidgets.QRadioButton(self)
+        self.selecao['C'].setText("")
+        self.selecao['C'].setObjectName("selecao_C")
+        self.selecao['D'] = QtWidgets.QRadioButton(self)
+        self.selecao['D'].setText("")
+        self.selecao['D'].setObjectName("selecao_D")
+        self.selecao['E'] = QtWidgets.QRadioButton(self)
+        self.selecao['E'].setText("")
+        self.selecao['E'].setObjectName("selecao_E")
+        self.gridLayout_alternativas.addWidget(
+            self.input_letra['A'], 0, 1, 1, 1)
+        self.gridLayout_alternativas.addWidget(
+            self.input_letra['B'], 1, 1, 1, 1)
+        self.gridLayout_alternativas.addWidget(
+            self.input_letra['C'], 2, 1, 1, 1)
+        self.gridLayout_alternativas.addWidget(
+            self.input_letra['D'], 3, 1, 1, 1)
+        self.gridLayout_alternativas.addWidget(
+            self.input_letra['E'], 4, 1, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['A'], 0, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['B'], 1, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['C'], 2, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['D'], 3, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['E'], 4, 0, 1, 1)
+        self.gridLayout_principal.addLayout(
+            self.gridLayout_alternativas, 2, 1, 1, 1)
+        # fim
+        if enunciado:
+            self.input_enunciado.setPlainText(enunciado)
+        if alternativas:
+            for i, letra in enumerate(self.input_letra):
+                self.input_letra[letra].setText(alternativas[i])
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     AtividadeProfessor = QtWidgets.QWidget()
     ui = Ui_AtividadeProfessor()
-    ui.setupUi(AtividadeProfessor, Atividade(1, 'função afim', 'atividade de função', 1, 1, 1, [
-        Questao(2, 1, 'Em 1988, o Brasil promulgou a Constituição que rege o país até hoje. Sobre a Constituição de 1988, é correto afirmar que:',
-                'a', 'a', 'b', 'c', 'd', 'e'),
-        Questao(3, 1, 'Após a promulgação da Constituição de 1988, o Brasil passou a ser regido por uma nova Carta Magna. Sobre a Constituição de 1988, é correto afirmar que:', 'a', 'a', 'b', 'c', 'd', 'e'),
-    ]))
+    ui.setupUi(AtividadeProfessor, Atividade(1, 'função afim', 'atividade de função',
+               1, 1, 1, {1: Questao(1, 1, 'enunciado', 'a', 'a', 'b', 'c', 'd', 'e')}))
     AtividadeProfessor.show()
     sys.exit(app.exec_())

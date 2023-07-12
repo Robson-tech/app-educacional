@@ -143,6 +143,50 @@ class Aluno(Usuario):
             return True
         else:
             return False
+        
+        
+class Materia:
+    def __init__(self, id, nome, atividades={}, professores=[]):
+        self._id = id
+        self._nome = nome.capitalize()
+        self._atividades = atividades
+        self._professores = professores
+
+    def __str__(self):
+        return f'{self._id}-{self._nome}'
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def nome(self):
+        return self._nome
+
+    @property
+    def atividades(self):
+        return self._atividades
+
+    # def add_atividade(self, atividade):
+    #     self._atividades.append(atividade)
+
+    def abrir(self, usuario):
+        for num, atividade in self._atividades.items():
+            print(f'{num} - {atividade.titulo}')
+        opc = int(input('Digite o número da atividade: '))
+        while opc:
+            try:
+                if self._atividades[opc].questoes:
+                    self._atividades[opc].abrir(usuario)
+                    for num, atividade in self._atividades.items():
+                        print(f'{num} - {atividade.titulo}')
+                    print('0 - Sair')
+                else:
+                    print('Atividade sem questões')
+                opc = int(input('Digite o número da atividade: '))
+            except KeyError:
+                print('Atividade não encontrada')
+                opc = int(input('Digite o número da atividade: '))
 
 
 class Atividade:

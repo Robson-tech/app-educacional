@@ -454,7 +454,7 @@ class MyThread(threading.Thread):
         self.client_socket.send(enviar.encode())
         while True:
             try:
-                mensagem = self.client_socket.recv(4096)
+                mensagem = self.client_socket.recv(32784)
                 mensagem_str = mensagem.decode().split('|')
 
                 if mensagem_str[0] == '1':
@@ -472,13 +472,13 @@ class MyThread(threading.Thread):
                             for turma in self.sistema.usuario.turmas.values():
                                 enviar += f'{turma.id}-{turma.nome},'
                             print(
-                                f'Professor {self.sistema.usuario} logou em {self.client_address}')
+                                f'Professor {self.sistema.usuario.email} logou em {self.client_address}')
                         elif isinstance(self.sistema.usuario, Aluno):
                             enviar = f'2|{self.sistema.usuario}'
                             self.client_socket.send(enviar.encode())
                             enviar = '2'
                             print(
-                                f'Aluno {self.sistema.usuario} logou em {self.client_address}')
+                                f'Aluno {self.sistema.usuario.email} logou em {self.client_address}')
                     else:
                         enviar = '0'
                         print(f'Erro no login em {self.client_address}')
@@ -495,7 +495,7 @@ class MyThread(threading.Thread):
                         if self.sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma):
                             enviar = '2'
                             print(
-                                f'Aluno {self.sistema.usuario} cadastrado no sistema em {self.client_address}')
+                                f'Aluno {self.sistema.usuario.email} cadastrado no sistema em {self.client_address}')
                         else:
                             enviar = '0'
                             print(
@@ -504,7 +504,7 @@ class MyThread(threading.Thread):
                         if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
                             enviar = '2'
                             print(
-                                f'Professor {self.sistema.usuario} cadastrado no sistema em {self.client_address}')
+                                f'Professor {self.sistema.usuario.email} cadastrado no sistema em {self.client_address}')
                         else:
                             enviar = '0'
                             print(
@@ -562,7 +562,7 @@ class MyThread(threading.Thread):
                                 f'Erro ao cadastrar atividade em {self.client_address}')
                 elif mensagem_str[0] == '0':
                     print(
-                        f'Usuário {self.sistema.usuario} deslogou em {self.client_address}')
+                        f'Usuário {self.sistema.usuario.email} deslogou em {self.client_address}')
                     self.sistema.logout()
                 elif mensagem_str[0] == '-1':
                     print(f'Conexão com {self.client_address} finalizada')

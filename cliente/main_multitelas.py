@@ -8,7 +8,7 @@ from cod_tela_atividade_aluno import Ui_TelaAtividade
 from cod_tela_atividade_professor import Ui_AtividadeProfessor
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
-from modelos import Professor, Aluno, Atividade, Questao
+from modelos import Professor, Aluno, Materia, Atividade, Questao
 # pyuic5 -x tela_atividade_professor.ui -o tela_atividade_professor.py
 
 
@@ -58,6 +58,8 @@ class Ui_Main(QtWidgets.QWidget):
         novo = QtWidgets.QWidget()
         self.stack.append(novo)
         self.atividades[-1].setupUi(self.stack[-1], atividade.materia_id)
+        self.atividades[-1].rotulo_titulo.setText(atividade.titulo)
+        self.atividades[-1].rotulo_descricao.setText(atividade.descricao)
         self.QtStack.addWidget(self.stack[-1])
         for i, questao in enumerate(atividade.questoes.values()) if atividade.questoes else []:
             self.atividades[-1].add_questao(i + 1, questao.enunciado, [
@@ -67,33 +69,6 @@ class Ui_Main(QtWidgets.QWidget):
         def voltar_atividade():
             self.QtStack.setCurrentIndex(2)
         self.atividades[-1].botao_voltar.clicked.connect(voltar_atividade)
-
-        def ir_para_pagina_atividade():
-            self.QtStack.setCurrentWidget(novo)
-        return ir_para_pagina_atividade
-
-    def criar_pagina_atividade_turma(self, turma_id, materia=None, atividade=None):
-        titulo = len(self.stack) + 1
-        self.atividades_turma[titulo] = Ui_AtividadeProfessor()
-        novo = QtWidgets.QWidget()
-        self.stack.append(novo)
-        if atividade:
-            self.atividades_turma[titulo].setupUi(self.stack[-1], atividade)
-            self.atividades_turma[titulo].input_titulo.setText(
-                atividade.titulo)
-            self.atividades_turma[titulo].input_descricao.setText(
-                atividade.descricao)
-        else:
-            self.atividades_turma[titulo].setupUi(
-                self.stack[-1], Atividade(None, None, None, None, turma_id, materia, None))
-        self.QtStack.addWidget(self.stack[-1])
-        self.atividades_turma[titulo].botao_publicar.clicked.connect(
-            self.cadastrar_tarefa)
-
-        def voltar_atividade():
-            self.QtStack.setCurrentIndex(3)
-        self.atividades_turma[titulo].botao_voltar.clicked.connect(
-            voltar_atividade)
 
         def ir_para_pagina_atividade():
             self.QtStack.setCurrentWidget(novo)
@@ -113,15 +88,17 @@ class Main(QMainWindow, Ui_Main):
         addr = ((ip, port))
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(addr)
-        resposta = self.client_socket.recv(1024).decode().split('|')
-        for materia in resposta[1].split(',')[:-1]:
-            materia_id = materia.split('-')[0]
-            materia_nome = materia.split('-')[1]
-            self._materias[materia_nome] = materia_id
-            atividades = self.pegar_atividades_materia(materia_id)
-            self.tela_principal_aluno.add_materia(
-                materia_nome.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
-        self.tela_principal_aluno.inserir_espacamento()
+        if self._materias == {}:
+            resposta = self.client_socket.recv(1024).decode().split('|')
+            for materia in resposta[1].split(',')[:-1]:
+                materia_id = materia.split('-')[0]
+                materia_nome = materia.split('-')[1]
+                self._materias.update(
+                    {materia_id: Materia(materia_id, materia_nome)})
+                atividades = self.pegar_atividades_materia(materia_id)
+                self.tela_principal_aluno.add_materia(
+                    materia_nome.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
+            self.tela_principal_aluno.inserir_espacamento()
         self.tela_login.botao_login.clicked.connect(self.botao_login)
         self.tela_login.botao_cadastro.clicked.connect(self.botao_cadastrar)
         self.tela_cadastro.alunos_botao_voltar.clicked.connect(
@@ -153,9 +130,44 @@ class Main(QMainWindow, Ui_Main):
     def materias(self):
         return self._materias
 
+    def get_materias_id(self, materia_nome):
+        for materia in self._materias.values():
+            if materia.nome == materia_nome:
+                return materia.id
+        return None
+
+    def criar_pagina_atividade_turma(self, turma_id, materia=None, atividade=None):
+        titulo = len(self.stack) + 1
+        self.atividades_turma[titulo] = Ui_AtividadeProfessor()
+        novo = QtWidgets.QWidget()
+        self.stack.append(novo)
+        if atividade:
+            self.atividades_turma[titulo].setupUi(self.stack[-1], atividade)
+            self.atividades_turma[titulo].input_titulo.setText(
+                atividade.titulo)
+            self.atividades_turma[titulo].input_descricao.setPlainText(
+                atividade.descricao)
+            self.atividades_turma[titulo].input_materia.setText(
+                self._materias[materia].nome)
+        else:
+            self.atividades_turma[titulo].setupUi(
+                self.stack[-1], Atividade(None, None, None, None, turma_id, materia, None))
+        self.QtStack.addWidget(self.stack[-1])
+        self.atividades_turma[titulo].botao_publicar.clicked.connect(
+            self.cadastrar_tarefa)
+
+        def voltar_atividade():
+            self.QtStack.setCurrentIndex(3)
+        self.atividades_turma[titulo].botao_voltar.clicked.connect(
+            voltar_atividade)
+
+        def ir_para_pagina_atividade():
+            self.QtStack.setCurrentWidget(novo)
+        return ir_para_pagina_atividade
+
     def pegar_atividades_materia(self, materia_id):
         self.client_socket.send(f'3|{materia_id}'.encode())
-        atividades = self.client_socket.recv(1024).decode().split('|')
+        atividades = self.client_socket.recv(32784).decode().split('|')
         lista_atividades = []
         for atividade in atividades[1:]:
             atividade_campos = atividade.split('//')[:6]
@@ -170,7 +182,7 @@ class Main(QMainWindow, Ui_Main):
 
     def pegar_atividades_materia_turma(self, turma_id):
         self.client_socket.send(f'5|{turma_id}'.encode())
-        atividades = self.client_socket.recv(4096).decode().split('|')
+        atividades = self.client_socket.recv(32784).decode().split('|')
         if len(atividades) == 1:
             return None
         lista_atividades = []
@@ -189,7 +201,6 @@ class Main(QMainWindow, Ui_Main):
         if mensagem.split('|')[0] == '6':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode()
-
             if resposta and resposta == '6':
                 return True
         return False
@@ -200,31 +211,30 @@ class Main(QMainWindow, Ui_Main):
         titulo = self.atividades_turma[
             self.QtStack.currentIndex() + 1].input_titulo.text()
         descricao = self.atividades_turma[
-            self.QtStack.currentIndex() + 1].input_descricao.text()
+            self.QtStack.currentIndex() + 1].input_descricao.toPlainText()
         materia = self.atividades_turma[
             self.QtStack.currentIndex() + 1].input_materia.text().capitalize()
         turma_id = self.atividades_turma[
             self.QtStack.currentIndex() + 1].atividade.turma_id
-        if materia in self.materias.keys():
-            materia_id = self.materias[materia]
+        materia_id = self.get_materias_id(materia)
+        if materia_id:
             mensagem = f'6|{atividade_id}|{titulo}|{descricao}|{materia_id}|{turma_id}'
-            for num, questao in enumerate(self.atividades_turma[self.QtStack.currentIndex() + 1].questoes):
+            for num in enumerate(self.atividades_turma[self.QtStack.currentIndex() + 1].questoes):
                 enunciado = self.atividades_turma[self.QtStack.currentIndex(
-                ) + 1].questoes[num].input_enunciado.text()
+                ) + 1].questoes[num[0]].input_enunciado.toPlainText()
                 a = self.atividades_turma[self.QtStack.currentIndex(
-                ) + 1].questoes[num].input_letra['A'].text()
+                ) + 1].questoes[num[0]].input_letra['A'].text()
                 b = self.atividades_turma[self.QtStack.currentIndex(
-                ) + 1].questoes[num].input_letra['B'].text()
+                ) + 1].questoes[num[0]].input_letra['B'].text()
                 c = self.atividades_turma[self.QtStack.currentIndex(
-                ) + 1].questoes[num].input_letra['C'].text()
+                ) + 1].questoes[num[0]].input_letra['C'].text()
                 d = self.atividades_turma[self.QtStack.currentIndex(
-                ) + 1].questoes[num].input_letra['D'].text()
+                ) + 1].questoes[num[0]].input_letra['D'].text()
                 e = self.atividades_turma[self.QtStack.currentIndex(
-                ) + 1].questoes[num].input_letra['E'].text()
+                ) + 1].questoes[num[0]].input_letra['E'].text()
                 id_questao = self.atividades_turma[self.QtStack.currentIndex(
-                ) + 1].questoes[num].questao_id
+                ) + 1].questoes[num[0]].questao_id
                 mensagem += f'|{id_questao}//{enunciado}//{a}//{b}//{c}//{d}//{e}'
-            print(mensagem)
             if self.enviar_cadastro_atividade(mensagem):
                 self.criar_pagina_atividade_turma(turma_id, materia)
                 QMessageBox.about(
@@ -247,9 +257,6 @@ class Main(QMainWindow, Ui_Main):
     def botao_logoff(self):
         mensagem = '0'
         self.usuario = None
-        self.tela_principal_professor.limpar_paginas()
-        self.tela_principal_aluno.limpar_paginas()
-        self.tela_principal_aluno.limpar_materias()
         self.client_socket.send(mensagem.encode())
         self.QtStack.setCurrentIndex(0)
 
