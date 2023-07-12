@@ -45,8 +45,7 @@ class Ui_Main(QtWidgets.QWidget):
         questoes = self.client_socket.recv(1024).decode().split('|')
         lista_questoes = []
         while questoes[0] == '4':
-            print(questoes[1].split('//'))
-            lista_questoes.append(Questao(*questoes[1].split('//')))
+            lista_questoes.append(Questao(*questoes[1].split(';;')))
             self.client_socket.send('4'.encode())
             questoes = self.client_socket.recv(1024).decode().split('|')
         atividade_campos = questoes[1].split('//')
@@ -54,18 +53,15 @@ class Ui_Main(QtWidgets.QWidget):
             return None
         return Atividade(*atividade_campos, lista_questoes)
 
-    def criar_pagina_atividade(self, id_atividade, titulo):
+    def criar_pagina_atividade(self, atividade):
         self.atividades.append(Ui_TelaAtividade())
         novo = QtWidgets.QWidget()
         self.stack.append(novo)
-        self.atividades[-1].setupUi(self.stack[-1], titulo)
-        atividade = self.get_atividade(id_atividade)
-        lista_questoes = atividade.questoes
+        self.atividades[-1].setupUi(self.stack[-1], atividade.materia_id)
         self.QtStack.addWidget(self.stack[-1])
-        if lista_questoes:
-            for i, questao in enumerate(lista_questoes):
-                self.atividades[-1].add_questao(i + 1, questao.enunciado, [
-                                                questao.letra_a, questao.letra_b, questao.letra_c, questao.letra_d, questao.letra_e])
+        for i, questao in enumerate(atividade.questoes.values()) if atividade.questoes else []:
+            self.atividades[-1].add_questao(i + 1, questao.enunciado, [
+                                            questao.letra_a, questao.letra_b, questao.letra_c, questao.letra_d, questao.letra_e])
         self.atividades[-1].add_rodape()
 
         def voltar_atividade():
@@ -121,7 +117,6 @@ class Main(QMainWindow, Ui_Main):
         for materia in resposta[1].split(',')[:-1]:
             materia_id = materia.split('-')[0]
             materia_nome = materia.split('-')[1]
-            print(materia_id, materia_nome)
             self._materias[materia_nome] = materia_id
             atividades = self.pegar_atividades_materia(materia_id)
             self.tela_principal_aluno.add_materia(
@@ -160,17 +155,34 @@ class Main(QMainWindow, Ui_Main):
 
     def pegar_atividades_materia(self, materia_id):
         self.client_socket.send(f'3|{materia_id}'.encode())
-        atividades = self.client_socket.recv(1024).decode()
-        return atividades.split('|')[1:]
+        atividades = self.client_socket.recv(1024).decode().split('|')
+        lista_atividades = []
+        for atividade in atividades[1:]:
+            atividade_campos = atividade.split('//')[:6]
+            lista_questoes = {}
+            for questao in atividade.split('//')[6:]:
+                questao_campos = questao.split(';;')
+                lista_questoes.update(
+                    {questao_campos[0]: Questao(*questao_campos)})
+            lista_atividades.append(
+                Atividade(*atividade_campos, lista_questoes))
+        return lista_atividades
 
     def pegar_atividades_materia_turma(self, turma_id):
         self.client_socket.send(f'5|{turma_id}'.encode())
         atividades = self.client_socket.recv(4096).decode().split('|')
+        if len(atividades) == 1:
+            return None
         lista_atividades = []
         for atividade in atividades[1:]:
             atividade_campos = atividade.split('//')[:6]
-            questoes_campos = atividade.split('//')[6:]
-            lista_atividades.append(Atividade(*atividade.split('//')))
+            lista_questoes = {}
+            for questao in atividade.split('//')[6:]:
+                questao_campos = questao.split(';;')
+                lista_questoes.update(
+                    {questao_campos[0]: Questao(*questao_campos)})
+            lista_atividades.append(
+                Atividade(*atividade_campos, lista_questoes))
         return lista_atividades
 
     def enviar_cadastro_atividade(self, mensagem):
@@ -215,7 +227,8 @@ class Main(QMainWindow, Ui_Main):
             print(mensagem)
             if self.enviar_cadastro_atividade(mensagem):
                 self.criar_pagina_atividade_turma(turma_id, materia)
-                QMessageBox.about(self, "Sucesso", "Tarefa cadastrada com sucesso")
+                QMessageBox.about(
+                    self, "Sucesso", "Tarefa cadastrada com sucesso")
                 self.QtStack.setCurrentIndex(3)
             else:
                 QMessageBox.about(self, "Erro", "Erro ao cadastrar tarefa")
@@ -251,7 +264,8 @@ class Main(QMainWindow, Ui_Main):
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode().split('|')
             if resposta and resposta[0] == '1':
-                self.usuario = Professor(*resposta[1].split(','), materias_professor=resposta[2].split(',')[:-1])
+                self.usuario = Professor(
+                    *resposta[1].split(','), materias_professor=resposta[2].split(',')[:-1])
             elif resposta and resposta[0] == '2':
                 self.usuario = Aluno(*resposta[1].split(','))
             resposta = self.client_socket.recv(1024).decode()
@@ -273,9 +287,6 @@ class Main(QMainWindow, Ui_Main):
                         turma_nome = turma.split('-')[1]
                         atividades = self.pegar_atividades_materia_turma(
                             turma_id)
-                        print(atividades)
-                        if not atividades:
-                            atividades = None
                         self.tela_principal_professor.add_pagina(
                             f'Turma-{turma_nome}', turma_id, atividades=atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
                     self.tela_principal_professor.inserir_espacamento()

@@ -123,7 +123,7 @@ class Ui_AtividadeProfessor(object):
                                           "background-color: rgb(0, 166, 202);")
         self.botao_publicar.setObjectName("botao_publicar")
         self.horizontalLayout_2.addWidget(self.botao_publicar)
-        for q in atividade.questoes if atividade and atividade.questoes else []:
+        for q in atividade.questoes.values() if atividade and atividade.questoes else []:
             num = len(self.questoes)
             self.questoes[num] = AtividadeQuestao(
                 self.scrollAreaWidgetContents, num + 1, q.enunciado, [q.letra_a, q.letra_b, q.letra_c, q.letra_d, q.letra_e], q.id)

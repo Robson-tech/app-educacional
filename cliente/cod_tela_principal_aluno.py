@@ -129,37 +129,37 @@ class Ui_TelaPrincipalAluno(object):
             self.scrollAreaWidgetContents_2)
         self.gridLayout.setObjectName("gridLayout")
         self.botoes_atividades = {}
-        for i, titulo in enumerate(atividades):
-            self.botoes_atividades[titulo] = QtWidgets.QPushButton(
+        for i, atividade in enumerate(atividades):
+            self.botoes_atividades[atividade.titulo] = QtWidgets.QPushButton(
                 self.scrollAreaWidgetContents_2)
             sizePolicy = QtWidgets.QSizePolicy(
                 QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
             sizePolicy.setHorizontalStretch(0)
             sizePolicy.setVerticalStretch(0)
             sizePolicy.setHeightForWidth(
-                self.botoes_atividades[titulo].sizePolicy().hasHeightForWidth())
-            self.botoes_atividades[titulo].setSizePolicy(sizePolicy)
-            self.botoes_atividades[titulo].setMinimumSize(
+                self.botoes_atividades[atividade.titulo].sizePolicy().hasHeightForWidth())
+            self.botoes_atividades[atividade.titulo].setSizePolicy(sizePolicy)
+            self.botoes_atividades[atividade.titulo].setMinimumSize(
                 QtCore.QSize(120, 150))
-            self.botoes_atividades[titulo].setMaximumSize(
+            self.botoes_atividades[atividade.titulo].setMaximumSize(
                 QtCore.QSize(120, 150))
-            self.botoes_atividades[titulo].setCursor(
+            self.botoes_atividades[atividade.titulo].setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.botoes_atividades[titulo].setLayoutDirection(
+            self.botoes_atividades[atividade.titulo].setLayoutDirection(
                 QtCore.Qt.LeftToRight)
-            self.botoes_atividades[titulo].setAutoFillBackground(False)
-            self.botoes_atividades[titulo].setStyleSheet("border-radius: 10px;\n"
+            self.botoes_atividades[atividade.titulo].setAutoFillBackground(False)
+            self.botoes_atividades[atividade.titulo].setStyleSheet("border-radius: 10px;\n"
                                                          "color: red;\n"
                                                          "background-color: rgb(217, 217, 217);\n"
                                                          "background-image: url(img/lista.png);\n"
                                                          "background-repeat: no-repeat;\n"
                                                          "background-position: center center;")
-            self.botoes_atividades[titulo].setObjectName(f"botao_atividade{i}")
+            self.botoes_atividades[atividade.titulo].setObjectName(f"botao_atividade{i}")
             self.gridLayout.addWidget(
-                self.botoes_atividades[titulo], i // 4, i % 4, 1, 1)
+                self.botoes_atividades[atividade.titulo], i // 4, i % 4, 1, 1)
             if funcao_criar_pagina_atividade and pilha_paginas:
-                self.botoes_atividades[titulo].clicked.connect(funcao_criar_pagina_atividade(
-                    atividades[i].split('-')[0], titulo.split('-')[1]))
+                self.botoes_atividades[atividade.titulo].clicked.connect(funcao_criar_pagina_atividade(
+                    atividade))
         spacerItem = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)

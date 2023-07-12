@@ -514,7 +514,7 @@ class MyThread(threading.Thread):
                     materia_id = mensagem_str[1]
                     enviar = f'3'
                     for atividade in self.sistema.get_atividades_materia(materia_id).values():
-                        enviar += f'|{atividade.id}-{atividade.titulo}-{atividade.turma_id}'
+                        enviar += f'|{atividade}'
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '4':
                     for questao in self.sistema.get_questoes_atividade(mensagem_str[1]).values():
@@ -712,19 +712,49 @@ class Teste:
 
 
 if __name__ == "__main__":
-    # servidor = Servidor()
-    # servidor.iniciar()
+    servidor = Servidor()
+    servidor.iniciar()
     # teste = Teste()
     # teste.iniciar()
-    sistema = SistemaEducacional()
-    sistema.login('jose@example.com', '1111')
-    enviar = f'5'
-    for atividade in sistema.get_atividades_turma(1).values():
-        enviar += f'|{atividade}'
-    atividade_campos = enviar.split('//')[:6]
-    questoes_campos = enviar.split('//')[6:]
-    print(atividade_campos)
-    print(questoes_campos)
+    # sistema = SistemaEducacional()
+    # sistema.login('jose@example.com', '1111')
+
+    # enviar = f'3'
+    # for atividade in sistema.get_atividades_materia(2).values():
+    #     enviar += f'|{atividade}'
+    # atividades = enviar.split('|')
+    # lista_atividades = []
+    # for atividade in atividades[1:]:
+    #     atividade_campos = atividade.split('//')[:6]
+    #     lista_questoes = {}
+    #     for questao in atividade.split('//')[6:]:
+    #         questao_campos = questao.split(';;')
+    #         lista_questoes.update(
+    #             {questao_campos[0]: Questao(*questao_campos)})
+    #     lista_atividades.append(Atividade(*atividade_campos, lista_questoes))
+    # for atividade in lista_atividades:
+    #     print(atividade.questoes)
+
+    # enviar = f'5'
+    # for atividade in sistema.get_atividades_turma(1).values():
+    #     enviar += f'|{atividade}'
+    # resposta = enviar.split('|')
+    # lista_atividades = []
+    # for atividade in resposta[1:]:
+    #     atividade_campos = atividade.split('//')[:6]
+    #     lista_questoes = {}
+    #     for questao in atividade.split('//')[6:]:
+    #         questao_campos = questao.split(';;')
+    #         lista_questoes.update(
+    #             {questao_campos[0]: Questao(*questao_campos)})
+    #     lista_atividades.append(Atividade(*atividade_campos, lista_questoes))
+    # for atividade in lista_atividades:
+    #     print(atividade.questoes)
+
+    # atividade_campos = enviar.split('//')[:6]
+    # questoes_campos = enviar.split('//')[6:]
+    # print(atividade_campos)
+    # print(questoes_campos)
 
     # print(sistema.usuario.get_materias_id())
 
