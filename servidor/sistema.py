@@ -269,6 +269,21 @@ class SistemaEducacional:
         except:
             return False
 
+    def submeter_atividade(self, atividade_id, aluno_id, pontuacao):
+        self._sql = "SELECT COUNT(*) FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
+        self._val = (atividade_id,)
+        self._cursor.execute(self._sql, self._val)
+        total_questoes = self._cursor.fetchone()[0]
+        if total_questoes == 0:
+            return False
+        else:
+            taxa_acerto = int(pontuacao) / total_questoes * 100
+            self._sql = "INSERT INTO sistema_educacional.atividades_alunos (atividade_id, aluno_id, pontuacao, taxa_acerto) VALUES (%s, %s, %s, %s)"
+            self._val = (atividade_id, aluno_id, pontuacao, taxa_acerto)
+            self._cursor.execute(self._sql, self._val)
+            self._mydb.commit()
+            return True
+
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
         if self.buscar(email):
             return False
@@ -320,63 +335,54 @@ class SistemaEducacional:
         return True
 
     def login_professor(self, usuario):
-        try:
-            self._sql = "SELECT * FROM sistema_educacional.professores WHERE sistema_educacional.professores.usuario_id = %s"
+        self._sql = "SELECT * FROM sistema_educacional.professores WHERE sistema_educacional.professores.usuario_id = %s"
+        self._val = (usuario[0],)
+        self._cursor.execute(self._sql, self._val)
+        consulta = self._cursor.fetchone()
+        if consulta:
+            self._sql = "SELECT sistema_educacional.materias.id, sistema_educacional.materias.nome FROM sistema_educacional.materias INNER JOIN sistema_educacional.materias_professores ON sistema_educacional.materias_professores.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias_professores.professor_id = %s"
+            self._val = (consulta[0],)
+            self._cursor.execute(self._sql, self._val)
+            materias = self._cursor.fetchall()
+            turmas = self.get_turmas_professor(consulta[0])
+            atividades = self.get_atividades_professor(consulta[0])
+            professor = Professor(
+                consulta[0], usuario[1], usuario[2], usuario[3], usuario[4], usuario[5],
+                usuario[6], usuario[7], materias_professor=materias, turmas_professor=turmas, atividades_professor=atividades, salario=consulta[2]
+            )
+            self._usuario = professor
+            self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
             self._val = (usuario[0],)
             self._cursor.execute(self._sql, self._val)
-            consulta = self._cursor.fetchone()
-            if consulta:
-                self._sql = "SELECT sistema_educacional.materias.id, sistema_educacional.materias.nome FROM sistema_educacional.materias INNER JOIN sistema_educacional.materias_professores ON sistema_educacional.materias_professores.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias_professores.professor_id = %s"
-                self._val = (consulta[0],)
-                self._cursor.execute(self._sql, self._val)
-                materias = self._cursor.fetchall()
-                turmas = self.get_turmas_professor(consulta[0])
-                atividades = self.get_atividades_professor(consulta[0])
-                professor = Professor(
-                    consulta[0], usuario[1], usuario[2], usuario[3], usuario[4], usuario[5],
-                    usuario[6], usuario[7], materias, turmas, atividades, consulta[2]
-                )
-                self._usuario = professor
-                self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
-                self._val = (usuario[0],)
-                self._cursor.execute(self._sql, self._val)
-                self._mydb.commit()
-                return True
-            return False
-        except Exception as e:
-            print('Erro ao logar professor:', str(e))
+            self._mydb.commit()
+            return True
+        else:
             return False
 
     def login_aluno(self, usuario):
-        try:
-            self._sql = "SELECT sistema_educacional.alunos.id, sistema_educacional.usuarios.email, sistema_educacional.usuarios.senha, sistema_educacional.usuarios.nome, sistema_educacional.usuarios.sobrenome, sistema_educacional.usuarios.nascimento, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login, sistema_educacional.alunos.turma_id, sistema_educacional.alunos.pontuacao_geral FROM sistema_educacional.usuarios INNER JOIN sistema_educacional.alunos ON sistema_educacional.usuarios.id = sistema_educacional.alunos.usuario_id WHERE usuario_id = %s"
+        self._sql = "SELECT * FROM sistema_educacional.alunos WHERE sistema_educacional.alunos.usuario_id = %s"
+        self._val = (usuario[0],)
+        self._cursor.execute(self._sql, self._val)
+        consulta = self._cursor.fetchone()
+        if consulta:
+            aluno = Aluno(
+                consulta[0], usuario[1], usuario[2], usuario[3], usuario[4],
+                usuario[5], usuario[6], usuario[7], consulta[2], pontuacao=consulta[3]
+            )
+            self._usuario = aluno
+            self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
             self._val = (usuario[0],)
             self._cursor.execute(self._sql, self._val)
-            consulta = self._cursor.fetchone()
-            if consulta:
-                aluno = Aluno(
-                    consulta[0], consulta[1], consulta[2], consulta[3], consulta[4],
-                    consulta[5], consulta[6], consulta[7], consulta[8], consulta[9]
-                )
-                self._usuario = aluno
-                self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
-                self._val = (usuario[0],)
-                self._cursor.execute(self._sql, self._val)
-                self._mydb.commit()
-                return True
-            return False
-        except Exception as e:
-            print('Erro ao logar aluno:', str(e))
+            self._mydb.commit()
+            return True
+        else:
             return False
 
     def autenticar(self, email, senha):
-        try:
-            self._sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s AND senha = %s"
-            self._val = (email, senha)
-            self._cursor.execute(self._sql, self._val)
-            return self._cursor.fetchone()
-        except:
-            return False
+        self._sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s AND senha = %s"
+        self._val = (email, senha)
+        self._cursor.execute(self._sql, self._val)
+        return self._cursor.fetchone()
 
     def login(self, email, senha):
         usuario = self.autenticar(email, senha)
@@ -484,14 +490,14 @@ class MyThread(threading.Thread):
                         print(f'Erro no login em {self.client_address}')
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '2':
-                    cadastrar = mensagem_str[1:].split(',')
-                    email = cadastrar[0]
-                    senha = cadastrar[1]
-                    nome = cadastrar[2]
-                    sobrenome = cadastrar[3]
-                    nascimento = cadastrar[4]
-                    if cadastrar[-1] == 'a':
-                        turma = cadastrar[5]
+                    cadastro = mensagem_str[1].split(',')
+                    email = cadastro[0]
+                    senha = cadastro[1]
+                    nome = cadastro[2]
+                    sobrenome = cadastro[3]
+                    nascimento = cadastro[4]
+                    if cadastro[-1] == 'a':
+                        turma = cadastro[5]
                         if self.sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma):
                             enviar = '2'
                             print(
@@ -499,8 +505,8 @@ class MyThread(threading.Thread):
                         else:
                             enviar = '0'
                             print(
-                                f'Erro ao cadastrar aluno no sistema em {self.client_address}')
-                    elif cadastrar[-1] == 'p':
+                                f'Erro ao cadastro aluno no sistema em {self.client_address}')
+                    elif cadastro[-1] == 'p':
                         if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
                             enviar = '2'
                             print(
@@ -524,9 +530,11 @@ class MyThread(threading.Thread):
                     atividade = self.sistema.get_atividade(mensagem_str[1])
                     self.client_socket.send(f'0|{atividade}'.encode())
                 elif mensagem_str[0] == '5':
-                    turma = mensagem_str[1]
+                    turmas_professor = mensagem_str[1].split(',')
+                    turma_id = turmas_professor[0]
+                    professor_id = turmas_professor[1]
                     enviar = f'5'
-                    for atividade in self.sistema.get_atividades_turma(turma).values():
+                    for atividade in self.sistema.get_atividades_turma_professor(turma_id, professor_id).values():
                         enviar += f'|{atividade}'
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '6':
@@ -550,7 +558,7 @@ class MyThread(threading.Thread):
                                 if q[0] == 'None':
                                     q[0] = None
                                 if not self.sistema.cadastrar_questao(
-                                        nova.id, q[1], 'a', q[2], q[3], q[4], q[5], q[6], id=q[0]):
+                                        nova.id, q[1], q[2], q[3], q[4], q[5], q[6], q[7], id=q[0]):
                                     raise Exception(
                                         f'Erro ao cadastrar questao em {self.client_address}')
                             print(
@@ -560,6 +568,20 @@ class MyThread(threading.Thread):
                             self.client_socket.send('-6'.encode())
                             print(
                                 f'Erro ao cadastrar atividade em {self.client_address}')
+                elif mensagem_str[0] == '7':
+                    atividade_id = mensagem_str[1]
+                    aluno_id = mensagem_str[2]
+                    pontuacao = mensagem_str[3]
+                    if self.sistema.submeter_atividade(
+                            atividade_id, aluno_id, pontuacao):
+                        enviar = '7'
+                        print(
+                            f'Atividade {atividade_id} submetida por {aluno_id} em {self.client_address}')
+                    else:
+                        enviar = '-7'
+                        print(
+                            f'Erro ao submeter atividade {atividade_id} por {aluno_id} em {self.client_address}')
+                    self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '0':
                     print(
                         f'Usuário {self.sistema.usuario.email} deslogou em {self.client_address}')
@@ -717,7 +739,8 @@ if __name__ == "__main__":
     # teste = Teste()
     # teste.iniciar()
     # sistema = SistemaEducacional()
-    # sistema.login('jose@example.com', '1111')
+    # sistema.login('jorge@example.com', '1111')
+    # sistema.submeter_atividade(32, 1, 2)
 
     # enviar = f'3'
     # for atividade in sistema.get_atividades_materia(2).values():

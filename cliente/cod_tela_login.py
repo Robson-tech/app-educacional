@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import settings
 
 
 class Ui_Login(object):
@@ -17,7 +18,7 @@ class Ui_Login(object):
         Login.resize(500, 500)
         Login.setMinimumSize(QtCore.QSize(500, 500))
         Login.setMaximumSize(QtCore.QSize(500, 500))
-        Login.setStyleSheet("background-color: rgb(33, 33, 33);")
+        Login.setStyleSheet(f"background-color: rgb({settings.FUNDO});")
         qtRectangle = Login.frameGeometry()
         centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
         qtRectangle.moveCenter(centerPoint)
@@ -25,7 +26,7 @@ class Ui_Login(object):
         self.background_login = QtWidgets.QFrame(Login)
         self.background_login.setGeometry(QtCore.QRect(30, 30, 444, 422))
         self.background_login.setStyleSheet("border-radius: 10px;\n"
-                                            "background-color: rgb(7, 66, 22);")
+                                            f"background-color: rgb({settings.FUNDO_LOGIN});")
         self.background_login.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.background_login.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_login.setObjectName("background_login")
@@ -45,7 +46,7 @@ class Ui_Login(object):
         self.botao_login.setFont(font)
         self.botao_login.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_login.setStyleSheet("border-radius: 20px;\n"
-                                       "background-color: rgb(11, 97, 144);")
+                                       f"background-color: rgb({settings.BOTAO_LOGIN});")
         self.botao_login.setObjectName("botao_login")
         self.caixa_senha = QtWidgets.QLineEdit(Login)
         self.caixa_senha.setGeometry(QtCore.QRect(79, 310, 350, 50))
@@ -76,7 +77,7 @@ class Ui_Login(object):
         self.botao_cadastro.setCursor(
             QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_cadastro.setStyleSheet("border-radius: 20px;\n"
-                                          "background-color: rgb(227, 246, 0);")
+                                          f"background-color: rgb({settings.BOTAO_CADASTRO});")
         self.botao_cadastro.setObjectName("botao_cadastro")
         self.caixa_email = QtWidgets.QLineEdit(Login)
         self.caixa_email.setGeometry(QtCore.QRect(79, 242, 350, 50))

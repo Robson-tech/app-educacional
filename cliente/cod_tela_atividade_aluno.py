@@ -12,7 +12,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_TelaAtividade(object):
-    def setupUi(self, Atividade, materia):
+    def setupUi(self, Atividade, atividade):
+        self.atividade = atividade
         Atividade.setObjectName("Atividade")
         Atividade.resize(900, 580)
         Atividade.setMinimumSize(QtCore.QSize(900, 580))
@@ -69,99 +70,26 @@ class Ui_TelaAtividade(object):
         self.botao_voltar.setObjectName("botao_voltar")
 
         self._translate = QtCore.QCoreApplication.translate
-        self.retranslateUi(Atividade, materia)
+        self.retranslateUi(Atividade)
         QtCore.QMetaObject.connectSlotsByName(Atividade)
 
-    def add_questao(self, num, enunciado, alternativas):
+    def add_questao(self, num, enunciado, resposta, alternativas):
         self.questoes[num] = QuestaoAtividade(
-            self.scrollAreaWidgetContents, num)
+            self.scrollAreaWidgetContents, num, resposta)
         self.verticalLayout.addWidget(self.questoes[num])
-        # self.questoes[num] = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
-        # self.questoes[num].setMinimumSize(QtCore.QSize(825, 300))
-        # self.questoes[num].setMaximumSize(QtCore.QSize(825, 16777215))
-        # self.questoes[num].setStyleSheet("background-color: rgb(52, 161, 50);")
-        # self.questoes[num].setTitle("")
-        # self.questoes[num].setObjectName(f"questao_{num}")
-        # self.gridLayout = QtWidgets.QGridLayout(self.questoes[num])
-        # self.gridLayout.setObjectName("gridLayout")
-        # self.layoutWidget = QtWidgets.QWidget(self.questoes[num])
-        # self.layoutWidget.setGeometry(QtCore.QRect(50, 120, 721, 141))
-        # self.layoutWidget.setObjectName("layoutWidget")
-        # self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.layoutWidget)
-        # self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        # self.verticalLayout_2.setObjectName("verticalLayout_2")
-        # self.num_questao = QtWidgets.QLabel(self.questoes[num])
-        # self.num_questao.setMinimumSize(QtCore.QSize(30, 30))
-        # self.num_questao.setMaximumSize(QtCore.QSize(30, 30))
-        # self.num_questao.setGeometry(QtCore.QRect(10, 10, 30, 30))
-        # font = QtGui.QFont()
-        # font.setPointSize(12)
-        # self.num_questao.setFont(font)
-        # self.num_questao.setStyleSheet("border-radius: 15px;\n"
-        #                                "background-color: rgb(252, 88, 20);")
-        # self.num_questao.setAlignment(QtCore.Qt.AlignCenter)
-        # self.num_questao.setObjectName("num_questao")
-        # self.gridLayout.addWidget(self.num_questao, 0, 0, 1, 1)
-        # self.label = QtWidgets.QLabel(self.questoes[num])
-        # self.label.setText("")
-        # self.label.setObjectName("label")
-        # self.gridLayout.addWidget(self.label, 0, 2, 1, 1)
-        # self.enunciado = QtWidgets.QLabel(self.questoes[num])
-        # self.enunciado.setGeometry(QtCore.QRect(50, 10, 761, 91))
-        # font = QtGui.QFont()
-        # font.setPointSize(12)
-        # self.enunciado.setFont(font)
-        # self.enunciado.setAlignment(
-        #     QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-        # self.enunciado.setWordWrap(True)
-        # self.enunciado.setObjectName("enunciado")
-        # self.gridLayout.addWidget(self.enunciado, 1, 2, 1, 1)
-        # self.A = QtWidgets.QRadioButton(self.layoutWidget)
-        # font = QtGui.QFont()
-        # font.setPointSize(12)
-        # self.A.setFont(font)
-        # self.A.setObjectName("A")
-        # self.verticalLayout_2.addWidget(self.A)
-        # self.B = QtWidgets.QRadioButton(self.layoutWidget)
-        # font = QtGui.QFont()
-        # font.setPointSize(12)
-        # self.B.setFont(font)
-        # self.B.setObjectName("B")
-        # self.verticalLayout_2.addWidget(self.B)
-        # self.C = QtWidgets.QRadioButton(self.layoutWidget)
-        # font = QtGui.QFont()
-        # font.setPointSize(12)
-        # self.C.setFont(font)
-        # self.C.setObjectName("C")
-        # self.verticalLayout_2.addWidget(self.C)
-        # self.D = QtWidgets.QRadioButton(self.layoutWidget)
-        # font = QtGui.QFont()
-        # font.setPointSize(12)
-        # self.D.setFont(font)
-        # self.D.setObjectName("D")
-        # self.verticalLayout_2.addWidget(self.D)
-        # self.E = QtWidgets.QRadioButton(self.layoutWidget)
-        # font = QtGui.QFont()
-        # font.setPointSize(12)
-        # self.E.setFont(font)
-        # self.E.setObjectName("E")
-        # self.verticalLayout_2.addWidget(self.E)
-        # self.verticalLayout_2.setStretch(0, 10)
-        # self.gridLayout.addLayout(self.verticalLayout_2, 2, 2, 1, 1)
-        # self.verticalLayout.addWidget(self.questoes[num])
         self.questoes[num].num_questao.setText(
             self._translate("Atividade", str(num)))
         self.questoes[num].enunciado.setText(
             self._translate("Atividade", f'{enunciado}'))
-        self.questoes[num].A.setText(self._translate(
+        self.questoes[num].selecao['a'].setText(self._translate(
             "Atividade", f"A) {alternativas[0]}"))
-        self.questoes[num].B.setText(self._translate(
+        self.questoes[num].selecao['b'].setText(self._translate(
             "Atividade", f"B) {alternativas[1]}"))
-        self.questoes[num].C.setText(self._translate(
+        self.questoes[num].selecao['c'].setText(self._translate(
             "Atividade", f"C) {alternativas[2]}"))
-        self.questoes[num].D.setText(self._translate(
+        self.questoes[num].selecao['d'].setText(self._translate(
             "Atividade", f"D) {alternativas[3]}"))
-        self.questoes[num].E.setText(self._translate(
+        self.questoes[num].selecao['e'].setText(self._translate(
             "Atividade", f"E) {alternativas[4]}"))
 
     def add_rodape(self):
@@ -206,30 +134,17 @@ class Ui_TelaAtividade(object):
         self.botao_verificar.setText(self._translate("Atividade", "Verificar"))
         self.botao_publicar.setText(self._translate("Atividade", "Responder"))
 
-    def retranslateUi(self, Atividade, materia):
+    def retranslateUi(self, Atividade):
         Atividade.setWindowTitle(self._translate("Atividade", "Atividade"))
-        self.rotulo_titulo.setText(self._translate("Atividade", str(materia)))
         self.botao_voltar.setText(self._translate("Atividade", "←"))
-        self.rotulo_descricao.setText(self._translate("Atividade", "Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias maxime accusantium molestias labore nemo odio quos iste ipsam eligendi, delectus, sunt tempora, earum voluptate blanditiis omnisLorem ipsum dolor sit amet consectetur adipisicing elit. Alias maxime accusantium molestias labore nemo odio quos iste ipsam eligendi, delectus, sunt tempora, earum voluptate blanditiis omnisLorem ipsum dolor sit amet consectetur adipisicing elit. Alias maxime accusantium molestias labore nemo odio quos iste ipsam eligendi, delectus, sunt tempora, earum voluptate blanditiis omnis"))
-        # self.num_questao.setText(self._translate("Atividade", "1"))
-        # self.enunciado.setText(self._translate("Atividade", "(Enem - 2016) Uma liga metálica sai do forno a uma temperatura de 3 000 ºC e diminui 1% de sua temperatura a cada 30 min. Use 0,477 como aproximação para log10(3) e 1,041 como aproximação para log10(11). O tempo decorrido, em hora, até que a liga atinja 30 °C é mais próximo de:"))
-        # self.A.setText(self._translate("Atividade", "A) 22"))
-        # self.B.setText(self._translate("Atividade", "B) 50"))
-        # self.C.setText(self._translate("Atividade", "C) 100"))
-        # self.D.setText(self._translate("Atividade", "D) 200"))
-        # self.E.setText(self._translate("Atividade", "E) 400"))
-        # self.label_4.setText(self._translate("Atividade", "2"))
-        # self.enunciado_2.setText(self._translate("Atividade", "(UFRGS - 2016) Se 10x = 20y, atribuindo 0,3 para log 2, então o valor de x/y é"))
-        # self.A_2.setText(self._translate("Atividade", "A) 0,3"))
-        # self.B_2.setText(self._translate("Atividade", "B) 0,5"))
-        # self.C_2.setText(self._translate("Atividade", "C) 0,7"))
-        # self.D_2.setText(self._translate("Atividade", "D) 1"))
-        # self.E_2.setText(self._translate("Atividade", "E) 1,3"))
+        self.rotulo_titulo.setText(self._translate("Atividade", self.atividade.titulo))
+        self.rotulo_descricao.setText(self._translate("Atividade", self.atividade.descricao))
 
 
 class QuestaoAtividade(QtWidgets.QGroupBox):
-    def __init__(self, scrollAreaWidgetContents, num):
+    def __init__(self, scrollAreaWidgetContents, num, resposta):
         super().__init__(scrollAreaWidgetContents)
+        self.resposta = resposta
         self.setMinimumSize(QtCore.QSize(825, 300))
         self.setMaximumSize(QtCore.QSize(825, 16777215))
         self.setStyleSheet("background-color: rgb(52, 161, 50);")
@@ -269,45 +184,44 @@ class QuestaoAtividade(QtWidgets.QGroupBox):
         self.enunciado.setWordWrap(True)
         self.enunciado.setObjectName("enunciado")
         self.gridLayout.addWidget(self.enunciado, 1, 2, 1, 1)
-        self.A = QtWidgets.QRadioButton(self.layoutWidget)
+        self.selecao = {}
+        self.selecao['a'] = QtWidgets.QRadioButton(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.A.setFont(font)
-        self.A.setObjectName("A")
-        self.verticalLayout.addWidget(self.A)
-        self.B = QtWidgets.QRadioButton(self.layoutWidget)
+        self.selecao['a'].setFont(font)
+        self.selecao['a'].setObjectName("A")
+        self.verticalLayout.addWidget(self.selecao['a'])
+        self.selecao['b'] = QtWidgets.QRadioButton(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.B.setFont(font)
-        self.B.setObjectName("B")
-        self.verticalLayout.addWidget(self.B)
-        self.C = QtWidgets.QRadioButton(self.layoutWidget)
+        self.selecao['b'].setFont(font)
+        self.selecao['b'].setObjectName("B")
+        self.verticalLayout.addWidget(self.selecao['b'])
+        self.selecao['c'] = QtWidgets.QRadioButton(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.C.setFont(font)
-        self.C.setObjectName("C")
-        self.verticalLayout.addWidget(self.C)
-        self.D = QtWidgets.QRadioButton(self.layoutWidget)
+        self.selecao['c'].setFont(font)
+        self.selecao['c'].setObjectName("C")
+        self.verticalLayout.addWidget(self.selecao['c'])
+        self.selecao['d'] = QtWidgets.QRadioButton(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.D.setFont(font)
-        self.D.setObjectName("D")
-        self.verticalLayout.addWidget(self.D)
-        self.E = QtWidgets.QRadioButton(self.layoutWidget)
+        self.selecao['d'].setFont(font)
+        self.selecao['d'].setObjectName("D")
+        self.verticalLayout.addWidget(self.selecao['d'])
+        self.selecao['e'] = QtWidgets.QRadioButton(self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
-        self.E.setFont(font)
-        self.E.setObjectName("E")
-        self.verticalLayout.addWidget(self.E)
+        self.selecao['e'].setFont(font)
+        self.selecao['e'].setObjectName("E")
+        self.verticalLayout.addWidget(self.selecao['e'])
         self.verticalLayout.setStretch(0, 10)
         self.gridLayout.addWidget(self.layoutWidget, 2, 2, 1, 1)
-        # self.num_questao.setText(self._translate("Atividade", str(num)))
-        # self.enunciado.setText(self._translate("Atividade", enunciado))
-        # self.A.setText(self._translate("Atividade", f"A) {alternativas[0]}"))
-        # self.B.setText(self._translate("Atividade", f"B) {alternativas[1]}"))
-        # self.C.setText(self._translate("Atividade", f"C) {alternativas[2]}"))
-        # self.D.setText(self._translate("Atividade", f"D) {alternativas[3]}"))
-        # self.E.setText(self._translate("Atividade", f"E) {alternativas[4]}"))
+
+    def alternativa_selecionada(self):
+        for letra, alternativa in self.selecao.items():
+            if alternativa.isChecked():
+                return letra
 
 
 if __name__ == "__main__":

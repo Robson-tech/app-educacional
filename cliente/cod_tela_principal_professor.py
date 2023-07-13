@@ -41,6 +41,8 @@ class Ui_TelaPrincipalProfessor(object):
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout = QtWidgets.QVBoxLayout(
             self.scrollAreaWidgetContents)
+        self.spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.scrollArea = QtWidgets.QScrollArea(TelaPrincipalProfessor)
         self.scrollArea.setGeometry(QtCore.QRect(0, 210, 300, 361))
         sizePolicy = QtWidgets.QSizePolicy(
@@ -122,16 +124,15 @@ class Ui_TelaPrincipalProfessor(object):
         self.stackedWidget.setCurrentWidget(self.page_recepcao)
 
     def inserir_espacamento(self):
-        spacerItem2 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem2)
+        self.verticalLayout.addItem(self.spacerItem)
 
     def limpar_paginas(self):
         for pagina in self.paginas:
-            self.paginas[pagina].rem_botao_turma_lateral()
             self.stackedWidget.removeWidget(self.paginas[pagina])
+            self.paginas[pagina].botao_turma_lateral.deleteLater()
             self.paginas[pagina].deleteLater()
         self.paginas = {}
+        self.verticalLayout.removeItem(self.spacerItem)
 
     def retranslateUi(self, TelaPrincipalProfessor):
         _translate = QtCore.QCoreApplication.translate
@@ -197,10 +198,10 @@ class PaginaTurma(QtWidgets.QWidget):
                 QtCore.Qt.LeftToRight)
             self.botao_atividade[atividade.titulo].setAutoFillBackground(False)
             self.botao_atividade[atividade.titulo].setStyleSheet("border-radius: 10px;\n"
-                                                               "background-color: rgb(217, 217, 217);\n"
-                                                               "background-image: url(img/lista.png);\n"
-                                                               "background-repeat: no-repeat;\n"
-                                                               "background-position: center center;")
+                                                                 "background-color: rgb(217, 217, 217);\n"
+                                                                 "background-image: url(img/lista.png);\n"
+                                                                 "background-repeat: no-repeat;\n"
+                                                                 "background-position: center center;")
             self.botao_atividade[atividade.titulo].setObjectName(
                 f"botao_atividade{i}")
             self.gridLayout.addWidget(
@@ -308,43 +309,43 @@ class PaginaTurma(QtWidgets.QWidget):
         self.botao_turma_lateral.setText(
             _translate("TelaPrincipalProfessor", nome_turma))
 
-    def rem_botao_turma_lateral(self):
-        self.botao_turma_lateral.deleteLater()
-        self.botao_turma_lateral = None
-
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     TelaPrincipalProfessor = QtWidgets.QWidget()
     ui = Ui_TelaPrincipalProfessor()
     ui.setupUi(TelaPrincipalProfessor)
-    ui.add_pagina("Turma 1", 1, 1, [
+    ui.add_pagina("Turma 1", 1, [
         Atividade(1, "Atividade 1", "Atividade 1", 1, 1, 1),
         Atividade(2, "Atividade 2", "Atividade 2", 1, 1, 1),
         Atividade(3, "Atividade 3", "Atividade 3", 1, 1, 1),
     ])
-    ui.add_pagina("Turma 2", 1, 1, [
+    ui.add_pagina("Turma 2", 1, [
         Atividade(1, "Atividade 1", "Atividade 1", 1, 1, 1),
         Atividade(2, "Atividade 2", "Atividade 2", 1, 1, 1),
     ])
-    ui.add_pagina("Turma 3", 1, 1, [
+    ui.add_pagina("Turma 3", 1, [
         Atividade(1, "Atividade 1", "Atividade 1", 1, 1, 1),
         Atividade(2, "Atividade 2", "Atividade 2", 1, 1, 1),
         Atividade(3, "Atividade 3", "Atividade 3", 1, 1, 1),
         Atividade(4, "Atividade 4", "Atividade 4", 1, 1, 1),
         Atividade(5, "Atividade 5", "Atividade 5", 1, 1, 1),
     ])
-    ui.add_pagina("Turma 4", 1, 1, [
+    ui.add_pagina("Turma 4", 1, [
         Atividade(1, "Atividade 1", "Atividade 1", 1, 1, 1),
     ])
-    # ui.add_pagina("Turma 2", ["Atividade 1", "Atividade 2", "Atividade 3"])
-    # ui.add_pagina("Turma 3", ["Atividade 1"])
-    # ui.add_pagina("Turma 4", ["Atividade 1",
-    #               "Atividade 2", "Atividade 3", "Atividade 4"])
-    # ui.add_pagina("Turma 5", ["Atividade 1", "Atividade 2",
-    #               "Atividade 3", "Atividade 4", "Atividade 5"])
-    # ui.add_pagina("Turma 6", ["Atividade 1", "Atividade 2",
-    #               "Atividade 3", "Atividade 4", "Atividade 5", "Atividade 6"])
     ui.inserir_espacamento()
+    ui.limpar_paginas()
+    ui.add_pagina("Turma 4", 1, [
+        Atividade(1, "Atividade 1", "Atividade 1", 1, 1, 1),
+    ])
+    ui.add_pagina("Turma 3", 1, [
+        Atividade(1, "Atividade 1", "Atividade 1", 1, 1, 1),
+        Atividade(2, "Atividade 2", "Atividade 2", 1, 1, 1),
+        Atividade(3, "Atividade 3", "Atividade 3", 1, 1, 1),
+        Atividade(4, "Atividade 4", "Atividade 4", 1, 1, 1),
+        Atividade(5, "Atividade 5", "Atividade 5", 1, 1, 1),
+    ])
+    # ui.inserir_espacamento()
     TelaPrincipalProfessor.show()
     sys.exit(app.exec_())

@@ -128,7 +128,7 @@ class Ui_AtividadeProfessor(object):
         for q in atividade.questoes.values() if atividade and atividade.questoes else []:
             num = len(self.questoes)
             self.questoes[num] = AtividadeQuestao(
-                self.scrollAreaWidgetContents_principal, q.enunciado, [q.letra_a, q.letra_b, q.letra_c, q.letra_d, q.letra_e], q.id)
+                self.scrollAreaWidgetContents_principal, q.enunciado, q.resposta, [q.letra_a, q.letra_b, q.letra_c, q.letra_d, q.letra_e], q.id)
             self.questoes[num].num_questao.setText(str(num + 1))
             self.verticalLayout.addWidget(self.questoes[num])
 
@@ -145,15 +145,15 @@ class Ui_AtividadeProfessor(object):
         self.questoes[num].num_questao.setText(str(num + 1))
         self.questoes[num].input_enunciado.setPlaceholderText(
             self._translate("AtividadeProfessor", "Enunciado"))
-        self.questoes[num].input_letra['A'].setPlaceholderText(
+        self.questoes[num].input_letra['a'].setPlaceholderText(
             self._translate("AtividadeProfessor", "A"))
-        self.questoes[num].input_letra['B'].setPlaceholderText(
+        self.questoes[num].input_letra['b'].setPlaceholderText(
             self._translate("AtividadeProfessor", "B"))
-        self.questoes[num].input_letra['C'].setPlaceholderText(
+        self.questoes[num].input_letra['c'].setPlaceholderText(
             self._translate("AtividadeProfessor", "C"))
-        self.questoes[num].input_letra['D'].setPlaceholderText(
+        self.questoes[num].input_letra['d'].setPlaceholderText(
             self._translate("AtividadeProfessor", "D"))
-        self.questoes[num].input_letra['E'].setPlaceholderText(
+        self.questoes[num].input_letra['e'].setPlaceholderText(
             self._translate("AtividadeProfessor", "E"))
         self.verticalLayout.addWidget(self.questoes[num])
 
@@ -174,7 +174,7 @@ class Ui_AtividadeProfessor(object):
 
 
 class AtividadeQuestao(QtWidgets.QGroupBox):
-    def __init__(self, scrollAreaWidgetContents_principal, enunciado=None, alternativas=None, questao_id=None):
+    def __init__(self, scrollAreaWidgetContents_principal, enunciado=None, resposta=None, alternativas=None, questao_id=None):
         super().__init__(scrollAreaWidgetContents_principal)
         self.questao_id = questao_id
         self.setMinimumSize(QtCore.QSize(835, 300))
@@ -230,66 +230,66 @@ class AtividadeQuestao(QtWidgets.QGroupBox):
         font_input_letra.setPointSize(12)
         self.gridLayout_alternativas = QtWidgets.QGridLayout()
         self.gridLayout_alternativas.setObjectName("gridLayout_alternativas")
-        self.input_letra['A'] = QtWidgets.QLineEdit(self)
-        self.input_letra['A'].setFont(font_input_letra)
-        self.input_letra['A'].setStyleSheet(
+        self.input_letra['a'] = QtWidgets.QLineEdit(self)
+        self.input_letra['a'].setFont(font_input_letra)
+        self.input_letra['a'].setStyleSheet(
             "background-color: rgb(255, 255, 255);")
-        self.input_letra['A'].setText("")
-        self.input_letra['A'].setObjectName("input_A")
-        self.input_letra['B'] = QtWidgets.QLineEdit(self)
-        self.input_letra['B'].setFont(font_input_letra)
-        self.input_letra['B'].setStyleSheet(
+        self.input_letra['a'].setText("")
+        self.input_letra['a'].setObjectName("input_A")
+        self.input_letra['b'] = QtWidgets.QLineEdit(self)
+        self.input_letra['b'].setFont(font_input_letra)
+        self.input_letra['b'].setStyleSheet(
             "background-color: rgb(255, 255, 255);")
-        self.input_letra['B'].setText("")
-        self.input_letra['B'].setObjectName("input_B")
-        self.input_letra['C'] = QtWidgets.QLineEdit(self)
-        self.input_letra['C'].setFont(font_input_letra)
-        self.input_letra['C'].setStyleSheet(
+        self.input_letra['b'].setText("")
+        self.input_letra['b'].setObjectName("input_B")
+        self.input_letra['c'] = QtWidgets.QLineEdit(self)
+        self.input_letra['c'].setFont(font_input_letra)
+        self.input_letra['c'].setStyleSheet(
             "background-color: rgb(255, 255, 255);")
-        self.input_letra['C'].setText("")
-        self.input_letra['C'].setObjectName("input_C")
-        self.input_letra['D'] = QtWidgets.QLineEdit(self)
-        self.input_letra['D'].setFont(font_input_letra)
-        self.input_letra['D'].setStyleSheet(
+        self.input_letra['c'].setText("")
+        self.input_letra['c'].setObjectName("input_C")
+        self.input_letra['d'] = QtWidgets.QLineEdit(self)
+        self.input_letra['d'].setFont(font_input_letra)
+        self.input_letra['d'].setStyleSheet(
             "background-color: rgb(255, 255, 255);")
-        self.input_letra['D'].setText("")
-        self.input_letra['D'].setObjectName("input_D")
-        self.input_letra['E'] = QtWidgets.QLineEdit(self)
-        self.input_letra['E'].setFont(font_input_letra)
-        self.input_letra['E'].setStyleSheet(
+        self.input_letra['d'].setText("")
+        self.input_letra['d'].setObjectName("input_D")
+        self.input_letra['e'] = QtWidgets.QLineEdit(self)
+        self.input_letra['e'].setFont(font_input_letra)
+        self.input_letra['e'].setStyleSheet(
             "background-color: rgb(255, 255, 255);")
-        self.input_letra['E'].setText("")
-        self.input_letra['E'].setObjectName("input_E")
-        self.selecao['A'] = QtWidgets.QRadioButton(self)
-        self.selecao['A'].setText("")
-        self.selecao['A'].setObjectName("selecao_A")
-        self.selecao['B'] = QtWidgets.QRadioButton(self)
-        self.selecao['B'].setText("")
-        self.selecao['B'].setObjectName("selecao_B")
-        self.selecao['C'] = QtWidgets.QRadioButton(self)
-        self.selecao['C'].setText("")
-        self.selecao['C'].setObjectName("selecao_C")
-        self.selecao['D'] = QtWidgets.QRadioButton(self)
-        self.selecao['D'].setText("")
-        self.selecao['D'].setObjectName("selecao_D")
-        self.selecao['E'] = QtWidgets.QRadioButton(self)
-        self.selecao['E'].setText("")
-        self.selecao['E'].setObjectName("selecao_E")
+        self.input_letra['e'].setText("")
+        self.input_letra['e'].setObjectName("input_E")
+        self.selecao['a'] = QtWidgets.QRadioButton(self)
+        self.selecao['a'].setText("")
+        self.selecao['a'].setObjectName("selecao_A")
+        self.selecao['b'] = QtWidgets.QRadioButton(self)
+        self.selecao['b'].setText("")
+        self.selecao['b'].setObjectName("selecao_B")
+        self.selecao['c'] = QtWidgets.QRadioButton(self)
+        self.selecao['c'].setText("")
+        self.selecao['c'].setObjectName("selecao_C")
+        self.selecao['d'] = QtWidgets.QRadioButton(self)
+        self.selecao['d'].setText("")
+        self.selecao['d'].setObjectName("selecao_D")
+        self.selecao['e'] = QtWidgets.QRadioButton(self)
+        self.selecao['e'].setText("")
+        self.selecao['e'].setObjectName("selecao_E")
         self.gridLayout_alternativas.addWidget(
-            self.input_letra['A'], 0, 1, 1, 1)
+            self.input_letra['a'], 0, 1, 1, 1)
         self.gridLayout_alternativas.addWidget(
-            self.input_letra['B'], 1, 1, 1, 1)
+            self.input_letra['b'], 1, 1, 1, 1)
         self.gridLayout_alternativas.addWidget(
-            self.input_letra['C'], 2, 1, 1, 1)
+            self.input_letra['c'], 2, 1, 1, 1)
         self.gridLayout_alternativas.addWidget(
-            self.input_letra['D'], 3, 1, 1, 1)
+            self.input_letra['d'], 3, 1, 1, 1)
         self.gridLayout_alternativas.addWidget(
-            self.input_letra['E'], 4, 1, 1, 1)
-        self.gridLayout_alternativas.addWidget(self.selecao['A'], 0, 0, 1, 1)
-        self.gridLayout_alternativas.addWidget(self.selecao['B'], 1, 0, 1, 1)
-        self.gridLayout_alternativas.addWidget(self.selecao['C'], 2, 0, 1, 1)
-        self.gridLayout_alternativas.addWidget(self.selecao['D'], 3, 0, 1, 1)
-        self.gridLayout_alternativas.addWidget(self.selecao['E'], 4, 0, 1, 1)
+            self.input_letra['e'], 4, 1, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['a'], 0, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['b'], 1, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['c'], 2, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['d'], 3, 0, 1, 1)
+        self.gridLayout_alternativas.addWidget(self.selecao['e'], 4, 0, 1, 1)
         self.gridLayout_principal.addLayout(
             self.gridLayout_alternativas, 2, 1, 1, 1)
         # fim
@@ -298,6 +298,13 @@ class AtividadeQuestao(QtWidgets.QGroupBox):
         if alternativas:
             for i, letra in enumerate(self.input_letra):
                 self.input_letra[letra].setText(alternativas[i])
+        if resposta and resposta in self.selecao:
+            self.selecao[resposta].setChecked(True)
+
+    def alternativa_correta(self):
+        for letra, alternativa in self.selecao.items():
+            if alternativa.isChecked():
+                return letra
 
 
 if __name__ == "__main__":
