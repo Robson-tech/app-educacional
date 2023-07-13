@@ -87,6 +87,7 @@ class Ui_TelaPrincipalAluno(object):
         self.stackedWidget.setObjectName("stackedWidget")
         self.page_recepcao = QtWidgets.QWidget()
         self.page_recepcao.setObjectName("page_recepcao")
+        self.ultima_pagina = "page_recepcao"
         self.stackedWidget.addWidget(self.page_recepcao)
 
         self._translate = QtCore.QCoreApplication.translate
@@ -178,37 +179,37 @@ class Ui_TelaPrincipalAluno(object):
         self.line.raise_()
         self.conteudo_scrollArea.raise_()
         self.botao_fechar.raise_()
+        self.ultima_pagina = self.stackedWidget.currentWidget().objectName()
         self.stackedWidget.addWidget(self.pages[nome])
 
         def alterar_pagina():
             if self.stackedWidget.currentWidget().objectName() == nome:
                 return
             elif self.stackedWidget.currentWidget().objectName() != "page_recepcao":
-                self.materias[self.stackedWidget.currentWidget().objectName()].setStyleSheet("""
-                        QPushButton {
-                            border-radius: 10px;
-                            background-color: rgb(252, 88, 20);
-                        }
-                    """
-                                                                                             )
+                self.materias[self.stackedWidget.currentWidget().objectName()].setStyleSheet(
+                    'QPushButton {\n'
+                        'border-radius: 10px;\n'
+                        'background-color: rgb(252, 88, 20);\n'
+                    '}'
+                )
             self.stackedWidget.setCurrentWidget(self.pages[nome])
-            self.materias[nome].setStyleSheet("""
-                    QPushButton {
-                        border-radius: 10px;
-                        background-color: rgb(255, 229, 0);
-                    }
-                """
-                                              )
+            self.materias[nome].setStyleSheet(
+                'QPushButton {\n'
+                    'border-radius: 10px;\n'
+                    'background-color: rgb(255, 229, 0);\n'
+                '}'
+            )
+            self.ultima_pagina = self.stackedWidget.currentWidget().objectName()
 
         def fechar_pagina():
+            self.ultima_pagina = self.stackedWidget.currentWidget().objectName()
             self.stackedWidget.setCurrentWidget(self.page_recepcao)
-            self.materias[nome].setStyleSheet("""
-                    QPushButton {
-                        border-radius: 10px;
-                        background-color: rgb(252, 88, 20);
-                    }
-                """
-                                              )
+            self.materias[nome].setStyleSheet(
+                'QPushButton {\n'
+                    'border-radius: 10px;\n'
+                    'background-color: rgb(252, 88, 20);\n'
+                '}'
+            )
         self.materias[nome].clicked.connect(alterar_pagina)
         self.botao_fechar.clicked.connect(fechar_pagina)
         self.stackedWidget.setCurrentWidget(self.page_recepcao)
@@ -225,13 +226,12 @@ class Ui_TelaPrincipalAluno(object):
         self.materias[nome].setFont(font)
         self.materias[nome].setCursor(
             QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.materias[nome].setStyleSheet("""
-                QPushButton {
-                    border-radius: 10px;
-                    background-color: rgb(252, 88, 20);
-                }
-            """
-                                          )
+        self.materias[nome].setStyleSheet(
+                'QPushButton {\n'
+                    'border-radius: 10px;\n'
+                    'background-color: rgb(252, 88, 20);\n'
+                '}'
+        )
         self.materias[nome].setObjectName(nome)
         self.verticalLayout.addWidget(self.materias[nome])
         self.materias[nome].setText(
@@ -248,6 +248,13 @@ class Ui_TelaPrincipalAluno(object):
         for pagina in self.pages:
             self.stackedWidget.removeWidget(self.pages[pagina])
             self.pages[pagina].deleteLater()
+        if self.ultima_pagina != "page_recepcao":
+            self.materias[self.ultima_pagina].setStyleSheet(
+                'QPushButton {\n'
+                    'border-radius: 10px;\n'
+                    'background-color: rgb(252, 88, 20);\n'
+                '}'
+            )
         self.pages = {}
 
     def limpar_materias(self):

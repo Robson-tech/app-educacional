@@ -123,12 +123,13 @@ class Main(QMainWindow, Ui_Main):
         self.QtStack.addWidget(self.stack[-1])
         for i, questao in enumerate(atividade.questoes.values()) if atividade.questoes else []:
             self.atividades[atividade.id].add_questao(i + 1, questao.enunciado, questao.resposta, [
-                                            questao.letra_a, questao.letra_b, questao.letra_c, questao.letra_d, questao.letra_e])
+                questao.letra_a, questao.letra_b, questao.letra_c, questao.letra_d, questao.letra_e])
         self.atividades[atividade.id].add_rodape()
 
         def voltar_atividade():
             self.QtStack.setCurrentIndex(2)
-        self.atividades[atividade.id].botao_voltar.clicked.connect(voltar_atividade)
+        self.atividades[atividade.id].botao_voltar.clicked.connect(
+            voltar_atividade)
 
         def ir_para_pagina_atividade():
             self.QtStack.setCurrentWidget(novo)
@@ -136,7 +137,8 @@ class Main(QMainWindow, Ui_Main):
         def submeter_atividade():
             self.submeter_atividade(atividade.id)
 
-        self.atividades[atividade.id].botao_publicar.clicked.connect(submeter_atividade)
+        self.atividades[atividade.id].botao_publicar.clicked.connect(
+            submeter_atividade)
         return ir_para_pagina_atividade
 
     def criar_pagina_atividade_turma(self, turma_id, materia=None, atividade=None):
@@ -280,6 +282,7 @@ class Main(QMainWindow, Ui_Main):
         mensagem = '0'
         self.usuario = None
         self.tela_principal_professor.limpar_paginas()
+        self.tela_principal_aluno.limpar_paginas()
         self.client_socket.send(mensagem.encode())
         self.QtStack.setCurrentIndex(0)
 
@@ -324,6 +327,10 @@ class Main(QMainWindow, Ui_Main):
                     self.tela_principal_professor.inserir_espacamento()
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':
+                    for materia in self.materias.values():
+                        atividades = self.pegar_atividades_materia(materia.id)
+                        self.tela_principal_aluno.add_pagina(
+                            materia.nome.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
                     self.QtStack.setCurrentIndex(2)
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")

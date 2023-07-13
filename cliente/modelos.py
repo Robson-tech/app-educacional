@@ -1,5 +1,4 @@
 import abc
-import datetime
 
 
 class Usuario(abc.ABC):

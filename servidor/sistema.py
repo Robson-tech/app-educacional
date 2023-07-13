@@ -2,115 +2,92 @@ import socket
 import threading
 import mysql.connector as mysql
 from modelos import Professor, Aluno, Materia, Turma, Atividade, Questao
-
-
-tabelas = {}
-tabelas['usuarios'] = (
-    "CREATE TABLE IF NOT EXISTS sistema_educacional.usuarios ("
-    "id INT AUTO_INCREMENT PRIMARY KEY,"
-    "email VARCHAR(255) NOT NULL,"
-    "senha VARCHAR(255) NOT NULL,"
-    "nome VARCHAR(255) NOT NULL,"
-    "sobrenome VARCHAR(255) NOT NULL,"
-    "nascimento DATE NOT NULL,"
-    "data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-    "ultimo_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
-    "UNIQUE (email)"
-    ")"
-)
-tabelas['turmas'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.turmas ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'nome VARCHAR(255) NOT NULL,'
-    'num_sala INT NOT NULL,'
-    'UNIQUE (nome),'
-    'UNIQUE (num_sala)'
-    ')'
-)
-tabelas['alunos'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.alunos ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'usuario_id INT NOT NULL,'
-    'turma_id INT NOT NULL,'
-    'pontuacao_geral INT NOT NULL,'
-    'FOREIGN KEY (usuario_id) REFERENCES usuarios(id),'
-    'FOREIGN KEY (turma_id) REFERENCES turmas(id)'
-    ')'
-)
-tabelas['professores'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.professores ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'usuario_id INT NOT NULL,'
-    'salario DECIMAL(10,2) NOT NULL,'
-    'FOREIGN KEY (usuario_id) REFERENCES usuarios(id)'
-    ')'
-)
-tabelas['turmas_professores'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.turmas_professores ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'turma_id INT NOT NULL,'
-    'professor_id INT NOT NULL,'
-    'FOREIGN KEY (turma_id) REFERENCES turmas(id),'
-    'FOREIGN KEY (professor_id) REFERENCES professores(id)'
-    ')'
-)
-tabelas['materias'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.materias ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'nome VARCHAR(255) NOT NULL'
-    ')'
-)
-tabelas['materias_professores'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.materias_professores ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'materia_id INT NOT NULL,'
-    'professor_id INT NOT NULL,'
-    'FOREIGN KEY (materia_id) REFERENCES materias(id),'
-    'FOREIGN KEY (professor_id) REFERENCES professores(id)'
-    ')'
-)
-tabelas['atividades'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.atividades ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'nome VARCHAR(255) NOT NULL,'
-    'descricao TEXT NULL,'
-    'professor_id INT NOT NULL,'
-    'turma_id INT NOT NULL,'
-    'materia_id INT NOT NULL,'
-    'FOREIGN KEY (professor_id) REFERENCES professores(id),'
-    'FOREIGN KEY (turma_id) REFERENCES turmas(id)'
-    ')'
-)
-tabelas['questoes'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.questoes ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'atividade_id INT NOT NULL,'
-    'enunciado TEXT NOT NULL,'
-    'resposta VARCHAR(255) NOT NULL,'
-    'letra_a VARCHAR(255) NOT NULL,'
-    'letra_b VARCHAR(255) NOT NULL,'
-    'letra_c VARCHAR(255) NOT NULL,'
-    'letra_d VARCHAR(255) NOT NULL,'
-    'letra_e VARCHAR(255) NOT NULL,'
-    'FOREIGN KEY (atividade_id) REFERENCES atividades(id)'
-    ')'
-)
-tabelas['atividades_alunos'] = (
-    'CREATE TABLE IF NOT EXISTS sistema_educacional.atividades_alunos ('
-    'id INT AUTO_INCREMENT PRIMARY KEY,'
-    'atividade_id INT NOT NULL,'
-    'aluno_id INT NOT NULL,'
-    'data_submissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-    'pontuacao INT NOT NULL,'
-    'taxa_acerto DECIMAL(10,2) NOT NULL,'
-    'FOREIGN KEY (atividade_id) REFERENCES atividades(id),'
-    'FOREIGN KEY (aluno_id) REFERENCES alunos(id)'
-    ')'
-)
+import settings
 
 
 class SistemaEducacional:
+    """
+    Classe que representa o sistema educacional e implementa todos os atributos e metodos necessarios para o funcionamento do sistema.
+
+    ...
+
+    Attributes
+    ----------
+    _mydb : mysql.connector.connection.MySQLConnection
+        Conexao com o banco de dados.
+    _cursor : mysql.connector.cursor.MySQLCursor
+        Cursor para executar comandos SQL.
+    _usuario : Professor ou Aluno
+        Usuario logado no sistema.
+    _materias : dict
+        Dicionario com todas as materias cadastradas no sistema.
+    _turmas : dict
+        Dicionario com todas as turmas cadastradas no sistema.
+    
+    Methods
+    -------
+    get_materias()
+        Retorna um dicionario com todas as materias cadastradas no sistema.
+    get_turmas()
+        Retorna um dicionario com todas as turmas cadastradas no sistema.
+    get_alunos_turma(turma_id)
+        Retorna um dicionario com todos os alunos de uma turma.
+    get_professores_turma(turma_id)
+        Retorna um dicionario com todos os professores de uma turma.
+    get_atividade(id_atividade)
+        Retorna uma atividade.
+    get_questoes_atividade(id_atividade)
+        Retorna um dicionario com todas as questoes de uma atividade.
+    get_atividades_professor(professor_id)
+        Retorna um dicionário com todas as atividades de um professor.
+    get_atividades_turma_professor(turma_id, professor_id)
+        Retorna um dicionario com todas as atividades de uma turma de um professor.
+    get_turmas_professor(professor_id)
+        Retorna um dicionario com todas as turmas de um professor.
+    get_atividades_materia(materia_id)
+        Retorna um dicionario com todas as atividades de uma materia.
+    get_atividades_turma(turma_id)
+        Retorna um dicionario com todas as atividades de uma turma.
+    buscar(email)
+        Retorna uma tupla com os dados de um usuario.
+    submeter_atividade(atividade_id, aluno_id, pontuacao)
+        Submete uma atividade de um aluno.
+    cadastrar_professor(email, senha, nome, sobrenome, nascimento)
+        Cadastra um professor no sistema.
+    cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma)
+        Cadastra um aluno no sistema.
+    login_professor(usuario)
+        Realiza o login de um professor.
+    login_aluno(usuario)
+        Realiza o login de um aluno.
+    autenticar(email, senha)
+        Autentica um usuário.
+    login(email, senha)
+        Realiza o login de um usuário.
+    cadastrar_atividade(nome, descricao, materia, turma, id=None)
+        Cadastra uma atividade no sistema.
+    cadastrar_questao(atividade_id, enunciado, resposta, a, b, c, d, e, id=None)
+        Cadastra uma questao no sistema.
+    logout()
+        Realiza o logout de um usuario.
+    fechar_bd()
+        Fecha a conexao com o banco de dados.
+    """
     def __init__(self):
+        """
+        Parameters
+        ----------
+        _mydb : mysql.connector.connection.MySQLConnection
+            Conexão com o banco de dados.
+        _cursor : mysql.connector.cursor.MySQLCursor
+            Cursor para executar comandos SQL.
+        _usuario : Professor ou Aluno
+            Usuario logado no sistema.
+        _materias : dict
+            Dicionario com todas as materias cadastradas no sistema.
+        _turmas : dict
+            Dicionario com todas as turmas cadastradas no sistema.
+        """
         self._mydb = mysql.connect(
             host="localhost",
             user="root",
@@ -119,11 +96,10 @@ class SistemaEducacional:
             consume_results=True
         )
         self._cursor = self._mydb.cursor()
-        self._sql = "CREATE DATABASE IF NOT EXISTS sistema_educacional"
-        self._val = ()
-        self._cursor.execute(self._sql)
-        for tabela in tabelas:
-            self._cursor.execute(tabelas[tabela])
+        consulta_sql = "CREATE DATABASE IF NOT EXISTS sistema_educacional"
+        self._cursor.execute(consulta_sql)
+        for tabela in settings.TABELAS_SISTEMA_EDUCACIONAL:
+            self._cursor.execute(settings.TABELAS_SISTEMA_EDUCACIONAL[tabela])
         self._mydb.commit()
         self._usuario = None
         self._materias = self.get_materias()
@@ -142,9 +118,16 @@ class SistemaEducacional:
         return self._turmas
 
     def get_materias(self):
-        self._sql = "SELECT * FROM sistema_educacional.materias"
-        self._val = ()
-        self._cursor.execute(self._sql, self._val)
+        """
+        Retorna um dicionario com todas as materias cadastradas no sistema.
+
+        Returns
+        -------
+        dict
+            Dicionario com todas as materias cadastradas no sistema.
+        """
+        consulta_sql = "SELECT * FROM sistema_educacional.materias"
+        self._cursor.execute(consulta_sql)
         materias = {}
         for materia in self._cursor.fetchall():
             atividades = self.get_atividades_materia(materia[0])
@@ -152,9 +135,16 @@ class SistemaEducacional:
         return materias
 
     def get_turmas(self):
-        self._sql = "SELECT * FROM sistema_educacional.turmas"
-        self._val = ()
-        self._cursor.execute(self._sql, self._val)
+        """
+        Retorna um dicionario com todas as turmas cadastradas no sistema.
+
+        Returns
+        -------
+        dict
+            Dicionario com todas as turmas cadastradas no sistema.
+        """
+        consulta_sql = "SELECT * FROM sistema_educacional.turmas"
+        self._cursor.execute(consulta_sql)
         turmas = {}
         for turma in self._cursor.fetchall():
             atividades = self.get_atividades_turma(turma[0])
@@ -165,27 +155,66 @@ class SistemaEducacional:
         return turmas
 
     def get_alunos_turma(self, turma_id):
-        self._sql = "SELECT sistema_educacional.alunos.id, sistema_educacional.usuarios.nome FROM sistema_educacional.alunos INNER JOIN sistema_educacional.usuarios ON sistema_educacional.alunos.usuario_id = sistema_educacional.usuarios.id WHERE sistema_educacional.alunos.turma_id = %s"
-        self._val = (turma_id,)
-        self._cursor.execute(self._sql, self._val)
+        """
+        Retorna um dicionario com todos os alunos de uma turma.
+
+        Parameters
+        ----------
+        turma_id : int
+            ID da turma.
+        
+        Returns
+        -------
+        dict
+            Dicionario com todos os alunos de uma turma.
+        """
+        consulta_sql = "SELECT sistema_educacional.alunos.id, sistema_educacional.usuarios.nome FROM sistema_educacional.alunos INNER JOIN sistema_educacional.usuarios ON sistema_educacional.alunos.usuario_id = sistema_educacional.usuarios.id WHERE sistema_educacional.alunos.turma_id = %s"
+        parametros_consulta = (turma_id,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         alunos = {}
         for aluno in self._cursor.fetchall():
             alunos.update({aluno[0]: aluno})
         return alunos
 
     def get_professores_turma(self, turma_id):
-        self._sql = "SELECT sistema_educacional.professores.id, sistema_educacional.usuarios.nome FROM sistema_educacional.professores INNER JOIN sistema_educacional.usuarios ON sistema_educacional.professores.usuario_id = sistema_educacional.usuarios.id INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.professores.id = sistema_educacional.turmas_professores.professor_id WHERE sistema_educacional.turmas_professores.turma_id = %s"
-        self._val = (turma_id,)
-        self._cursor.execute(self._sql, self._val)
+        """
+        Retorna um dicionario com todos os professores de uma turma.
+
+        Parameters
+        ----------
+        turma_id : int
+            ID da turma.
+
+        Returns
+        -------
+        dict
+            Dicionario com todos os professores de uma turma.
+        """
+        consulta_sql = "SELECT sistema_educacional.professores.id, sistema_educacional.usuarios.nome FROM sistema_educacional.professores INNER JOIN sistema_educacional.usuarios ON sistema_educacional.professores.usuario_id = sistema_educacional.usuarios.id INNER JOIN sistema_educacional.turmas_professores ON sistema_educacional.professores.id = sistema_educacional.turmas_professores.professor_id WHERE sistema_educacional.turmas_professores.turma_id = %s"
+        parametros_consulta = (turma_id,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         professores = {}
         for professor in self._cursor.fetchall():
             professores.update({professor[0]: professor})
         return professores
 
     def get_atividade(self, id_atividade):
-        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.id = %s"
-        self._val = (id_atividade,)
-        self._cursor.execute(self._sql, self._val)
+        """
+        Retorna uma atividade.
+
+        Parameters
+        ----------
+        id_atividade : int
+            ID da atividade.
+
+        Returns
+        -------
+        Atividade
+            Objeto da classe Atividade.
+        """
+        consulta_sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.id = %s"
+        parametros_consulta = (id_atividade,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         atividade = self._cursor.fetchone()
         if atividade:
             questoes = self.get_questoes_atividade(atividade[0])
@@ -194,18 +223,44 @@ class SistemaEducacional:
             return None
 
     def get_questoes_atividade(self, id_atividade):
-        self._sql = "SELECT * FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
-        self._val = (id_atividade,)
-        self._cursor.execute(self._sql, self._val)
+        """
+        Retorna um dicionario com todas as questoes de uma atividade.
+
+        Parameters
+        ----------
+        id_atividade : int
+            ID da atividade.
+
+        Returns
+        -------
+        dict
+            Dicionario com todas as questoes de uma atividade.
+        """
+        consulta_sql = "SELECT * FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
+        parametros_consulta = (id_atividade,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         questoes_atividade = {}
         for questao in self._cursor.fetchall():
             questoes_atividade.update({questao[0]: Questao(*questao)})
         return questoes_atividade
 
     def get_atividades_professor(self, professor_id):
-        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.professor_id = %s"
-        self._val = (professor_id,)
-        self._cursor.execute(self._sql, self._val)
+        """
+        Retorna um dicionario com todas as atividades de um professor.
+
+        Parameters
+        ----------
+        professor_id : int
+            ID do professor.
+
+        Returns
+        -------
+        dict
+            Dicionario com todas as atividades de um professor.
+        """
+        consulta_sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.professor_id = %s"
+        parametros_consulta = (professor_id,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         lista_atividades = {}
         for atividade in self._cursor.fetchall():
             questoes = self.get_questoes_atividade(atividade[0])
@@ -214,9 +269,9 @@ class SistemaEducacional:
         return lista_atividades
 
     def get_atividades_turma_professor(self, turma_id, professor_id):
-        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.turma_id = %s AND sistema_educacional.atividades.professor_id = %s"
-        self._val = (turma_id, professor_id)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.turma_id = %s AND sistema_educacional.atividades.professor_id = %s"
+        parametros_consulta = (turma_id, professor_id)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         lista_atividades = {}
         for atividade in self._cursor.fetchall():
             questoes = self.get_questoes_atividade(atividade[0])
@@ -225,9 +280,9 @@ class SistemaEducacional:
         return lista_atividades
 
     def get_turmas_professor(self, professor_id):
-        self._sql = "SELECT sistema_educacional.turmas.id, sistema_educacional.turmas.nome, sistema_educacional.turmas.num_sala FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores WHERE sistema_educacional.turmas_professores.professor_id = %s AND sistema_educacional.turmas_professores.turma_id = sistema_educacional.turmas.id"
-        self._val = (professor_id,)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT sistema_educacional.turmas.id, sistema_educacional.turmas.nome, sistema_educacional.turmas.num_sala FROM sistema_educacional.turmas INNER JOIN sistema_educacional.turmas_professores WHERE sistema_educacional.turmas_professores.professor_id = %s AND sistema_educacional.turmas_professores.turma_id = sistema_educacional.turmas.id"
+        parametros_consulta = (professor_id,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         turmas = {}
         for turma in self._cursor.fetchall():
             atividades = self.get_atividades_turma_professor(
@@ -239,9 +294,9 @@ class SistemaEducacional:
         return turmas
 
     def get_atividades_materia(self, materia_id):
-        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE materia_id = %s"
-        self._val = (materia_id,)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT * FROM sistema_educacional.atividades WHERE materia_id = %s"
+        parametros_consulta = (materia_id,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         atividades_materia = {}
         for atividade in self._cursor.fetchall():
             questoes = self.get_questoes_atividade(atividade[0])
@@ -250,9 +305,9 @@ class SistemaEducacional:
         return atividades_materia
 
     def get_atividades_turma(self, turma_id):
-        self._sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.turma_id = %s"
-        self._val = (turma_id,)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT * FROM sistema_educacional.atividades WHERE sistema_educacional.atividades.turma_id = %s"
+        parametros_consulta = (turma_id,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         lista_atividades = {}
         for atividade in self._cursor.fetchall():
             questoes = self.get_questoes_atividade(atividade[0])
@@ -262,87 +317,87 @@ class SistemaEducacional:
 
     def buscar(self, email):
         try:
-            self._sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s"
-            self._val = (email,)
-            self._cursor.execute(self._sql, self._val)
+            consulta_sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s"
+            parametros_consulta = (email,)
+            self._cursor.execute(consulta_sql, parametros_consulta)
             return self._cursor.fetchone()
         except:
             return False
 
     def submeter_atividade(self, atividade_id, aluno_id, pontuacao):
-        self._sql = "SELECT COUNT(*) FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
-        self._val = (atividade_id,)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT COUNT(*) FROM sistema_educacional.questoes WHERE sistema_educacional.questoes.atividade_id = %s"
+        parametros_consulta = (atividade_id,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         total_questoes = self._cursor.fetchone()[0]
         if total_questoes == 0:
             return False
         else:
             taxa_acerto = int(pontuacao) / total_questoes * 100
-            self._sql = "INSERT INTO sistema_educacional.atividades_alunos (atividade_id, aluno_id, pontuacao, taxa_acerto) VALUES (%s, %s, %s, %s)"
-            self._val = (atividade_id, aluno_id, pontuacao, taxa_acerto)
-            self._cursor.execute(self._sql, self._val)
+            consulta_sql = "INSERT INTO sistema_educacional.atividades_alunos (atividade_id, aluno_id, pontuacao, taxa_acerto) VALUES (%s, %s, %s, %s)"
+            parametros_consulta = (atividade_id, aluno_id, pontuacao, taxa_acerto)
+            self._cursor.execute(consulta_sql, parametros_consulta)
             self._mydb.commit()
             return True
 
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
         if self.buscar(email):
             return False
-        self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
-        self._val = (email, senha, nome, sobrenome, nascimento)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+        parametros_consulta = (email, senha, nome, sobrenome, nascimento)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         self._mydb.commit()
-        self._sql = 'SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login FROM sistema_educacional.usuarios WHERE email = %s'
-        self._val = (email,)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = 'SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login FROM sistema_educacional.usuarios WHERE email = %s'
+        parametros_consulta = (email,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         id, data_cadastro, ultimo_login = self._cursor.fetchone()
         professor = Professor(id, email, senha, nome, sobrenome,
                               nascimento, data_cadastro, ultimo_login)
         self._usuario = professor
 
-        self._sql = "INSERT INTO sistema_educacional.professores (usuario_id, salario) VALUES (%s, %s)"
-        self._val = (professor.id, 1320)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "INSERT INTO sistema_educacional.professores (usuario_id, salario) VALUES (%s, %s)"
+        parametros_consulta = (professor.id, 1320)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         self._mydb.commit()
         return True
 
     def cadastrar_aluno(self, email, senha, nome, sobrenome, nascimento, turma):
         if self.buscar(email):
             return False
-        self._sql = "SELECT sistema_educacional.turmas.id FROM sistema_educacional.turmas WHERE sistema_educacional.turmas.nome = %s"
-        self._val = (turma,)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT sistema_educacional.turmas.id FROM sistema_educacional.turmas WHERE sistema_educacional.turmas.nome = %s"
+        parametros_consulta = (turma,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         try:
             turma_id = self._cursor.fetchone()[0]
         except:
             return False
-        self._sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
-        self._val = (email, senha, nome,
+        consulta_sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+        parametros_consulta = (email, senha, nome,
                      sobrenome, nascimento)
-        self._cursor.execute(self._sql, self._val)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         self._mydb.commit()
-        self._sql = 'SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login FROM sistema_educacional.usuarios WHERE email = %s'
-        self._val = (email,)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = 'SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login FROM sistema_educacional.usuarios WHERE email = %s'
+        parametros_consulta = (email,)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         id, data_cadastro, ultimo_login = self._cursor.fetchone()
         aluno = Aluno(id, email, senha, nome, sobrenome,
                       nascimento, data_cadastro, ultimo_login, turma)
         self._usuario = aluno
 
-        self._sql = "INSERT INTO sistema_educacional.alunos (usuario_id, pontuacao_geral, turma_id) VALUES (%s, %s, %s)"
-        self._val = (aluno.id, 0, turma_id)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "INSERT INTO sistema_educacional.alunos (usuario_id, pontuacao_geral, turma_id) VALUES (%s, %s, %s)"
+        parametros_consulta = (aluno.id, 0, turma_id)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         self._mydb.commit()
         return True
 
     def login_professor(self, usuario):
-        self._sql = "SELECT * FROM sistema_educacional.professores WHERE sistema_educacional.professores.usuario_id = %s"
-        self._val = (usuario[0],)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT * FROM sistema_educacional.professores WHERE sistema_educacional.professores.usuario_id = %s"
+        parametros_consulta = (usuario[0],)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         consulta = self._cursor.fetchone()
         if consulta:
-            self._sql = "SELECT sistema_educacional.materias.id, sistema_educacional.materias.nome FROM sistema_educacional.materias INNER JOIN sistema_educacional.materias_professores ON sistema_educacional.materias_professores.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias_professores.professor_id = %s"
-            self._val = (consulta[0],)
-            self._cursor.execute(self._sql, self._val)
+            consulta_sql = "SELECT sistema_educacional.materias.id, sistema_educacional.materias.nome FROM sistema_educacional.materias INNER JOIN sistema_educacional.materias_professores ON sistema_educacional.materias_professores.materia_id = sistema_educacional.materias.id WHERE sistema_educacional.materias_professores.professor_id = %s"
+            parametros_consulta = (consulta[0],)
+            self._cursor.execute(consulta_sql, parametros_consulta)
             materias = self._cursor.fetchall()
             turmas = self.get_turmas_professor(consulta[0])
             atividades = self.get_atividades_professor(consulta[0])
@@ -351,18 +406,18 @@ class SistemaEducacional:
                 usuario[6], usuario[7], materias_professor=materias, turmas_professor=turmas, atividades_professor=atividades, salario=consulta[2]
             )
             self._usuario = professor
-            self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
-            self._val = (usuario[0],)
-            self._cursor.execute(self._sql, self._val)
+            consulta_sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
+            parametros_consulta = (usuario[0],)
+            self._cursor.execute(consulta_sql, parametros_consulta)
             self._mydb.commit()
             return True
         else:
             return False
 
     def login_aluno(self, usuario):
-        self._sql = "SELECT * FROM sistema_educacional.alunos WHERE sistema_educacional.alunos.usuario_id = %s"
-        self._val = (usuario[0],)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT * FROM sistema_educacional.alunos WHERE sistema_educacional.alunos.usuario_id = %s"
+        parametros_consulta = (usuario[0],)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         consulta = self._cursor.fetchone()
         if consulta:
             aluno = Aluno(
@@ -370,18 +425,18 @@ class SistemaEducacional:
                 usuario[5], usuario[6], usuario[7], consulta[2], pontuacao=consulta[3]
             )
             self._usuario = aluno
-            self._sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
-            self._val = (usuario[0],)
-            self._cursor.execute(self._sql, self._val)
+            consulta_sql = 'UPDATE sistema_educacional.usuarios SET ultimo_login = CURRENT_TIMESTAMP WHERE id = %s'
+            parametros_consulta = (usuario[0],)
+            self._cursor.execute(consulta_sql, parametros_consulta)
             self._mydb.commit()
             return True
         else:
             return False
 
     def autenticar(self, email, senha):
-        self._sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s AND senha = %s"
-        self._val = (email, senha)
-        self._cursor.execute(self._sql, self._val)
+        consulta_sql = "SELECT * FROM sistema_educacional.usuarios WHERE email = %s AND senha = %s"
+        parametros_consulta = (email, senha)
+        self._cursor.execute(consulta_sql, parametros_consulta)
         return self._cursor.fetchone()
 
     def login(self, email, senha):
@@ -397,16 +452,16 @@ class SistemaEducacional:
         retorno = None
         try:
             if id:
-                self._sql = "UPDATE sistema_educacional.atividades SET nome = %s, descricao = %s, materia_id = %s, turma_id = %s WHERE id = %s"
-                self._val = (nome, descricao, materia, turma, id)
-                self._cursor.execute(self._sql, self._val)
+                consulta_sql = "UPDATE sistema_educacional.atividades SET nome = %s, descricao = %s, materia_id = %s, turma_id = %s WHERE id = %s"
+                parametros_consulta = (nome, descricao, materia, turma, id)
+                self._cursor.execute(consulta_sql, parametros_consulta)
                 self._mydb.commit()
                 retorno = Atividade(id, nome, descricao,
                                     self.usuario.id, turma, materia)
             else:
-                self._sql = "INSERT INTO sistema_educacional.atividades (nome, descricao, professor_id, turma_id, materia_id) VALUES (%s, %s, %s, %s, %s)"
-                self._val = (nome, descricao, self.usuario.id, turma, materia)
-                self._cursor.execute(self._sql, self._val)
+                consulta_sql = "INSERT INTO sistema_educacional.atividades (nome, descricao, professor_id, turma_id, materia_id) VALUES (%s, %s, %s, %s, %s)"
+                parametros_consulta = (nome, descricao, self.usuario.id, turma, materia)
+                self._cursor.execute(consulta_sql, parametros_consulta)
                 self._mydb.commit()
                 retorno = Atividade(
                     self._cursor.lastrowid, nome, descricao, self.usuario.id, turma, materia)
@@ -418,16 +473,16 @@ class SistemaEducacional:
         retorno = None
         try:
             if id:
-                self._sql = "UPDATE sistema_educacional.questoes SET enunciado = %s, resposta = %s, letra_a = %s, letra_b = %s, letra_c = %s, letra_d = %s, letra_e = %s WHERE id = %s"
-                self._val = (enunciado, resposta, a, b, c, d, e, id)
-                self._cursor.execute(self._sql, self._val)
+                consulta_sql = "UPDATE sistema_educacional.questoes SET enunciado = %s, resposta = %s, letra_a = %s, letra_b = %s, letra_c = %s, letra_d = %s, letra_e = %s WHERE id = %s"
+                parametros_consulta = (enunciado, resposta, a, b, c, d, e, id)
+                self._cursor.execute(consulta_sql, parametros_consulta)
                 self._mydb.commit()
                 retorno = Questao(id, atividade_id, enunciado,
                                   resposta, a, b, c, d, e)
             else:
-                self._sql = "INSERT INTO sistema_educacional.questoes (atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                self._val = (atividade_id, enunciado, resposta, a, b, c, d, e)
-                self._cursor.execute(self._sql, self._val)
+                consulta_sql = "INSERT INTO sistema_educacional.questoes (atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                parametros_consulta = (atividade_id, enunciado, resposta, a, b, c, d, e)
+                self._cursor.execute(consulta_sql, parametros_consulta)
                 self._mydb.commit()
                 retorno = Questao(self._cursor.lastrowid,
                                   atividade_id, enunciado, resposta, a, b, c, d, e)
@@ -601,8 +656,10 @@ class MyThread(threading.Thread):
 
 
 class Servidor:
+    """
+    """
     def __init__(self):
-        self.host = 'LOCALHOST'
+        self.host = '10.180.46.33'
         self.port = 5000
         self.addr = (self.host, self.port)
         self.serv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
