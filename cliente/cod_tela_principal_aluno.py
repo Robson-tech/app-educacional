@@ -95,7 +95,7 @@ class Ui_TelaPrincipalAluno(object):
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TelaPrincipalAluno)
 
-    def add_pagina(self, nome, atividades, pilha_paginas=None, funcao_criar_pagina_atividade=None):
+    def add_pagina(self, nome, atividades, funcao_criar_pagina_atividade=None):
         self.pages[nome] = QtWidgets.QWidget()
         self.pages[nome].setObjectName(nome)
         self.rotulo_novas_atividades = QtWidgets.QLabel(self.pages[nome])
@@ -130,7 +130,7 @@ class Ui_TelaPrincipalAluno(object):
             self.scrollAreaWidgetContents_2)
         self.gridLayout.setObjectName("gridLayout")
         self.botoes_atividades = {}
-        for i, atividade in enumerate(atividades):
+        for i, atividade in enumerate(atividades.values()):
             self.botoes_atividades[atividade.titulo] = QtWidgets.QPushButton(
                 self.scrollAreaWidgetContents_2)
             sizePolicy = QtWidgets.QSizePolicy(
@@ -158,7 +158,7 @@ class Ui_TelaPrincipalAluno(object):
             self.botoes_atividades[atividade.titulo].setObjectName(f"botao_atividade{i}")
             self.gridLayout.addWidget(
                 self.botoes_atividades[atividade.titulo], i // 4, i % 4, 1, 1)
-            if funcao_criar_pagina_atividade and pilha_paginas:
+            if funcao_criar_pagina_atividade:
                 self.botoes_atividades[atividade.titulo].clicked.connect(funcao_criar_pagina_atividade(
                     atividade))
         spacerItem = QtWidgets.QSpacerItem(
@@ -218,7 +218,7 @@ class Ui_TelaPrincipalAluno(object):
         self.botao_fechar.setText(QtCore.QCoreApplication.translate(
             "TelaPrincipalAluno", u"X", None))
 
-    def add_materia(self, nome, atividades, pilha_paginas=None, funcao_criar_pagina_atividade=None):
+    def add_materia(self, nome, atividades, funcao_criar_pagina_atividade=None):
         self.materias[nome] = QtWidgets.QPushButton(
             self.scrollAreaWidgetContents)
         font = QtGui.QFont()
@@ -236,8 +236,7 @@ class Ui_TelaPrincipalAluno(object):
         self.verticalLayout.addWidget(self.materias[nome])
         self.materias[nome].setText(
             self._translate("TelaPrincipalAluno", nome))
-        self.add_pagina(nome, atividades, pilha_paginas,
-                        funcao_criar_pagina_atividade)
+        self.add_pagina(nome, atividades, funcao_criar_pagina_atividade)
 
     def inserir_espacamento(self):
         spacerItem4 = QtWidgets.QSpacerItem(

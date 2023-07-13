@@ -61,9 +61,9 @@ class Main(QMainWindow, Ui_Main):
                 materia_nome = materia.split('-')[1]
                 self._materias.update(
                     {materia_id: Materia(materia_id, materia_nome)})
-                atividades = self.pegar_atividades_materia(materia_id)
+                atividades = self.get_atividades_materia(materia_id)
                 self.tela_principal_aluno.add_materia(
-                    materia_nome.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
+                    materia_nome.capitalize(), atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
             self.tela_principal_aluno.inserir_espacamento()
         self.tela_login.botao_login.clicked.connect(self.botao_login)
         self.tela_login.botao_cadastro.clicked.connect(self.botao_cadastrar)
@@ -170,10 +170,10 @@ class Main(QMainWindow, Ui_Main):
             self.QtStack.setCurrentWidget(novo)
         return ir_para_pagina_atividade
 
-    def pegar_atividades_materia(self, materia_id):
+    def get_atividades_materia(self, materia_id):
         self.client_socket.send(f'3|{materia_id}'.encode())
         atividades = self.client_socket.recv(32784).decode().split('|')
-        lista_atividades = []
+        lista_atividades = {}
         for atividade in atividades[1:]:
             atividade_campos = atividade.split('//')[:6]
             lista_questoes = {}
@@ -181,8 +181,8 @@ class Main(QMainWindow, Ui_Main):
                 questao_campos = questao.split(';;')
                 lista_questoes.update(
                     {questao_campos[0]: Questao(*questao_campos)})
-            lista_atividades.append(
-                Atividade(*atividade_campos, lista_questoes))
+            lista_atividades.update(
+                {atividade_campos[0]: Atividade(*atividade_campos, lista_questoes)})
         return lista_atividades
 
     def get_atividades_turma_professor(self, turma_id, professor_id):
@@ -328,9 +328,9 @@ class Main(QMainWindow, Ui_Main):
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':
                     for materia in self.materias.values():
-                        atividades = self.pegar_atividades_materia(materia.id)
+                        atividades = self.get_atividades_materia(materia.id)
                         self.tela_principal_aluno.add_pagina(
-                            materia.nome.capitalize(), atividades, pilha_paginas=self.QtStack, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
+                            materia.nome.capitalize(), atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
                     self.QtStack.setCurrentIndex(2)
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")

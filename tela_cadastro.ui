@@ -73,37 +73,6 @@
        <number>10</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="alunos_caixa_sobrenome">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>16</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="placeholderText">
-         <string>Sobrenome</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLineEdit" name="alunos_caixa_nome">
         <property name="minimumSize">
          <size>
@@ -131,6 +100,37 @@ background-color: rgb(217, 217, 217);</string>
         </property>
         <property name="placeholderText">
          <string>Nome</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="alunos_caixa_sobrenome">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border-radius: 10px;
+background-color: rgb(217, 217, 217);</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>Sobrenome</string>
         </property>
        </widget>
       </item>
@@ -166,7 +166,7 @@ color: rgb(102, 102, 102);</string>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="alunos_caixa_turma">
+         <widget class="QComboBox" name="comboBox_3">
           <property name="minimumSize">
            <size>
             <width>240</width>
@@ -186,14 +186,27 @@ color: rgb(102, 102, 102);</string>
           </property>
           <property name="styleSheet">
            <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);</string>
+background-color: rgb(217, 217, 217);
+color: rgb(102, 102, 102);</string>
           </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <property name="currentIndex">
+           <number>0</number>
           </property>
-          <property name="placeholderText">
-           <string>Turma</string>
-          </property>
+          <item>
+           <property name="text">
+            <string>1A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1B</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
@@ -416,37 +429,6 @@ background-color: rgb(11, 97, 144);</string>
        <number>10</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="alunos_caixa_sobrenome_2">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>16</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="placeholderText">
-         <string>Sobrenome</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLineEdit" name="alunos_caixa_nome_2">
         <property name="minimumSize">
          <size>
@@ -478,40 +460,69 @@ background-color: rgb(217, 217, 217);</string>
        </widget>
       </item>
       <item>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="alunos_caixa_turma_2">
-          <property name="minimumSize">
-           <size>
-            <width>240</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>240</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-radius: 10px;
+       <widget class="QLineEdit" name="alunos_caixa_sobrenome_2">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border-radius: 10px;
 background-color: rgb(217, 217, 217);</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <property name="placeholderText">
-           <string>Turma</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLineEdit" name="alunos_caixa_turma_3">
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>Sobrenome</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateEdit" name="alunos_caixa_nascimento_2">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border-radius: 10px;
+background-color: rgb(217, 217, 217);
+color: rgb(102, 102, 102);</string>
+        </property>
+        <property name="displayFormat">
+         <string>yyyy-dd-MM</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QComboBox" name="comboBox_4">
           <property name="minimumSize">
            <size>
             <width>240</width>
@@ -521,43 +532,6 @@ background-color: rgb(217, 217, 217);</string>
           <property name="maximumSize">
            <size>
             <width>240</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-radius: 10px;
-background-color: rgb(217, 217, 217);</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <property name="placeholderText">
-           <string>Matéria</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QListView" name="listView"/>
-        </item>
-        <item row="0" column="1">
-         <widget class="QListView" name="listView_2"/>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QDateEdit" name="alunos_caixa_nascimento_2">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
             <height>50</height>
            </size>
           </property>
@@ -571,12 +545,87 @@ background-color: rgb(217, 217, 217);</string>
 background-color: rgb(217, 217, 217);
 color: rgb(102, 102, 102);</string>
           </property>
-          <property name="displayFormat">
-           <string>yyyy-dd-MM</string>
+          <property name="editable">
+           <bool>false</bool>
           </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>Física</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Matemática</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Biologia</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_5">
+          <property name="minimumSize">
+           <size>
+            <width>240</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>240</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">border-radius: 10px;
+background-color: rgb(217, 217, 217);
+color: rgb(102, 102, 102);</string>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>1A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1B</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QLineEdit" name="alunos_caixa_email_2">
