@@ -13,15 +13,15 @@ class SistemaEducacional:
 
     Attributes
     ----------
-    _mydb : mysql.connector.connection.MySQLConnection
+    mydb : mysql.connector.connection.MySQLConnection
         Conexao com o banco de dados.
-    _cursor : mysql.connector.cursor.MySQLCursor
+    cursor : mysql.connector.cursor.MySQLCursor
         Cursor para executar comandos SQL.
-    _usuario : Professor ou Aluno
+    usuario : Professor ou Aluno
         Usuario logado no sistema.
-    _materias : dict
+    materias : dict
         Dicionario com todas as materias cadastradas no sistema.
-    _turmas : dict
+    turmas : dict
         Dicionario com todas as turmas cadastradas no sistema.
 
     Methods
@@ -78,15 +78,15 @@ class SistemaEducacional:
         """
         Parameters
         ----------
-        _mydb : mysql.connector.connection.MySQLConnection
+        mydb : mysql.connector.connection.MySQLConnection
             Conexão com o banco de dados.
-        _cursor : mysql.connector.cursor.MySQLCursor
+        cursor : mysql.connector.cursor.MySQLCursor
             Cursor para executar comandos SQL.
-        _usuario : Professor ou Aluno
+        usuario : Professor ou Aluno
             Usuario logado no sistema.
-        _materias : dict
+        materias : dict
             Dicionario com todas as materias cadastradas no sistema.
-        _turmas : dict
+        turmas : dict
             Dicionario com todas as turmas cadastradas no sistema.
         """
         self._mydb = mysql.connect(
@@ -423,6 +423,27 @@ class SistemaEducacional:
             return True
 
     def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
+        """
+        Cadastra um professor no sistema.
+
+        Parameters
+        ----------
+        email : str
+            Email do professor.
+        senha : str
+            Senha do professor.
+        nome : str
+            Nome do professor.
+        sobrenome : str
+            Sobrenome do professor.
+        nascimento : str
+            Data de nascimento do professor.
+
+        Returns
+        -------
+        bool
+            True, caso o professor tenha sido cadastrado com sucesso. Caso contrario, retorna False.
+        """
         if self.buscar(email):
             return False
         consulta_sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
@@ -444,6 +465,29 @@ class SistemaEducacional:
         return True
 
     def cadastrar_aluno(self, email, senha, nome, sobrenome, nascimento, turma):
+        """
+        Cadastra um aluno no sistema.
+
+        Parameters
+        ----------
+        email : str
+            Email do aluno.
+        senha : str
+            Senha do aluno.
+        nome : str
+            Nome do aluno.
+        sobrenome : str
+            Sobrenome do aluno.
+        nascimento : str
+            Data de nascimento do aluno.
+        turma : str
+            Nome da turma do aluno.
+
+        Returns
+        -------
+        bool
+            True, caso o aluno tenha sido cadastrado com sucesso. Caso contrario, retorna False.
+        """
         if self.buscar(email):
             return False
         consulta_sql = "SELECT sistema_educacional.turmas.id FROM sistema_educacional.turmas WHERE sistema_educacional.turmas.nome = %s"
@@ -473,6 +517,19 @@ class SistemaEducacional:
         return True
 
     def login_professor(self, usuario):
+        """
+        Realiza o login de um professor.
+
+        Parameters
+        ----------
+        usuario : tuple
+            Tupla com os dados do usuario.
+
+        Returns
+        -------
+        bool
+            True, caso o professor tenha sido logado com sucesso. Caso contrario, retorna False.
+        """
         consulta_sql = "SELECT * FROM sistema_educacional.professores WHERE sistema_educacional.professores.usuario_id = %s"
         parametros_consulta = (usuario[0],)
         self._cursor.execute(consulta_sql, parametros_consulta)
@@ -498,6 +555,19 @@ class SistemaEducacional:
             return False
 
     def login_aluno(self, usuario):
+        """
+        Realiza o login de um aluno.
+
+        Parameters
+        ----------
+        usuario : tuple
+            Tupla com os dados do usuario.
+
+        Returns
+        -------
+        bool
+            True, caso o aluno tenha sido logado com sucesso. Caso contrario, retorna False.
+        """
         consulta_sql = "SELECT * FROM sistema_educacional.alunos WHERE sistema_educacional.alunos.usuario_id = %s"
         parametros_consulta = (usuario[0],)
         self._cursor.execute(consulta_sql, parametros_consulta)
@@ -532,6 +602,27 @@ class SistemaEducacional:
             return False
 
     def cadastrar_atividade(self, nome, descricao, materia, turma, id=None):
+        """
+        Cadastra uma atividade no sistema.
+
+        Parameters
+        ----------
+        nome : str
+            Nome da atividade.
+        descricao : str
+            Descricao da atividade.
+        materia : int
+            ID da materia.
+        turma : int
+            ID da turma.
+        id : int, optional
+            ID da atividade. O valor padrao e None.
+
+        Returns
+        -------
+        Atividade
+            Objeto da classe Atividade, caso a atividade tenha sido cadastrada com sucesso. Caso contrario, retorna None.
+        """
         retorno = None
         try:
             if id:
@@ -554,6 +645,35 @@ class SistemaEducacional:
         return retorno
 
     def cadastrar_questao(self, atividade_id, enunciado, resposta, a, b, c, d, e, id=None):
+        """
+        Cadastra uma questao no sistema.
+
+        Parameters
+        ----------
+        atividade_id : int
+            ID da atividade.
+        enunciado : str
+            Enunciado da questao.
+        resposta : str
+            Resposta da questao.
+        a : str
+            Alternativa A.
+        b : str
+            Alternativa B.
+        c : str
+            Alternativa C.
+        d : str
+            Alternativa D.
+        e : str
+            Alternativa E.
+        id : int, optional
+            ID da questao. O valor padrao e None.
+
+        Returns
+        -------
+        Questao
+            Objeto da classe Questao, caso a questao tenha sido cadastrada com sucesso. Caso contrario, retorna None.
+        """
         retorno = None
         try:
             if id:
@@ -589,7 +709,40 @@ class SistemaEducacional:
 
 
 class MyThread(threading.Thread):
+    """
+    Classe para criar uma thread para cada cliente conectado ao servidor.
+
+    ...
+
+    Attributes
+    ----------
+    name : str
+        Nome da thread.
+    sistema : SistemaEducacional
+        Sistema educacional.
+    client_address : tuple
+        Endereço do cliente.
+    client_socket : socket.socket
+        Socket do cliente.
+    serv_socket : socket.socket
+        Socket do servidor.
+
+    Methods
+    -------
+    run()
+        Executa a thread.
+    """
     def __init__(self, client_address, serv_socket, client_socket):
+        """
+        Parameters
+        ----------
+        client_address : tuple
+            Endereço do cliente.
+        serv_socket : socket.socket
+            Socket do servidor.
+        client_socket : socket.socket
+            Socket do cliente.
+        """
         threading.Thread.__init__(self)
         self.name = None
         self.sistema = SistemaEducacional()
@@ -599,6 +752,9 @@ class MyThread(threading.Thread):
         print(f'Nova conexão, endereço: {self.client_address}')
 
     def run(self):
+        """
+        Executa a thread.
+        """
         enviar = '1|'
         for materia in self.sistema.materias.values():
             enviar += f'{materia.id}-{materia.nome},'
@@ -750,6 +906,8 @@ class Servidor:
     """
     Classe que representa o servidor do sistema.
 
+    ...
+
     Attributes
     ----------
     host : str
@@ -768,6 +926,18 @@ class Servidor:
     """
 
     def __init__(self):
+        """
+        Parameters
+        ----------
+        host : str
+            Endereço do servidor.
+        port : int
+            Porta do servidor.
+        addr : tuple
+            Tupla com o endereço e a porta do servidor.
+        serv_socket : socket
+            Socket do servidor.
+        """
         self.host = 'LOCALHOST'
         self.port = 5000
         self.addr = (self.host, self.port)
@@ -779,10 +949,6 @@ class Servidor:
     def iniciar(self):
         """
         Inicia o servidor.
-
-        Returns
-        -------
-        None
         """
         while True:
             try:
@@ -801,10 +967,29 @@ class Servidor:
 
 
 class Teste:
+    """
+    Classe para testar o sistema.
+
+    ...
+
+    Attributes
+    ----------
+    sistema : SistemaEducacional
+        Sistema educacional.
+    """
     def __init__(self):
+        """
+        Parameters
+        ----------
+        sistema : SistemaEducacional
+            Sistema educacional.
+        """
         self.sistema = SistemaEducacional()
 
     def iniciar(self):
+        """
+        Inicia o teste.
+        """
         opc = 1
         while opc:
             try:

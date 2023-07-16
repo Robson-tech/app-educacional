@@ -2,7 +2,58 @@ import abc
 
 
 class Usuario(abc.ABC):
+    """
+    Classe abstrata que representa um usuário do sistema
+
+    ...
+
+    Attributes
+    ---------
+    id : int
+        id do usuário
+    email : str
+        email do usuário
+    senha : str
+        senha do usuário
+    nome : str
+        nome do usuário
+    sobrenome : str
+        sobrenome do usuário
+    nascimento : str
+        data de nascimento do usuário
+    data_cadastro : str
+        data de cadastro do usuário
+    ultimo_login : str
+        data do último login do usuário
+
+    Methods
+    -------
+    validar_email(email)
+        Valida o email do usuário
+    validar_senha(senha)
+        Valida a senha do usuário
+    """
     def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login):
+        """
+        Parameters
+        ----------
+        id : int
+            id do usuário
+        email : str
+            email do usuário
+        senha : str
+            senha do usuário
+        nome : str
+            nome do usuário
+        sobrenome : str
+            sobrenome do usuário
+        nascimento : str
+            data de nascimento do usuário
+        data_cadastro : str
+            data de cadastro do usuário
+        ultimo_login : str
+            data do último login do usuário
+        """
         self._id = id
         self._email = email
         self._senha = senha
@@ -49,24 +100,118 @@ class Usuario(abc.ABC):
 
     @abc.abstractmethod
     def validar_email(self, email):
+        """
+        Valida o email do usuário
+
+        Parameters
+        ----------
+        email : str
+            email do usuário
+        """
         pass
 
     @abc.abstractmethod
     def validar_senha(self, senha):
+        """
+        Valida a senha do usuário
+
+        Parameters
+        ----------
+        senha : str
+            senha do usuário
+        """
         pass
 
 
 class Diretor(Usuario):
-    def __init__(self, email, senha, nome, sobrenome, nascimento):
-        super().__init__(email, senha, nome, sobrenome, nascimento)
+    """
+    Classe que representa um diretor do sistema
+
+    ...
+
+    Attributes
+    ---------
+    id : int
+        id do usuário
+    email : str
+        email do usuário
+    senha : str
+        senha do usuário
+    nome : str
+        nome do usuário
+    sobrenome : str
+        sobrenome do usuário
+    nascimento : str
+        data de nascimento do usuário
+    data_cadastro : str
+        data de cadastro do usuário
+    ultimo_login : str
+        data do último login do usuário
+
+    Methods
+    -------
+    validar_email(email)
+        Valida o email do usuário
+    validar_senha(senha)
+        Valida a senha do usuário
+    """
+    def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login):
+        """
+        Parameters
+        ----------
+        id : int
+            id do usuário
+        email : str
+            email do usuário
+        senha : str
+            senha do usuário
+        nome : str
+            nome do usuário
+        sobrenome : str
+            sobrenome do usuário
+        nascimento : str
+            data de nascimento do usuário
+        data_cadastro : str
+            data de cadastro do usuário
+        ultimo_login : str
+            data do último login do usuário
+        """
+        super().__init__(id, email, senha, nome, sobrenome,
+                         nascimento, data_cadastro, ultimo_login)
 
     def validar_email(self, email):
+        """
+        Valida o email do usuário
+
+        Parameters
+        ----------
+        email : str
+            email do usuário
+
+        Returns
+        -------
+        bool
+            True se o email for válido, False caso contrário
+        """
         if email.find("@") != -1:
             return True
         else:
             return False
 
     def validar_senha(self, senha):
+        """
+        Valida a senha do usuário
+
+        Parameters
+        ----------
+        senha : str
+            senha do usuário
+        
+        Returns
+        -------
+        bool
+            True se a senha for válida, False caso contrário
+        """
         if self._senha == senha:
             return True
         else:
@@ -74,7 +219,66 @@ class Diretor(Usuario):
 
 
 class Professor(Usuario):
+    """
+    Classe que representa um professor do sistema
+    
+    ...
+
+    Attributes
+    ---------
+    id : int
+        id do usuário
+    email : str
+        email do usuário
+    senha : str
+        senha do usuário
+    nome : str
+        nome do usuário
+    sobrenome : str
+        sobrenome do usuário
+    nascimento : str
+        data de nascimento do usuário
+    data_cadastro : str
+        data de cadastro do usuário
+    ultimo_login : str
+        data do último login do usuário
+    materias_professor : list
+        lista de matérias que o professor leciona
+    turmas_professor : dict
+        dicionário de turmas que o professor leciona
+    atividades_professor : dict
+        dicionário de atividades que o professor criou
+    salario : float
+        salário do professor
+
+    Methods
+    -------
+    validar_email(email)
+        Valida o email do usuário
+    validar_senha(senha)
+        Valida a senha do usuário
+    """
     def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, materias_professor=[], turmas_professor={}, atividades_professor={}, salario=1320):
+        """
+        Parameters
+        ----------
+        id : int
+            id do usuário
+        email : str
+            email do usuário
+        senha : str
+            senha do usuário
+        nome : str
+            nome do usuário
+        sobrenome : str
+            sobrenome do usuário
+        nascimento : str
+            data de nascimento do usuário
+        data_cadastro : str
+            data de cadastro do usuário
+        ultimo_login : str
+            data do último login do usuário
+        """
         super().__init__(id, email, senha, nome, sobrenome,
                          nascimento, data_cadastro, ultimo_login)
         self._materias_professor = materias_professor
@@ -109,12 +313,38 @@ class Professor(Usuario):
         self._salario = salario
 
     def validar_email(self, email):
+        """
+        Valida o email do usuário
+
+        Parameters
+        ----------
+        email : str
+            email do usuário
+
+        Returns
+        -------
+        bool
+            True se o email for válido, False caso contrário
+        """
         if email.find("@") != -1:
             return True
         else:
             return False
 
     def validar_senha(self, senha):
+        """
+        Valida a senha do usuário
+
+        Parameters
+        ----------
+        senha : str
+            senha do usuário
+
+        Returns
+        -------
+        bool
+            True se a senha for válida, False caso contrário
+        """
         if self._senha == senha:
             return True
         else:
@@ -122,7 +352,66 @@ class Professor(Usuario):
 
 
 class Aluno(Usuario):
+    """
+    Classe que representa um aluno do sistema
+
+    ...
+
+    Attributes
+    ---------
+    id : int
+        id do usuário
+    email : str
+        email do usuário
+    senha : str
+        senha do usuário
+    nome : str
+        nome do usuário
+    sobrenome : str
+        sobrenome do usuário
+    nascimento : str
+        data de nascimento do usuário
+    data_cadastro : str
+        data de cadastro do usuário
+    ultimo_login : str
+        data do último login do usuário
+    turma : str
+        turma do aluno
+    pontuacao : int
+        pontuação do aluno
+
+    Methods
+    -------
+    validar_email(email)
+        Valida o email do usuário
+    validar_senha(senha)
+        Valida a senha do usuário
+    """
     def __init__(self, id, email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login, turma, pontuacao=0):
+        """
+        Parameters
+        ----------
+        id : int
+            id do usuário
+        email : str
+            email do usuário
+        senha : str
+            senha do usuário
+        nome : str
+            nome do usuário
+        sobrenome : str
+            sobrenome do usuário
+        nascimento : str
+            data de nascimento do usuário
+        data_cadastro : str
+            data de cadastro do usuário
+        ultimo_login : str
+            data do último login do usuário
+        turma : str
+            turma do aluno
+        pontuacao : int
+            pontuação do aluno
+        """
         super().__init__(id, email, senha, nome, sobrenome,
                          nascimento, data_cadastro, ultimo_login)
         self._turma = turma
@@ -132,12 +421,38 @@ class Aluno(Usuario):
         return f'{self._id},{self._email},{self._senha},{self._nome},{self._sobrenome},{self._nascimento},{self._data_cadastro},{self._ultimo_login},{self._turma},{self._pontuacao}'
 
     def validar_email(self, email):
+        """
+        Valida o email do usuário
+
+        Parameters
+        ----------
+        email : str
+            email do usuário
+
+        Returns
+        -------
+        bool
+            True se o email for válido, False caso contrário
+        """
         if email.find("@") != -1:
             return True
         else:
             return False
 
     def validar_senha(self, senha):
+        """
+        Valida a senha do usuário
+
+        Parameters
+        ----------
+        senha : str
+            senha do usuário
+
+        Returns
+        -------
+        bool
+            True se a senha for válida, False caso contrário
+        """
         if self._senha == senha:
             return True
         else:
@@ -145,7 +460,40 @@ class Aluno(Usuario):
         
         
 class Materia:
+    """
+    Classe que representa uma matéria
+
+    ...
+
+    Attributes
+    ---------
+    id : int
+        id da matéria
+    nome : str
+        nome da matéria
+    atividades : dict
+        dicionário de atividades da matéria
+    professores : list
+        lista de professores que lecionam a matéria
+
+    Methods
+    -------
+    abrir(usuario)
+        Abre as atividades da matéria
+    """
     def __init__(self, id, nome, atividades={}, professores=[]):
+        """
+        Parameters
+        ----------
+        id : int
+            id da matéria
+        nome : str
+            nome da matéria
+        atividades : dict
+            dicionário de atividades da matéria
+        professores : list
+            lista de professores que lecionam a matéria
+        """
         self._id = id
         self._nome = nome.capitalize()
         self._atividades = atividades
@@ -170,6 +518,14 @@ class Materia:
     #     self._atividades.append(atividade)
 
     def abrir(self, usuario):
+        """
+        Abre as atividades da matéria
+
+        Parameters
+        ----------
+        usuario : Usuario
+            usuário que está abrindo as atividades
+        """
         for num, atividade in self._atividades.items():
             print(f'{num} - {atividade.titulo}')
         opc = int(input('Digite o número da atividade: '))
@@ -189,7 +545,66 @@ class Materia:
 
 
 class Atividade:
+    """
+    Classe que representa uma atividade
+
+    ...
+
+    Attributes
+    ---------
+    id : int
+        id da atividade
+    titulo : str
+        título da atividade
+    descricao : str
+        descrição da atividade
+    professor_id : int
+        id do professor que criou a atividade
+    turma_id : int
+        id da turma da atividade
+    materia_id : int
+        id da matéria da atividade
+    questoes : dict
+        dicionário de questões da atividade
+    respondidas : int
+        quantidade de questões respondidas
+    pontuacao : int
+        pontuação da atividade
+
+    Methods
+    -------
+    imprimir_questoes()
+        Imprime as questões da atividade
+    add_questao(questao)
+        Adiciona uma questão à atividade
+    remover_questao(num)
+        Remove uma questão da atividade
+    editar_questao(num)
+        Edita uma questão da atividade
+    resetar()
+        Reseta a atividade
+    abrir(sistema)
+        Abre a atividade
+    """
     def __init__(self, id, titulo, descricao, professor_id, turma_id, materia_id, questoes={}):
+        """
+        Parameters
+        ----------
+        id : int
+            id da atividade
+        titulo : str
+            título da atividade
+        descricao : str
+            descrição da atividade
+        professor_id : int
+            id do professor que criou a atividade
+        turma_id : int
+            id da turma da atividade
+        materia_id : int
+            id da matéria da atividade
+        questoes : dict
+            dicionário de questões da atividade
+        """
         self._id = id
         self._titulo = titulo
         self._descricao = descricao
@@ -204,6 +619,10 @@ class Atividade:
         return f'{self._id}//{self._titulo}//{self._descricao}//{self._professor_id}//{self._turma_id}//{self._materia_id}//{self._respondidas}//{self._pontuacao}'
     
     def imprimir_questoes(self):
+        """
+        Imprime as questões da atividade
+        
+        """
         for num, questao in self._questoes.items():
             print(f'{num} - {questao.enunciado}')
             print(f'A) {questao.letra_a}')
@@ -237,15 +656,39 @@ class Atividade:
         return self._questoes
 
     def add_questao(self, questao):
+        """
+        Adiciona uma questão à atividade
+
+        Parameters
+        ----------
+        questao : Questao
+            questão a ser adicionada
+        """
         self._questoes[len(self._questoes) * -1] = questao
 
     def remover_questao(self, num):
+        """
+        Remove uma questão da atividade
+
+        Parameters
+        ----------
+        num : int
+            número da questão a ser removida
+        """
         try:
             self._questoes.pop(num)
         except KeyError:
             print('Questão não encontrada')
 
     def editar_questao(self, num):
+        """
+        Edita uma questão da atividade
+
+        Parameters
+        ----------
+        num : int
+            número da questão a ser editada
+        """
         try:
             print(
                 f'{num} - {self._questoes[num].enunciado}\n'
@@ -305,12 +748,23 @@ class Atividade:
             print('Questão não encontrada')
 
     def resetar(self):
+        """
+        Reseta a atividade
+        """
         self._respondidas = 0
         self._pontuacao = 0
         for questao in self._questoes.values():
             questao.respondida = False
 
     def abrir(self, sistema):
+        """
+        Abre a atividade
+
+        Parameters
+        ----------
+        sistema : Sistema
+            sistema que está abrindo a atividade
+        """
         if isinstance(sistema.usuario, Aluno):
             self.imprimir_questoes()
             print('0 - Sair')
@@ -373,7 +827,62 @@ class Atividade:
 
 
 class Questao:
+    """
+    Classe que representa uma questão
+
+    ...
+
+    Attributes
+    ---------
+    id : int
+        id da questão
+    atividade_id : int
+        id da atividade da questão
+    enunciado : str
+        enunciado da questão
+    resposta : str
+        resposta da questão
+    letra_a : str
+        alternativa A da questão
+    letra_b : str
+        alternativa B da questão
+    letra_c : str
+        alternativa C da questão
+    letra_d : str
+        alternativa D da questão
+    letra_e : str
+        alternativa E da questão
+    respondida : bool
+        True se a questão foi respondida, False caso contrário
+
+    Methods
+    -------
+    validar_resposta(resposta)
+        Valida a resposta da questão
+    """
     def __init__(self, id, atividade_id, enunciado, resposta, letra_a, letra_b, letra_c, letra_d, letra_e):
+        """
+        Parameters
+        ----------
+        id : int
+            id da questão
+        atividade_id : int
+            id da atividade da questão
+        enunciado : str
+            enunciado da questão
+        resposta : str
+            resposta da questão
+        letra_a : str
+            alternativa A da questão
+        letra_b : str
+            alternativa B da questão
+        letra_c : str
+            alternativa C da questão
+        letra_d : str
+            alternativa D da questão
+        letra_e : str
+            alternativa E da questão
+        """
         self._id = id
         self._atividade_id = atividade_id
         self._resposta = resposta
@@ -405,6 +914,19 @@ class Questao:
         self._resposta = resposta
 
     def validar_resposta(self, resposta):
+        """
+        Valida a resposta da questão
+
+        Parameters
+        ----------
+        resposta : str
+            resposta da questão
+
+        Returns
+        -------
+        bool
+            True se a resposta for válida, False caso contrário
+        """
         if not self.respondida:
             self.respondida = True
             if resposta == self._resposta:
