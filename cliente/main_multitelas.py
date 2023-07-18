@@ -8,8 +8,8 @@ from cod_tela_atividade_aluno import Ui_TelaAtividade
 from cod_tela_atividade_professor import Ui_AtividadeProfessor
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
-from modelos import Professor, Aluno, Materia, Atividade, Questao
-# pyuic5 -x tela_principal.ui -o tela_principal.py
+from modelos import Professor, Aluno, Materia, Turma, Atividade, Questao
+# pyuic5 -x tela_cadastro.ui -o tela_cadastro.py
 
 
 class Ui_Main(QtWidgets.QWidget):
@@ -194,6 +194,7 @@ class Main(QMainWindow, Ui_Main):
         self.setupUi(self)
         self._usuario = None
         self._materias = {}
+        self._turmas = {}
         ip = 'LOCALHOST'
         port = 5000
         addr = ((ip, port))
@@ -239,6 +240,10 @@ class Main(QMainWindow, Ui_Main):
     @property
     def materias(self):
         return self._materias
+    
+    @property
+    def turmas(self):
+        return self._turmas
 
     def get_materias_id(self, materia_nome):
         """

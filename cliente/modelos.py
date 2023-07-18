@@ -517,7 +517,7 @@ class Materia:
     # def add_atividade(self, atividade):
     #     self._atividades.append(atividade)
 
-    def abrir(self, usuario):
+    # def abrir(self, usuario):
         """
         Abre as atividades da matéria
 
@@ -542,6 +542,81 @@ class Materia:
             except KeyError:
                 print('Atividade não encontrada')
                 opc = int(input('Digite o número da atividade: '))
+
+
+class Turma:
+    def __init__(self, id, nome, num_sala, atividades={}, alunos={}, professores={}):
+        self._id = id
+        self._nome = nome
+        self._num_sala = num_sala
+        self._atividades = atividades
+        self._alunos = alunos
+        self._professores = professores
+
+    def __str__(self):
+        return f'{self._id}-{self._nome}'
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def nome(self):
+        return self._nome
+
+    @property
+    def atividades(self):
+        return self._atividades
+
+    @property
+    def alunos(self):
+        return self._alunos
+
+    @property
+    def professores(self):
+        return self._professores
+
+    # def add_aluno(self, aluno):
+    #     self._alunos.append(aluno)
+
+    def abrir(self, sistema):
+        for num, atividade in self._atividades.items():
+            print(f'{num} - {atividade.titulo}')
+        print(
+            '+ - Adicionar atividade\n'
+            '- - Remover atividade\n'
+            '0 - Sair'
+        )
+        opc = input('Digite a opção: ')
+        opc = int(opc) if opc.isdigit() else opc
+        while opc:
+            if opc == '+':
+                nova = None
+                while not nova:
+                    titulo = input('Digite o título da atividade: ')
+                    descricao = input('Digite a descrição da atividade: ')
+                    print('Materias:')
+                    for materia in sistema.usuario.materias:
+                        print(f'{materia[0]} - {materia[1].capitalize()}')
+                    materia_id = int(input('Digite o id da matéria: '))
+                    if materia_id in [materia[0] for materia in sistema.usuario.materias]:
+                        nova = sistema.cadastrar_atividade(titulo, descricao, self.id, materia_id)
+                    else:
+                        print('Matéria não encontrada')
+                    if nova:
+                        self._atividades[nova.id] = nova
+            elif opc == '-':
+                pass
+            else:
+                try:
+                    self._atividades[opc].abrir(sistema)
+                except KeyError:
+                    print('Atividade não encontrada')
+            for num, atividade in self._atividades.items():
+                print(f'{num} - {atividade.titulo}')
+            print('0 - Sair')
+            opc = input('Digite a opção: ')
+            opc = int(opc) if opc.isdigit() else opc
 
 
 class Atividade:
@@ -655,108 +730,108 @@ class Atividade:
     def questoes(self):
         return self._questoes
 
-    def add_questao(self, questao):
-        """
-        Adiciona uma questão à atividade
+    # def add_questao(self, questao):
+    #     """
+    #     Adiciona uma questão à atividade
 
-        Parameters
-        ----------
-        questao : Questao
-            questão a ser adicionada
-        """
-        self._questoes[len(self._questoes) * -1] = questao
+    #     Parameters
+    #     ----------
+    #     questao : Questao
+    #         questão a ser adicionada
+    #     """
+    #     self._questoes[len(self._questoes) * -1] = questao
 
-    def remover_questao(self, num):
-        """
-        Remove uma questão da atividade
+    # def remover_questao(self, num):
+    #     """
+    #     Remove uma questão da atividade
 
-        Parameters
-        ----------
-        num : int
-            número da questão a ser removida
-        """
-        try:
-            self._questoes.pop(num)
-        except KeyError:
-            print('Questão não encontrada')
+    #     Parameters
+    #     ----------
+    #     num : int
+    #         número da questão a ser removida
+    #     """
+    #     try:
+    #         self._questoes.pop(num)
+    #     except KeyError:
+    #         print('Questão não encontrada')
 
-    def editar_questao(self, num):
-        """
-        Edita uma questão da atividade
+    # def editar_questao(self, num):
+    #     """
+    #     Edita uma questão da atividade
 
-        Parameters
-        ----------
-        num : int
-            número da questão a ser editada
-        """
-        try:
-            print(
-                f'{num} - {self._questoes[num].enunciado}\n'
-                f'A) {self._questoes[num].letra_a}\n'
-                f'B) {self._questoes[num].letra_b}\n'
-                f'C) {self._questoes[num].letra_c}\n'
-                f'D) {self._questoes[num].letra_d}\n'
-                f'E) {self._questoes[num].letra_e}\n'
-                '1 - Enunciado\n'
-                '2 - Resposta\n'
-                'a - Alternativa A\n'
-                'b - Alternativa B\n'
-                'c - Alternativa C\n'
-                'd - Alternativa D\n'
-                'e - Alternativa E\n'
-                '0 - Sair'
-            )
-            opc = input('Digite a opção: ')
-            opc = int(opc) if opc.isdigit() else opc
-            while opc:
-                if opc == 1:
-                    enunciado = input('Digite o enunciado: ')
-                    self._questoes[num].enunciado = enunciado
-                elif opc == 2:
-                    resposta = input('Digite a resposta: ')
-                    self._questoes[num].resposta = resposta
-                elif opc.isalpha() and opc.lower() == 'a':
-                    letra_a = input('Digite a alternativa A: ')
-                    self._questoes[num].letra_a = letra_a
-                elif opc.isalpha() and opc.lower() == 'b':
-                    letra_b = input('Digite a alternativa B: ')
-                    self._questoes[num].letra_b = letra_b
-                elif opc.isalpha() and opc.lower() == 'c':
-                    letra_c = input('Digite a alternativa C: ')
-                    self._questoes[num].letra_c = letra_c
-                elif opc.isalpha() and opc.lower() == 'd':
-                    letra_d = input('Digite a alternativa D: ')
-                    self._questoes[num].letra_d = letra_d
-                elif opc.isalpha() and opc.lower() == 'e':
-                    letra_e = input('Digite a alternativa E: ')
-                    self._questoes[num].letra_e = letra_e
-                else:
-                    print('Opção inválida')
-                print(
-                    '1 - Enunciado\n'
-                    '2 - Resposta\n'
-                    'a - Alternativa A\n'
-                    'b - Alternativa B\n'
-                    'c - Alternativa C\n'
-                    'd - Alternativa D\n'
-                    'e - Alternativa E\n'
-                    '0 - Sair'
-                )
-                opc = input('Digite a opção: ')
-                opc = int(opc) if opc.isdigit() else opc
-        except KeyError:
-            print('Questão não encontrada')
+    #     Parameters
+    #     ----------
+    #     num : int
+    #         número da questão a ser editada
+    #     """
+    #     try:
+    #         print(
+    #             f'{num} - {self._questoes[num].enunciado}\n'
+    #             f'A) {self._questoes[num].letra_a}\n'
+    #             f'B) {self._questoes[num].letra_b}\n'
+    #             f'C) {self._questoes[num].letra_c}\n'
+    #             f'D) {self._questoes[num].letra_d}\n'
+    #             f'E) {self._questoes[num].letra_e}\n'
+    #             '1 - Enunciado\n'
+    #             '2 - Resposta\n'
+    #             'a - Alternativa A\n'
+    #             'b - Alternativa B\n'
+    #             'c - Alternativa C\n'
+    #             'd - Alternativa D\n'
+    #             'e - Alternativa E\n'
+    #             '0 - Sair'
+    #         )
+    #         opc = input('Digite a opção: ')
+    #         opc = int(opc) if opc.isdigit() else opc
+    #         while opc:
+    #             if opc == 1:
+    #                 enunciado = input('Digite o enunciado: ')
+    #                 self._questoes[num].enunciado = enunciado
+    #             elif opc == 2:
+    #                 resposta = input('Digite a resposta: ')
+    #                 self._questoes[num].resposta = resposta
+    #             elif opc.isalpha() and opc.lower() == 'a':
+    #                 letra_a = input('Digite a alternativa A: ')
+    #                 self._questoes[num].letra_a = letra_a
+    #             elif opc.isalpha() and opc.lower() == 'b':
+    #                 letra_b = input('Digite a alternativa B: ')
+    #                 self._questoes[num].letra_b = letra_b
+    #             elif opc.isalpha() and opc.lower() == 'c':
+    #                 letra_c = input('Digite a alternativa C: ')
+    #                 self._questoes[num].letra_c = letra_c
+    #             elif opc.isalpha() and opc.lower() == 'd':
+    #                 letra_d = input('Digite a alternativa D: ')
+    #                 self._questoes[num].letra_d = letra_d
+    #             elif opc.isalpha() and opc.lower() == 'e':
+    #                 letra_e = input('Digite a alternativa E: ')
+    #                 self._questoes[num].letra_e = letra_e
+    #             else:
+    #                 print('Opção inválida')
+    #             print(
+    #                 '1 - Enunciado\n'
+    #                 '2 - Resposta\n'
+    #                 'a - Alternativa A\n'
+    #                 'b - Alternativa B\n'
+    #                 'c - Alternativa C\n'
+    #                 'd - Alternativa D\n'
+    #                 'e - Alternativa E\n'
+    #                 '0 - Sair'
+    #             )
+    #             opc = input('Digite a opção: ')
+    #             opc = int(opc) if opc.isdigit() else opc
+    #     except KeyError:
+    #         print('Questão não encontrada')
 
-    def resetar(self):
-        """
-        Reseta a atividade
-        """
-        self._respondidas = 0
-        self._pontuacao = 0
-        for questao in self._questoes.values():
-            questao.respondida = False
+    # def resetar(self):
+    #     """
+    #     Reseta a atividade
+    #     """
+    #     self._respondidas = 0
+    #     self._pontuacao = 0
+    #     for questao in self._questoes.values():
+    #         questao.respondida = False
 
-    def abrir(self, sistema):
+    # def abrir(self, sistema):
         """
         Abre a atividade
 

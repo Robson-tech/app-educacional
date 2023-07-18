@@ -44,7 +44,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideNone</enum>
@@ -166,7 +166,7 @@ color: rgb(102, 102, 102);</string>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_3">
+         <widget class="QComboBox" name="alunos_comboBox_turmas">
           <property name="minimumSize">
            <size>
             <width>240</width>
@@ -429,7 +429,7 @@ background-color: rgb(11, 97, 144);</string>
        <number>10</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="alunos_caixa_nome_2">
+       <widget class="QLineEdit" name="professor_caixa_nome">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -460,7 +460,7 @@ background-color: rgb(217, 217, 217);</string>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="alunos_caixa_sobrenome_2">
+       <widget class="QLineEdit" name="professor_caixa_sobrenome">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -491,7 +491,7 @@ background-color: rgb(217, 217, 217);</string>
        </widget>
       </item>
       <item>
-       <widget class="QDateEdit" name="alunos_caixa_nascimento_2">
+       <widget class="QDateEdit" name="professor_caixa_nascimento">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -522,7 +522,7 @@ color: rgb(102, 102, 102);</string>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QComboBox" name="comboBox_4">
+         <widget class="QComboBox" name="professor_comboBox_materias">
           <property name="minimumSize">
            <size>
             <width>240</width>
@@ -569,7 +569,7 @@ color: rgb(102, 102, 102);</string>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_5">
+         <widget class="QComboBox" name="professor_comboBox_turmas">
           <property name="minimumSize">
            <size>
             <width>240</width>
@@ -628,7 +628,7 @@ color: rgb(102, 102, 102);</string>
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="alunos_caixa_email_2">
+       <widget class="QLineEdit" name="professor_caixa_email">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -659,7 +659,7 @@ background-color: rgb(217, 217, 217);</string>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="alunos_caixa_senha1_2">
+       <widget class="QLineEdit" name="professor_caixa_senha1">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -698,7 +698,7 @@ background-color: rgb(217, 217, 217);</string>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="alunos_caixa_senha2_2">
+       <widget class="QLineEdit" name="professor_caixa_senha2">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -745,7 +745,7 @@ background-color: rgb(217, 217, 217);</string>
          <number>0</number>
         </property>
         <item>
-         <widget class="QPushButton" name="alunos_botao_voltar_2">
+         <widget class="QPushButton" name="professor_botao_voltar">
           <property name="minimumSize">
            <size>
             <width>150</width>
@@ -781,7 +781,7 @@ background-color: rgb(227, 246, 0);</string>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="alunos_botao_cadastrar_2">
+         <widget class="QPushButton" name="professor_botao_cadastrar">
           <property name="minimumSize">
            <size>
             <width>150</width>

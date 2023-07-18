@@ -214,6 +214,10 @@ class Turma:
     @property
     def nome(self):
         return self._nome
+    
+    @property
+    def num_sala(self):
+        return self._num_sala
 
     @property
     def atividades(self):
