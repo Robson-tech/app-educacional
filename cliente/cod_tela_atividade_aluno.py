@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from modelos import Atividade
 
 
 class Ui_TelaAtividade(object):
@@ -98,20 +99,6 @@ class Ui_TelaAtividade(object):
         self.verticalLayout.addItem(spacerItem)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.botao_verificar = QtWidgets.QPushButton(
-            self.scrollAreaWidgetContents)
-        self.botao_verificar.setMinimumSize(QtCore.QSize(0, 30))
-        self.botao_verificar.setMaximumSize(QtCore.QSize(200, 16777215))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.botao_verificar.setFont(font)
-        self.botao_verificar.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.botao_verificar.setStyleSheet("border: none;\n"
-                                           "border-radius: 15px;\n"
-                                           "background-color: rgb(0, 224, 22);")
-        self.botao_verificar.setObjectName("botao_verificar")
-        self.horizontalLayout_2.addWidget(self.botao_verificar)
         self.botao_publicar = QtWidgets.QPushButton(
             self.scrollAreaWidgetContents)
         self.botao_publicar.setMinimumSize(QtCore.QSize(0, 30))
@@ -131,14 +118,15 @@ class Ui_TelaAtividade(object):
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.botao_verificar.setText(self._translate("Atividade", "Verificar"))
         self.botao_publicar.setText(self._translate("Atividade", "Responder"))
 
     def retranslateUi(self, Atividade):
         Atividade.setWindowTitle(self._translate("Atividade", "Atividade"))
         self.botao_voltar.setText(self._translate("Atividade", "←"))
-        self.rotulo_titulo.setText(self._translate("Atividade", self.atividade.titulo))
-        self.rotulo_descricao.setText(self._translate("Atividade", self.atividade.descricao))
+        self.rotulo_titulo.setText(self._translate(
+            "Atividade", self.atividade.titulo))
+        self.rotulo_descricao.setText(self._translate(
+            "Atividade", self.atividade.descricao))
 
 
 class QuestaoAtividade(QtWidgets.QGroupBox):
@@ -227,15 +215,16 @@ class QuestaoAtividade(QtWidgets.QGroupBox):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Atividade = QtWidgets.QWidget()
+    TelaAtividade = QtWidgets.QWidget()
     ui = Ui_TelaAtividade()
-    ui.setupUi(Atividade, "historia")
-    ui.add_questao(1, "(Enem - 2016) Uma liga metálica sai do forno a uma temperatura de 3 000 ºC e diminui 1% de sua temperatura a cada 30 min. Use 0,477 como aproximação para log10(3) e 1,041 como aproximação para log10(11). O tempo decorrido, em hora, até que a liga atinja 30 °C é mais próximo de:",
+    atividade = Atividade(1, "titulo", "descricao", 1, 1, {})
+    ui.setupUi(TelaAtividade, atividade)
+    ui.add_questao(1, "(Enem - 2016) Uma liga metálica sai do forno a uma temperatura de 3 000 ºC e diminui 1% de sua temperatura a cada 30 min. Use 0,477 como aproximação para log10(3) e 1,041 como aproximação para log10(11). O tempo decorrido, em hora, até que a liga atinja 30 °C é mais próximo de:", 'a',
                    ["22", "50", "100", "200", "400"])
-    ui.add_questao(2, "(UFRGS - 2016) Se 10x = 20y, atribuindo 0,3 para log 2, então o valor de x/y é",
+    ui.add_questao(2, "(UFRGS - 2016) Se 10x = 20y, atribuindo 0,3 para log 2, então o valor de x/y é", 'b',
                    ["0,3", "0,5", "0,7", "1", "1,3"])
-    ui.add_questao(3, "(Enem - 2016) Uma liga metálica sai do forno a uma temperatura de 3 000 ºC e diminui 1% de sua temperatura a cada 30 min. Use 0,477 como aproximação para log10(3) e 1,041 como aproximação para log10(11). O tempo decorrido, em hora, até que a liga atinja 30 °C é mais próximo de:",
-                   ["22", "50", "100", "200", "400ldldldldldldldldldldldldldldldldldldldld"])
+    ui.add_questao(3, "(Enem - 2016) Uma liga metálica sai do forno a uma temperatura de 3 000 ºC e diminui 1% de sua temperatura a cada 30 min. Use 0,477 como aproximação para log10(3) e 1,041 como aproximação para log10(11). O tempo decorrido, em hora, até que a liga atinja 30 °C é mais próximo de:", 'e',
+                   ["22", "50", "100", "200", "400"])
     ui.add_rodape()
-    Atividade.show()
+    TelaAtividade.show()
     sys.exit(app.exec_())

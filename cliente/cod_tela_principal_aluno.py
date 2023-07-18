@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from modelos import Atividade
 
 
 class Ui_TelaPrincipalAluno(object):
@@ -129,38 +130,41 @@ class Ui_TelaPrincipalAluno(object):
         self.gridLayout = QtWidgets.QGridLayout(
             self.scrollAreaWidgetContents_2)
         self.gridLayout.setObjectName("gridLayout")
-        self.botoes_atividades = {}
+        self.itens_atividade = {}
         for i, atividade in enumerate(atividades.values()):
-            self.botoes_atividades[atividade.titulo] = QtWidgets.QPushButton(
-                self.scrollAreaWidgetContents_2)
-            sizePolicy = QtWidgets.QSizePolicy(
-                QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-            sizePolicy.setHorizontalStretch(0)
-            sizePolicy.setVerticalStretch(0)
-            sizePolicy.setHeightForWidth(
-                self.botoes_atividades[atividade.titulo].sizePolicy().hasHeightForWidth())
-            self.botoes_atividades[atividade.titulo].setSizePolicy(sizePolicy)
-            self.botoes_atividades[atividade.titulo].setMinimumSize(
-                QtCore.QSize(120, 150))
-            self.botoes_atividades[atividade.titulo].setMaximumSize(
-                QtCore.QSize(120, 150))
-            self.botoes_atividades[atividade.titulo].setCursor(
-                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.botoes_atividades[atividade.titulo].setLayoutDirection(
-                QtCore.Qt.LeftToRight)
-            self.botoes_atividades[atividade.titulo].setAutoFillBackground(False)
-            self.botoes_atividades[atividade.titulo].setStyleSheet("border-radius: 10px;\n"
-                                                         "color: red;\n"
-                                                         "background-color: rgb(217, 217, 217);\n"
-                                                         "background-image: url(img/lista.png);\n"
-                                                         "background-repeat: no-repeat;\n"
-                                                         "background-position: center center;")
-            self.botoes_atividades[atividade.titulo].setObjectName(f"botao_atividade{i}")
+            self.itens_atividade.update({atividade.titulo: ItemAtividade(self.scrollAreaWidgetContents_2)})
+            # self.botoes_atividades[atividade.titulo] = QtWidgets.QPushButton(
+            #     self.scrollAreaWidgetContents_2)
+            # sizePolicy = QtWidgets.QSizePolicy(
+            #     QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+            # sizePolicy.setHorizontalStretch(0)
+            # sizePolicy.setVerticalStretch(0)
+            # sizePolicy.setHeightForWidth(
+            #     self.botoes_atividades[atividade.titulo].sizePolicy().hasHeightForWidth())
+            # self.botoes_atividades[atividade.titulo].setSizePolicy(sizePolicy)
+            # self.botoes_atividades[atividade.titulo].setMinimumSize(
+            #     QtCore.QSize(120, 150))
+            # self.botoes_atividades[atividade.titulo].setMaximumSize(
+            #     QtCore.QSize(120, 150))
+            # self.botoes_atividades[atividade.titulo].setCursor(
+            #     QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            # self.botoes_atividades[atividade.titulo].setLayoutDirection(
+            #     QtCore.Qt.LeftToRight)
+            # self.botoes_atividades[atividade.titulo].setAutoFillBackground(False)
+            # self.botoes_atividades[atividade.titulo].setStyleSheet("border-radius: 10px;\n"
+            #                                              "color: red;\n"
+            #                                              "background-color: rgb(217, 217, 217);\n"
+            #                                              "background-image: url(img/lista.png);\n"
+            #                                              "background-repeat: no-repeat;\n"
+            #                                              "background-position: center center;")
+            # self.botoes_atividades[atividade.titulo].setObjectName(f"botao_atividade{i}")
             self.gridLayout.addWidget(
-                self.botoes_atividades[atividade.titulo], i // 4, i % 4, 1, 1)
+                self.itens_atividade[atividade.titulo], i // 4, i % 4, 1, 1)
             if funcao_criar_pagina_atividade:
-                self.botoes_atividades[atividade.titulo].clicked.connect(funcao_criar_pagina_atividade(
+                self.itens_atividade[atividade.titulo].botao_atividade.clicked.connect(funcao_criar_pagina_atividade(
                     atividade))
+            self.itens_atividade[atividade.titulo].label_titulo_atividade.setText(
+                self._translate("TelaPrincipalAluno", atividade.titulo))
         spacerItem = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
@@ -269,7 +273,49 @@ class Ui_TelaPrincipalAluno(object):
         self.botao_logoff.setText(
             self._translate("TelaPrincipalAluno", "Logoff"))
         self.botao_sair.setText(self._translate("TelaPrincipalAluno", "Sair"))
-# import img_rc
+
+
+class ItemAtividade(QtWidgets.QGroupBox):
+    def __init__(self, scrollAreaWidgetContents):
+        super().__init__(scrollAreaWidgetContents)
+        self.setMinimumSize(QtCore.QSize(120, 190))
+        self.setMaximumSize(QtCore.QSize(120, 190))
+        self.setTitle("")
+        self.setObjectName("atividade")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self)
+        self.verticalLayout.setContentsMargins(0, 0, 0, -1)
+        self.verticalLayout.setSpacing(10)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.botao_atividade = QtWidgets.QPushButton(self)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.botao_atividade.sizePolicy().hasHeightForWidth())
+        self.botao_atividade.setSizePolicy(sizePolicy)
+        self.botao_atividade.setMinimumSize(QtCore.QSize(120, 150))
+        self.botao_atividade.setMaximumSize(QtCore.QSize(120, 150))
+        self.botao_atividade.setCursor(
+            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_atividade.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.botao_atividade.setAutoFillBackground(False)
+        self.botao_atividade.setStyleSheet("border-radius: 10px;\n"
+                                             "background-color: rgb(217, 217, 217);\n"
+                                             "background-image: url(img/lista.png);\n"
+                                             "background-repeat: no-repeat;\n"
+                                             "background-position: center center;")
+        self.botao_atividade.setText("")
+        self.botao_atividade.setObjectName("botao_atividade")
+        self.verticalLayout.addWidget(self.botao_atividade)
+        self.label_titulo_atividade = QtWidgets.QLabel(self)
+        self.label_titulo_atividade.setMinimumSize(QtCore.QSize(120, 15))
+        self.label_titulo_atividade.setMaximumSize(QtCore.QSize(120, 15))
+        self.label_titulo_atividade.setStyleSheet(
+            "background-color: rgb(253, 255, 102);")
+        self.label_titulo_atividade.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_titulo_atividade.setObjectName("label_titulo_atividade")
+        self.verticalLayout.addWidget(self.label_titulo_atividade)
 
 
 if __name__ == "__main__":
@@ -278,7 +324,13 @@ if __name__ == "__main__":
     TelaPrincipalAluno = QtWidgets.QWidget()
     ui = Ui_TelaPrincipalAluno()
     ui.setupUi(TelaPrincipalAluno)
-    ui.add_materia("Matemática", [])
+    ui.add_materia("Matemática", {
+        "MMC e MDC": Atividade(1, "MMC e MDC", "Matemática", 1, 1, 1, {}),
+        "Função Afim": Atividade(2, "Função Afim", "Matemática", 1, 1, 1, {}),
+        "Radiciação": Atividade(3, "Radiciação", "Matemática", 1, 1, 1, {}),
+        "Potência": Atividade(4, "Potência", "Matemática", 1, 1, 1, {}),
+        "Equações": Atividade(5, "Equações", "Matemática", 1, 1, 1, {}),
+    })
     # ui.add_materia("Química")
     # ui.add_materia("História")
     # ui.add_materia("Inglês")

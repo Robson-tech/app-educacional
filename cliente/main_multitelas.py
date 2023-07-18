@@ -9,11 +9,78 @@ from cod_tela_atividade_professor import Ui_AtividadeProfessor
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
 from modelos import Professor, Aluno, Materia, Atividade, Questao
-# pyuic5 -x tela_atividade_professor.ui -o tela_atividade_professor.py
+# pyuic5 -x tela_principal.ui -o tela_principal.py
 
 
 class Ui_Main(QtWidgets.QWidget):
+    """
+    Classe que controla as telas do programa
+    
+    ...
+
+    Attributes
+    ----------
+    stack : list
+        lista de widgets
+    atividades : dict
+        dicionário de atividades
+    atividades_turma : dict
+        dicionário de atividades da turma
+    usuario : Professor or Aluno
+        usuário logado
+    materias : dict
+        dicionário de matérias
+
+    Methods
+    -------
+    get_materias_id(materia_nome)
+        retorna o id da matéria
+    get_atividade(id_atividade)
+        retorna a atividade
+    criar_pagina_atividade(atividade)
+        cria a página da atividade
+    criar_pagina_atividade_turma(turma_id, materia=None, atividade=None)
+        cria a página da atividade da turma
+    get_atividades_materia(materia_id)
+        retorna as atividades da matéria
+    get_atividades_turma_professor(turma_id, professor_id)
+        retorna as atividades da turma do professor
+    enviar_cadastro_atividade(mensagem)
+        envia o cadastro da atividade
+    cadastrar_tarefa()
+        cadastra a tarefa
+    submeter_atividade(atividade_id)
+        submete a atividade
+    enviar_cadastro(mensagem)
+        envia o cadastro
+    botao_logoff()
+        realiza o logoff
+    botao_sair()
+        realiza o logout
+    enviar_login(mensagem)
+        envia o login
+    botao_login()
+        realiza o login
+    botao_cadastrar_professor()
+        realiza o cadastro do professor
+    botao_cadastrar_aluno()
+        realiza o cadastro do aluno
+    botao_cadastrar()
+        realiza o cadastro
+    botao_voltar_cadastro()
+        volta para a tela de login
+    limpar_campos()
+        limpa os campos
+    """
     def setupUi(self, Main):
+        """
+        Configura a interface da tela principal
+
+        Parameters
+        ----------
+        Main : QMainWindow
+            janela principal
+        """
         Main.setObjectName("Main")
         Main.resize(500, 450)
 
@@ -42,11 +109,89 @@ class Ui_Main(QtWidgets.QWidget):
 
 
 class Main(QMainWindow, Ui_Main):
+    """
+    Classe que controla as telas do programa
+
+    ...
+
+    Attributes
+    ----------
+    stack : list
+        lista de widgets
+    atividades : dict
+        dicionário de atividades
+    atividades_turma : dict
+        dicionário de atividades da turma
+    usuario : Professor or Aluno
+        usuário logado
+    materias : dict
+        dicionário de matérias
+
+    Methods
+    -------
+    get_materias_id(materia_nome)
+        retorna o id da matéria
+    get_atividade(id_atividade)
+        retorna a atividade
+    criar_pagina_atividade(atividade)
+        cria a página da atividade
+    criar_pagina_atividade_turma(turma_id, materia=None, atividade=None)
+        cria a página da atividade da turma
+    get_atividades_materia(materia_id)
+        retorna as atividades da matéria
+    get_atividades_turma_professor(turma_id, professor_id)
+        retorna as atividades da turma do professor
+    enviar_cadastro_atividade(mensagem)
+        envia o cadastro da atividade
+    cadastrar_tarefa()
+        cadastra a tarefa
+    submeter_atividade(atividade_id)
+        submete a atividade
+    enviar_cadastro(mensagem)
+        envia o cadastro
+    botao_logoff()
+        realiza o logoff
+    botao_sair()
+        realiza o logout
+    enviar_login(mensagem)
+        envia o login
+    botao_login()
+        realiza o login
+    botao_cadastrar_professor()
+        realiza o cadastro do professor
+    botao_cadastrar_aluno()
+        realiza o cadastro do aluno
+    botao_cadastrar()
+        realiza o cadastro
+    botao_voltar_cadastro()
+        volta para a tela de login
+    limpar_campos()
+        limpa os campos
+    """
     def __init__(self, parent=None):
+        """
+        Construtor da classe
+
+        Parameters
+        ----------
+        parent : None
+            janela principal
+
+        Attributes
+        ----------
+        stack : list
+            lista de widgets
+        atividades : dict
+            dicionário de atividades
+        atividades_turma : dict
+            dicionário de atividades da turma
+        usuario : Professor or Aluno
+            usuário logado
+        materias : dict
+            dicionário de matérias
+        """
         super(QMainWindow, self).__init__(parent)
         self.setupUi(self)
-
-        '''Modificadores'''
         self._usuario = None
         self._materias = {}
         ip = 'LOCALHOST'
@@ -75,7 +220,6 @@ class Main(QMainWindow, Ui_Main):
             self.botao_cadastrar_aluno)
         self.tela_cadastro.professores_botao_cadastrar.clicked.connect(
             self.botao_cadastrar_professor)
-
         self.tela_principal_aluno.botao_logoff.clicked.connect(
             self.botao_logoff)
         self.tela_principal_aluno.botao_sair.clicked.connect(self.botao_sair)
@@ -97,12 +241,38 @@ class Main(QMainWindow, Ui_Main):
         return self._materias
 
     def get_materias_id(self, materia_nome):
+        """
+        Retorna o id da matéria
+
+        Parameters
+        ----------
+        materia_nome : str
+            nome da matéria
+
+        Returns
+        -------
+        int or None
+            id da matéria ou None se não encontrada
+        """
         for materia in self._materias.values():
             if materia.nome == materia_nome:
                 return materia.id
         return None
 
     def get_atividade(self, id_atividade):
+        """
+        Retorna a atividade
+
+        Parameters
+        ----------
+        id_atividade : int
+            id da atividade
+
+        Returns
+        -------
+        Atividade or None
+            atividade ou None se não encontrada
+        """
         self.client_socket.send(f'4|{id_atividade}'.encode())
         questoes = self.client_socket.recv(1024).decode().split('|')
         lista_questoes = []
@@ -116,6 +286,19 @@ class Main(QMainWindow, Ui_Main):
         return Atividade(*atividade_campos, lista_questoes)
 
     def criar_pagina_atividade(self, atividade):
+        """
+        Cria a página da atividade
+
+        Parameters
+        ----------
+        atividade : Atividade
+            atividade
+
+        Returns
+        -------
+        function
+            função que cria a página da atividade
+        """
         self.atividades.update({atividade.id: Ui_TelaAtividade()})
         novo = QtWidgets.QWidget()
         self.stack.append(novo)
@@ -142,6 +325,23 @@ class Main(QMainWindow, Ui_Main):
         return ir_para_pagina_atividade
 
     def criar_pagina_atividade_turma(self, turma_id, materia=None, atividade=None):
+        """
+        Cria a página da atividade da turma
+
+        Parameters
+        ----------
+        turma_id : int
+            id da turma
+        materia : str, optional
+            nome da matéria
+        atividade : Atividade, optional
+            atividade
+
+        Returns
+        -------
+        function
+            função que cria a página da atividade da turma
+        """
         titulo = len(self.stack) + 1
         self.atividades_turma[titulo] = Ui_AtividadeProfessor()
         novo = QtWidgets.QWidget()
@@ -171,6 +371,19 @@ class Main(QMainWindow, Ui_Main):
         return ir_para_pagina_atividade
 
     def get_atividades_materia(self, materia_id):
+        """
+        Retorna as atividades da matéria
+
+        Parameters
+        ----------
+        materia_id : int
+            id da matéria
+
+        Returns
+        -------
+        dict
+            dicionário de atividades
+        """
         self.client_socket.send(f'3|{materia_id}'.encode())
         atividades = self.client_socket.recv(32784).decode().split('|')
         lista_atividades = {}
@@ -186,6 +399,21 @@ class Main(QMainWindow, Ui_Main):
         return lista_atividades
 
     def get_atividades_turma_professor(self, turma_id, professor_id):
+        """
+        Retorna as atividades da turma do professor
+
+        Parameters
+        ----------
+        turma_id : int
+            id da turma
+        professor_id : int
+            id do professor
+
+        Returns
+        -------
+        dict
+            dicionário de atividades
+        """
         self.client_socket.send(f'5|{turma_id},{professor_id}'.encode())
         atividades = self.client_socket.recv(32784).decode().split('|')
         if len(atividades) == 1:
@@ -203,6 +431,19 @@ class Main(QMainWindow, Ui_Main):
         return lista_atividades
 
     def enviar_cadastro_atividade(self, mensagem):
+        """
+        Envia o cadastro da atividade
+
+        Parameters
+        ----------
+        mensagem : str
+            mensagem de cadastro da atividade para o servidor
+
+        Returns
+        -------
+        bool
+            True se a atividade foi cadastrada com sucesso, False caso contrário
+        """
         if mensagem.split('|')[0] == '6':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode()
@@ -211,6 +452,9 @@ class Main(QMainWindow, Ui_Main):
         return False
 
     def cadastrar_tarefa(self):
+        """
+        Cadastra a tarefa
+        """
         atividade_id = self.atividades_turma[
             self.QtStack.currentIndex() + 1].atividade.id
         titulo = self.atividades_turma[
@@ -253,6 +497,14 @@ class Main(QMainWindow, Ui_Main):
             QMessageBox.about(self, "Erro", "Matéria não encontrada")
 
     def submeter_atividade(self, atividade_id):
+        """
+        Submete a atividade
+
+        Parameters
+        ----------
+        atividade_id : int
+            id da atividade a ser submetida ao servidor
+        """
         aluno_id = self.usuario.id
         mensagem = f'7|{atividade_id}|{aluno_id}'
         acertos = 0
@@ -270,6 +522,19 @@ class Main(QMainWindow, Ui_Main):
             QMessageBox.about(self, "Erro", "Erro ao submeter atividade")
 
     def enviar_cadastro(self, mensagem):
+        """
+        Envia o cadastro
+
+        Parameters
+        ----------
+        mensagem : str
+            mensagem de cadastro para o servidor
+
+        Returns
+        -------
+        bool
+            True se o cadastro foi realizado com sucesso, False caso contrário
+        """
         if mensagem.split('|')[0] == '2':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode()
@@ -279,6 +544,9 @@ class Main(QMainWindow, Ui_Main):
         return False
 
     def botao_logoff(self):
+        """
+        Realiza o logoff
+        """
         mensagem = '0'
         self.usuario = None
         self.tela_principal_professor.limpar_paginas()
@@ -287,12 +555,28 @@ class Main(QMainWindow, Ui_Main):
         self.QtStack.setCurrentIndex(0)
 
     def botao_sair(self):
+        """
+        Encerra o programa
+        """
         mensagem = '-1'
         self.client_socket.send(mensagem.encode())
         self.client_socket.close()
         exit()
 
     def enviar_login(self, mensagem):
+        """
+        Envia o login
+
+        Parameters
+        ----------
+        mensagem : str
+            mensagem a ser enviada para o servidor
+
+        Returns
+        -------
+        bool or list
+            False se o login falhou, lista com os dados do usuário se o login foi realizado com sucesso
+        """
         if mensagem.split('|')[0] == '1':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode().split('|')
@@ -309,6 +593,9 @@ class Main(QMainWindow, Ui_Main):
         return False
 
     def botao_login(self):
+        """
+        Realiza o login
+        """
         email = self.tela_login.caixa_email.text()
         senha = self.tela_login.caixa_senha.text()
         mensagem = f'1|{email},{senha}'
@@ -338,6 +625,9 @@ class Main(QMainWindow, Ui_Main):
             QMessageBox.about(self, "Erro", "E-mail ou senha não preenchidos")
 
     def botao_cadastrar_professor(self):
+        """
+        Realiza o cadastro do professor
+        """
         email = self.tela_cadastro.professores_caixa_email.text()
         senha1 = self.tela_cadastro.professores_caixa_senha1.text()
         senha2 = self.tela_cadastro.professores_caixa_senha2.text()
@@ -361,6 +651,9 @@ class Main(QMainWindow, Ui_Main):
             QMessageBox.about(self, "Erro", "Preencha todos os campos")
 
     def botao_cadastrar_aluno(self):
+        """
+        Realiza o cadastro do aluno
+        """
         email = self.tela_cadastro.alunos_caixa_email.text()
         senha1 = self.tela_cadastro.alunos_caixa_senha1.text()
         senha2 = self.tela_cadastro.alunos_caixa_senha2.text()
@@ -385,12 +678,21 @@ class Main(QMainWindow, Ui_Main):
             QMessageBox.about(self, "Erro", "Preencha todos os campos")
 
     def botao_cadastrar(self):
+        """
+        Realiza o cadastro
+        """
         self.QtStack.setCurrentIndex(1)
 
     def botao_voltar_cadastro(self):
+        """
+        Volta para a tela de login
+        """
         self.QtStack.setCurrentIndex(0)
 
     def limpar_campos(self):
+        """
+        Limpa os campos de cadastro de professor e aluno
+        """
         self.tela_cadastro.alunos_caixa_email.clear()
         self.tela_cadastro.alunos_caixa_senha1.clear()
         self.tela_cadastro.alunos_caixa_senha2.clear()

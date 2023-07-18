@@ -732,7 +732,7 @@ class MyThread(threading.Thread):
     run()
         Executa a thread.
     """
-    def __init__(self, client_address, serv_socket, client_socket):
+    def __init__(self, serv_socket, client_address, client_socket):
         """
         Parameters
         ----------
@@ -746,9 +746,9 @@ class MyThread(threading.Thread):
         threading.Thread.__init__(self)
         self.name = None
         self.sistema = SistemaEducacional()
+        self.serv_socket = serv_socket
         self.client_address = client_address
         self.client_socket = client_socket
-        self.serv_socket = serv_socket
         print(f'Nova conexão, endereço: {self.client_address}')
 
     def run(self):
@@ -892,6 +892,7 @@ class MyThread(threading.Thread):
                     print(f'Conexão com {self.client_address} finalizada')
                     self.client_socket.close()
                     self.sistema.fechar_bd()
+                    break
                 else:
                     raise Exception(
                         f'Conexão com {self.client_address} finalizada inesperadamente')
@@ -938,8 +939,8 @@ class Servidor:
         serv_socket : socket
             Socket do servidor.
         """
-        self.host = 'LOCALHOST'
-        self.port = 5000
+        self.host = settings.IP_SERVIDOR
+        self.port = settings.PORTA_SERVIDOR
         self.addr = (self.host, self.port)
         self.serv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serv_socket.bind(self.addr)
@@ -953,8 +954,7 @@ class Servidor:
         while True:
             try:
                 client_socket, client_address = self.serv_socket.accept()
-                my_thread = MyThread(
-                    client_address, self.serv_socket, client_socket)
+                my_thread = MyThread(self.serv_socket, client_address, client_socket)
                 my_thread.start()
             except KeyboardInterrupt:
                 print('Servidor encerrado')
