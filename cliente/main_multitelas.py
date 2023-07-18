@@ -9,6 +9,7 @@ from cod_tela_atividade_professor import Ui_AtividadeProfessor
 from cod_tela_login import Ui_Login
 from cod_tela_cadastro import Ui_Cadastro
 from modelos import Professor, Aluno, Materia, Turma, Atividade, Questao
+import settings
 # pyuic5 -x tela_cadastro.ui -o tela_cadastro.py
 
 
@@ -195,8 +196,8 @@ class Main(QMainWindow, Ui_Main):
         self._usuario = None
         self._materias = {}
         self._turmas = {}
-        ip = 'LOCALHOST'
-        port = 5000
+        ip = settings.IP_SERVIDOR
+        port = settings.PORTA_SERVIDOR
         addr = ((ip, port))
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(addr)
