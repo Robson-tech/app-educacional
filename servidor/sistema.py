@@ -712,7 +712,7 @@ class MyThread(threading.Thread):
     """
     Classe para criar uma thread para cada cliente conectado ao servidor.
 
-    ...
+    Classe responsavel por criar uma thread para cada cliente conectado ao servidor.
 
     Attributes
     ----------
@@ -753,7 +753,7 @@ class MyThread(threading.Thread):
 
     def run(self):
         """
-        Executa a thread.
+        Script de execução da thread.
         """
         enviar = '1|'
         for materia in self.sistema.materias.values():
@@ -907,7 +907,7 @@ class Servidor:
     """
     Classe que representa o servidor do sistema.
 
-    ...
+    Classe responsavel por iniciar o servidor e criar uma thread para cada cliente conectado.
 
     Attributes
     ----------
@@ -970,7 +970,7 @@ class Teste:
     """
     Classe para testar o sistema.
 
-    ...
+    Classe responsavel por testar o sistema realizando as operacoes de login, cadastro, submissao de atividade e logout.
 
     Attributes
     ----------
