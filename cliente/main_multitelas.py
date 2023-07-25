@@ -16,7 +16,7 @@ import settings
 class Ui_Main(QtWidgets.QWidget):
     """
     Classe que controla as telas do programa
-    
+
     ...
 
     Attributes
@@ -73,6 +73,7 @@ class Ui_Main(QtWidgets.QWidget):
     limpar_campos()
         limpa os campos
     """
+
     def setupUi(self, Main):
         """
         Configura a interface da tela principal
@@ -169,6 +170,7 @@ class Main(QMainWindow, Ui_Main):
     limpar_campos()
         limpa os campos
     """
+
     def __init__(self, parent=None):
         """
         Construtor da classe
@@ -201,26 +203,15 @@ class Main(QMainWindow, Ui_Main):
         addr = ((ip, port))
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(addr)
-        if self._materias == {}:
-            resposta = self.client_socket.recv(1024).decode().split('|')
-            for materia in resposta[1].split(',')[:-1]:
-                materia_id = materia.split('-')[0]
-                materia_nome = materia.split('-')[1]
-                self._materias.update(
-                    {materia_id: Materia(materia_id, materia_nome)})
-                atividades = self.get_atividades_materia(materia_id)
-                self.tela_principal_aluno.add_materia(
-                    materia_nome.capitalize(), atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
-            self.tela_principal_aluno.inserir_espacamento()
         self.tela_login.botao_login.clicked.connect(self.botao_login)
         self.tela_login.botao_cadastro.clicked.connect(self.botao_cadastrar)
         self.tela_cadastro.alunos_botao_voltar.clicked.connect(
             self.botao_voltar_cadastro)
-        self.tela_cadastro.professores_botao_voltar.clicked.connect(
+        self.tela_cadastro.professor_botao_voltar.clicked.connect(
             self.botao_voltar_cadastro)
         self.tela_cadastro.alunos_botao_cadastrar.clicked.connect(
             self.botao_cadastrar_aluno)
-        self.tela_cadastro.professores_botao_cadastrar.clicked.connect(
+        self.tela_cadastro.professor_botao_cadastrar.clicked.connect(
             self.botao_cadastrar_professor)
         self.tela_principal_aluno.botao_logoff.clicked.connect(
             self.botao_logoff)
@@ -241,10 +232,41 @@ class Main(QMainWindow, Ui_Main):
     @property
     def materias(self):
         return self._materias
-    
+
     @property
     def turmas(self):
         return self._turmas
+
+    def request_materias(self):
+        self._materias = {}
+        self.client_socket.send('8'.encode())
+        resposta = self.client_socket.recv(1024).decode().split('|')
+        for materia in resposta[1].split(',')[:-1]:
+            materia_id = materia.split('-')[0]
+            materia_nome = materia.split('-')[1]
+            self._materias.update(
+                {materia_id: Materia(materia_id, materia_nome)})
+            if self._usuario:
+                atividades = self.get_atividades_materia(materia_id)
+                self.tela_principal_aluno.add_materia(
+                    materia_nome.capitalize(), atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
+        self.tela_principal_aluno.inserir_espacamento()
+
+    def request_turmas(self):
+        self._turmas = {}
+        self.client_socket.send('9'.encode())
+        resposta = self.client_socket.recv(1024).decode().split('|')
+        for turma in resposta[1].split(',')[:-1]:
+            turma_id = turma.split('-')[0]
+            turma_nome = turma.split('-')[1]
+            turma_numero = turma.split('-')[2]
+            self._turmas.update({turma_id: Turma(turma_id, turma_nome, turma_numero)})
+            if self._usuario:
+                atividades = self.get_atividades_turma_professor(
+                    turma_id, self._usuario.id)
+                self.tela_principal_professor.add_pagina(
+                    f'Turma-{turma_nome}', turma_id, atividades=atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
+        self.tela_principal_professor.inserir_espacamento()
 
     def get_materias_id(self, materia_nome):
         """
@@ -553,11 +575,13 @@ class Main(QMainWindow, Ui_Main):
         """
         Realiza o logoff
         """
-        mensagem = '0'
+        if isinstance(self.usuario, Professor):
+            self.tela_principal_professor.limpar_paginas()
+        elif isinstance(self.usuario, Aluno):
+            self.tela_principal_aluno.limpar_paginas()
+            self.tela_principal_aluno.limpar_materias()
+        self.client_socket.send('0'.encode())
         self.usuario = None
-        self.tela_principal_professor.limpar_paginas()
-        self.tela_principal_aluno.limpar_paginas()
-        self.client_socket.send(mensagem.encode())
         self.QtStack.setCurrentIndex(0)
 
     def botao_sair(self):
@@ -583,20 +607,22 @@ class Main(QMainWindow, Ui_Main):
         bool or list
             False se o login falhou, lista com os dados do usuário se o login foi realizado com sucesso
         """
+        logou = False
         if mensagem.split('|')[0] == '1':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode().split('|')
-            if resposta and resposta[0] == '0':
-                return False
-            elif resposta and resposta[0] == '1':
+
+            if resposta and resposta[0] == '1':
                 self.usuario = Professor(
                     *resposta[1].split(','), materias_professor=resposta[2].split(',')[:-1])
             elif resposta and resposta[0] == '2':
                 self.usuario = Aluno(*resposta[1].split(','))
+
             resposta = self.client_socket.recv(1024).decode().split('|')
+
             if resposta and resposta != '0':
-                return resposta
-        return False
+                logou = resposta
+        return logou
 
     def botao_login(self):
         """
@@ -609,21 +635,11 @@ class Main(QMainWindow, Ui_Main):
         if email and senha:
             resposta = self.enviar_login(mensagem)
             if resposta:
+                self.request_materias()
                 if resposta[0] == '1':
-                    for turma in resposta[2].split(',')[:-1]:
-                        turma_id = turma.split('-')[0]
-                        turma_nome = turma.split('-')[1]
-                        atividades = self.get_atividades_turma_professor(
-                            turma_id, self._usuario.id)
-                        self.tela_principal_professor.add_pagina(
-                            f'Turma-{turma_nome}', turma_id, atividades=atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade_turma)
-                    self.tela_principal_professor.inserir_espacamento()
+                    self.request_turmas()
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':
-                    for materia in self.materias.values():
-                        atividades = self.get_atividades_materia(materia.id)
-                        self.tela_principal_aluno.add_pagina(
-                            materia.nome.capitalize(), atividades, funcao_criar_pagina_atividade=self.criar_pagina_atividade)
                     self.QtStack.setCurrentIndex(2)
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")
@@ -634,18 +650,21 @@ class Main(QMainWindow, Ui_Main):
         """
         Realiza o cadastro do professor
         """
-        email = self.tela_cadastro.professores_caixa_email.text()
-        senha1 = self.tela_cadastro.professores_caixa_senha1.text()
-        senha2 = self.tela_cadastro.professores_caixa_senha2.text()
-        nome = self.tela_cadastro.professores_caixa_nome.text()
-        sobrenome = self.tela_cadastro.professores_caixa_sobrenome.text()
-        nascimento = self.tela_cadastro.professores_caixa_nascimento.text()
-        mensagem = f'2|{email},{senha1},{nome},{sobrenome},{nascimento},p'
+        email = self.tela_cadastro.professor_caixa_email.text()
+        senha1 = self.tela_cadastro.professor_caixa_senha1.text()
+        senha2 = self.tela_cadastro.professor_caixa_senha2.text()
+        nome = self.tela_cadastro.professor_caixa_nome.text()
+        sobrenome = self.tela_cadastro.professor_caixa_sobrenome.text()
+        nascimento = self.tela_cadastro.professor_caixa_nascimento.text()
+        materias = self.tela_cadastro.get_materias()
+        turmas = self.tela_cadastro.get_turmas()
+        mensagem = f'2|{email},{senha1},{nome},{sobrenome},{nascimento},{materias},{turmas},p'
         if email and senha1 and senha2 and nome and sobrenome and nascimento:
             if senha1 == senha2:
                 if self.enviar_cadastro(mensagem):
                     QMessageBox.about(
                         self, "Sucesso", "Professor cadastrado com sucesso")
+                    self.request_turmas()
                     self.limpar_campos()
                     self.QtStack.setCurrentIndex(2)
                 else:
@@ -666,7 +685,7 @@ class Main(QMainWindow, Ui_Main):
         nome = self.tela_cadastro.alunos_caixa_nome.text()
         sobrenome = self.tela_cadastro.alunos_caixa_sobrenome.text()
         nascimento = self.tela_cadastro.alunos_caixa_nascimento.text()
-        turma = self.tela_cadastro.alunos_caixa_turma.text()
+        turma = self.tela_cadastro.alunos_comboBox_turmas.currentText()
         mensagem = f'2|{email},{senha1},{nome},{sobrenome},{nascimento},{turma},a'
         if email and senha1 and senha2 and nome and sobrenome and nascimento:
             if senha1 == senha2:
@@ -687,6 +706,10 @@ class Main(QMainWindow, Ui_Main):
         """
         Realiza o cadastro
         """
+        self.request_materias()
+        self.request_turmas()
+        self.tela_cadastro.set_turmas(self._turmas)
+        self.tela_cadastro.set_materias(self._materias)
         self.QtStack.setCurrentIndex(1)
 
     def botao_voltar_cadastro(self):
@@ -706,14 +729,16 @@ class Main(QMainWindow, Ui_Main):
         self.tela_cadastro.alunos_caixa_sobrenome.clear()
         self.tela_cadastro.alunos_caixa_nascimento.setDate(
             QtCore.QDate(2000, 1, 1))
-        self.tela_cadastro.alunos_caixa_turma.clear()
-        self.tela_cadastro.professores_caixa_email.clear()
-        self.tela_cadastro.professores_caixa_senha1.clear()
-        self.tela_cadastro.professores_caixa_senha2.clear()
-        self.tela_cadastro.professores_caixa_nome.clear()
-        self.tela_cadastro.professores_caixa_sobrenome.clear()
-        self.tela_cadastro.professores_caixa_nascimento.setDate(
+        self.tela_cadastro.alunos_comboBox_turmas.setCurrentIndex(0)
+        self.tela_cadastro.professor_caixa_email.clear()
+        self.tela_cadastro.professor_caixa_senha1.clear()
+        self.tela_cadastro.professor_caixa_senha2.clear()
+        self.tela_cadastro.professor_caixa_nome.clear()
+        self.tela_cadastro.professor_caixa_sobrenome.clear()
+        self.tela_cadastro.professor_caixa_nascimento.setDate(
             QtCore.QDate(2000, 1, 1))
+        self.tela_cadastro.professor_comboBox_materias.setCurrentIndex(0)
+        self.tela_cadastro.professor_comboBox_turmas.setCurrentIndex(0)
 
 
 if __name__ == "__main__":

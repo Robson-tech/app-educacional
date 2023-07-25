@@ -44,7 +44,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="elideMode">
     <enum>Qt::ElideNone</enum>
@@ -64,7 +64,7 @@
       <rect>
        <x>40</x>
        <y>20</y>
-       <width>490</width>
+       <width>501</width>
        <height>541</height>
       </rect>
      </property>
@@ -164,6 +164,19 @@ color: rgb(102, 102, 102);</string>
            <string>yyyy-dd-MM</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
          <widget class="QComboBox" name="alunos_comboBox_turmas">
@@ -440,7 +453,7 @@ background-color: rgb(11, 97, 144);</string>
       <string notr="true">border: none;</string>
      </property>
      <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOn</enum>
+      <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -453,7 +466,7 @@ background-color: rgb(11, 97, 144);</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>513</width>
+        <width>525</width>
         <height>577</height>
        </rect>
       </property>
@@ -563,7 +576,7 @@ color: rgb(102, 102, 102);</string>
             <number>10</number>
            </property>
            <item>
-            <widget class="QListView" name="listView">
+            <widget class="QListWidget" name="professor_listWidget_materias">
              <property name="styleSheet">
               <string notr="true">border: 1px solid rgb(0, 0, 0);
 background-color: rgb(170, 255, 127);</string>
@@ -623,7 +636,7 @@ color: rgb(102, 102, 102);</string>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="professor_botao_cadastrar_2">
+              <widget class="QPushButton" name="professor_botao_add_materia">
                <property name="minimumSize">
                 <size>
                  <width>30</width>
@@ -665,7 +678,7 @@ background-color: rgb(170, 255, 127);</string>
             <number>10</number>
            </property>
            <item>
-            <widget class="QListView" name="listView_2">
+            <widget class="QListWidget" name="professor_listWidget_turmas">
              <property name="styleSheet">
               <string notr="true">border: 1px solid rgb(0, 0, 0);
 background-color: rgb(170, 255, 127);</string>
@@ -722,7 +735,7 @@ color: rgb(102, 102, 102);</string>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="professor_botao_cadastrar_3">
+              <widget class="QPushButton" name="professor_botao_add_turma">
                <property name="minimumSize">
                 <size>
                  <width>30</width>

@@ -422,7 +422,7 @@ class SistemaEducacional:
             self._mydb.commit()
             return True
 
-    def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento):
+    def cadastrar_professor(self, email, senha, nome, sobrenome, nascimento, turmas=[], materias=[], salario=1320):
         """
         Cadastra um professor no sistema.
 
@@ -444,25 +444,35 @@ class SistemaEducacional:
         bool
             True, caso o professor tenha sido cadastrado com sucesso. Caso contrario, retorna False.
         """
-        if self.buscar(email):
-            return False
-        consulta_sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
-        parametros_consulta = (email, senha, nome, sobrenome, nascimento)
-        self._cursor.execute(consulta_sql, parametros_consulta)
-        self._mydb.commit()
-        consulta_sql = 'SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login FROM sistema_educacional.usuarios WHERE email = %s'
-        parametros_consulta = (email,)
-        self._cursor.execute(consulta_sql, parametros_consulta)
-        id, data_cadastro, ultimo_login = self._cursor.fetchone()
-        professor = Professor(id, email, senha, nome, sobrenome,
-                              nascimento, data_cadastro, ultimo_login)
-        self._usuario = professor
+        cadastrou = False
+        if not self.buscar(email):
+            # Cadastra o usuario
+            consulta_sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+            parametros_consulta = (email, senha, nome, sobrenome, nascimento)
+            self._cursor.execute(consulta_sql, parametros_consulta)
 
-        consulta_sql = "INSERT INTO sistema_educacional.professores (usuario_id, salario) VALUES (%s, %s)"
-        parametros_consulta = (professor.id, 1320)
-        self._cursor.execute(consulta_sql, parametros_consulta)
-        self._mydb.commit()
-        return True
+            # Cadastra o professor
+            consulta_sql = "INSERT INTO sistema_educacional.professores (usuario_id, salario) VALUES (%s, %s)"
+            parametros_consulta = (self._cursor.lastrowid, salario)
+            self._cursor.execute(consulta_sql, parametros_consulta)
+            id_professor = self._cursor.lastrowid
+            
+            # Cadastra as turmas do professor
+            for turma in turmas:
+                consulta_sql = "INSERT INTO sistema_educacional.turmas_professores (turma_id, professor_id) VALUES (%s, %s)"
+                parametros_consulta = (turma, id_professor)
+                self._cursor.execute(consulta_sql, parametros_consulta)
+
+            # Cadastra as materias do professor
+            for materia in materias:
+                consulta_sql = "INSERT INTO sistema_educacional.materias_professores (materia_id, professor_id) VALUES (%s, %s)"
+                parametros_consulta = (materia, id_professor)
+                self._cursor.execute(consulta_sql, parametros_consulta)
+
+            self._mydb.commit()
+            self.login_professor(self.buscar(email))
+            cadastrou = True
+        return cadastrou
 
     def cadastrar_aluno(self, email, senha, nome, sobrenome, nascimento, turma):
         """
@@ -755,11 +765,6 @@ class MyThread(threading.Thread):
         """
         Script de execução da thread.
         """
-        enviar = '1|'
-        for materia in self.sistema.materias.values():
-            enviar += f'{materia.id}-{materia.nome},'
-        enviar += '0'
-        self.client_socket.send(enviar.encode())
         while True:
             try:
                 mensagem = self.client_socket.recv(32784)
@@ -809,7 +814,9 @@ class MyThread(threading.Thread):
                             print(
                                 f'Erro ao cadastro aluno no sistema em {self.client_address}')
                     elif cadastro[-1] == 'p':
-                        if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento):
+                        materias = cadastro[5].split('-')
+                        turmas = cadastro[6].split('-')
+                        if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento, turmas, materias):
                             enviar = '2'
                             print(
                                 f'Professor {self.sistema.usuario.email} cadastrado no sistema em {self.client_address}')
@@ -883,6 +890,18 @@ class MyThread(threading.Thread):
                         enviar = '-7'
                         print(
                             f'Erro ao submeter atividade {atividade_id} por {aluno_id} em {self.client_address}')
+                    self.client_socket.send(enviar.encode())
+                elif mensagem_str[0] == '8':
+                    enviar = '8|'
+                    for materia in self.sistema.materias.values():
+                        enviar += f'{materia.id}-{materia.nome},'
+                    enviar += '0'
+                    self.client_socket.send(enviar.encode())
+                elif mensagem_str[0] == '9':
+                    enviar = '9|'
+                    for turma in self.sistema.turmas.values():
+                        enviar += f'{turma.id}-{turma.nome}-{turma.num_sala},'
+                    enviar += '0'
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '0':
                     print(
@@ -1097,7 +1116,16 @@ if __name__ == "__main__":
     # teste = Teste()
     # teste.iniciar()
     # sistema = SistemaEducacional()
-    # sistema.login('jorge@example.com', '1111')
+
+    # sistema.cadastrar_professor(
+    #     'armando@example.com',
+    #     '1111',
+    #     'Armando',
+    #     'Silva',
+    #     '1990-01-01',
+    #     [1, 2],
+    #     [1, 2]
+    # )
     # sistema.submeter_atividade(32, 1, 2)
 
     # enviar = f'3'

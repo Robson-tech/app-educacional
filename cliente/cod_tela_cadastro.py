@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from modelos import Turma, Materia
 
 
 class Ui_Cadastro(object):
@@ -22,6 +23,8 @@ class Ui_Cadastro(object):
         centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
         qtRectangle.moveCenter(centerPoint)
         Cadastro.move(qtRectangle.topLeft())
+        self.materias = []
+        self.turmas = []
         self.abas = QtWidgets.QTabWidget(Cadastro)
         self.abas.setGeometry(QtCore.QRect(30, 20, 580, 600))
         self.abas.setTabPosition(QtWidgets.QTabWidget.North)
@@ -32,23 +35,88 @@ class Ui_Cadastro(object):
         self.alunos = QtWidgets.QWidget()
         self.alunos.setStyleSheet("background-color: rgb(52, 161, 50);")
         self.alunos.setObjectName("alunos")
-        self.alunos_botao_voltar = QtWidgets.QPushButton(self.alunos)
-        self.alunos_botao_voltar.setGeometry(QtCore.QRect(100, 530, 150, 40))
+        self.verticalLayoutWidget = QtWidgets.QWidget(self.alunos)
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(40, 20, 507, 541))
+        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setSpacing(10)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.alunos_caixa_nome = QtWidgets.QLineEdit(self.verticalLayoutWidget)
+        self.alunos_caixa_nome.setMinimumSize(QtCore.QSize(0, 50))
+        self.alunos_caixa_nome.setMaximumSize(QtCore.QSize(16777215, 50))
         font = QtGui.QFont()
-        font.setFamily("Arial")
         font.setPointSize(16)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
-        font.setKerning(True)
-        self.alunos_botao_voltar.setFont(font)
-        self.alunos_botao_voltar.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.alunos_botao_voltar.setStyleSheet("border-radius: 20px;\n"
-                                               "background-color: rgb(227, 246, 0);")
-        self.alunos_botao_voltar.setObjectName("alunos_botao_voltar")
-        self.alunos_caixa_senha1 = QtWidgets.QLineEdit(self.alunos)
-        self.alunos_caixa_senha1.setGeometry(QtCore.QRect(55, 377, 470, 53))
+        self.alunos_caixa_nome.setFont(font)
+        self.alunos_caixa_nome.setStyleSheet("border-radius: 10px;\n"
+                                             "background-color: rgb(217, 217, 217);")
+        self.alunos_caixa_nome.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.alunos_caixa_nome.setObjectName("alunos_caixa_nome")
+        self.verticalLayout.addWidget(self.alunos_caixa_nome)
+        self.alunos_caixa_sobrenome = QtWidgets.QLineEdit(
+            self.verticalLayoutWidget)
+        self.alunos_caixa_sobrenome.setMinimumSize(QtCore.QSize(0, 50))
+        self.alunos_caixa_sobrenome.setMaximumSize(QtCore.QSize(16777215, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.alunos_caixa_sobrenome.setFont(font)
+        self.alunos_caixa_sobrenome.setStyleSheet("border-radius: 10px;\n"
+                                                  "background-color: rgb(217, 217, 217);")
+        self.alunos_caixa_sobrenome.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.alunos_caixa_sobrenome.setObjectName("alunos_caixa_sobrenome")
+        self.verticalLayout.addWidget(self.alunos_caixa_sobrenome)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.alunos_caixa_nascimento = QtWidgets.QDateEdit(
+            self.verticalLayoutWidget)
+        self.alunos_caixa_nascimento.setMinimumSize(QtCore.QSize(240, 50))
+        self.alunos_caixa_nascimento.setMaximumSize(QtCore.QSize(240, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.alunos_caixa_nascimento.setFont(font)
+        self.alunos_caixa_nascimento.setStyleSheet("border-radius: 10px;\n"
+                                                   "background-color: rgb(217, 217, 217);\n"
+                                                   "color: rgb(102, 102, 102);")
+        self.alunos_caixa_nascimento.setObjectName("alunos_caixa_nascimento")
+        self.horizontalLayout.addWidget(self.alunos_caixa_nascimento)
+        self.horizontalSpacer = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+        self.alunos_comboBox_turmas = QtWidgets.QComboBox(
+            self.verticalLayoutWidget)
+        self.alunos_comboBox_turmas.setMinimumSize(QtCore.QSize(240, 50))
+        self.alunos_comboBox_turmas.setMaximumSize(QtCore.QSize(240, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.alunos_comboBox_turmas.setFont(font)
+        self.alunos_comboBox_turmas.setStyleSheet("border-radius: 10px;\n"
+                                                  "background-color: rgb(217, 217, 217);\n"
+                                                  "color: rgb(102, 102, 102);")
+        self.alunos_comboBox_turmas.setObjectName("alunos_comboBox_turmas")
+        self.horizontalLayout.addWidget(self.alunos_comboBox_turmas)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
+        self.alunos_caixa_email = QtWidgets.QLineEdit(
+            self.verticalLayoutWidget)
+        self.alunos_caixa_email.setMinimumSize(QtCore.QSize(0, 50))
+        self.alunos_caixa_email.setMaximumSize(QtCore.QSize(16777215, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.alunos_caixa_email.setFont(font)
+        self.alunos_caixa_email.setStyleSheet("border-radius: 10px;\n"
+                                              "background-color: rgb(217, 217, 217);")
+        self.alunos_caixa_email.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.alunos_caixa_email.setObjectName("alunos_caixa_email")
+        self.verticalLayout.addWidget(self.alunos_caixa_email)
+        self.alunos_caixa_senha1 = QtWidgets.QLineEdit(
+            self.verticalLayoutWidget)
+        self.alunos_caixa_senha1.setMinimumSize(QtCore.QSize(0, 50))
+        self.alunos_caixa_senha1.setMaximumSize(QtCore.QSize(16777215, 50))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(16)
@@ -63,8 +131,11 @@ class Ui_Cadastro(object):
         self.alunos_caixa_senha1.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.alunos_caixa_senha1.setObjectName("alunos_caixa_senha1")
-        self.alunos_caixa_senha2 = QtWidgets.QLineEdit(self.alunos)
-        self.alunos_caixa_senha2.setGeometry(QtCore.QRect(55, 460, 470, 53))
+        self.verticalLayout.addWidget(self.alunos_caixa_senha1)
+        self.alunos_caixa_senha2 = QtWidgets.QLineEdit(
+            self.verticalLayoutWidget)
+        self.alunos_caixa_senha2.setMinimumSize(QtCore.QSize(0, 50))
+        self.alunos_caixa_senha2.setMaximumSize(QtCore.QSize(16777215, 50))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(16)
@@ -79,39 +150,31 @@ class Ui_Cadastro(object):
         self.alunos_caixa_senha2.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.alunos_caixa_senha2.setObjectName("alunos_caixa_senha2")
-        self.alunos_caixa_nome = QtWidgets.QLineEdit(self.alunos)
-        self.alunos_caixa_nome.setGeometry(QtCore.QRect(55, 45, 470, 53))
+        self.verticalLayout.addWidget(self.alunos_caixa_senha2)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.alunos_botao_voltar = QtWidgets.QPushButton(
+            self.verticalLayoutWidget)
+        self.alunos_botao_voltar.setMinimumSize(QtCore.QSize(150, 40))
+        self.alunos_botao_voltar.setMaximumSize(QtCore.QSize(150, 40))
         font = QtGui.QFont()
+        font.setFamily("Arial")
         font.setPointSize(16)
-        self.alunos_caixa_nome.setFont(font)
-        self.alunos_caixa_nome.setStyleSheet("border-radius: 10px;\n"
-                                             "background-color: rgb(217, 217, 217);")
-        self.alunos_caixa_nome.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.alunos_caixa_nome.setObjectName("alunos_caixa_nome")
-        self.alunos_caixa_email = QtWidgets.QLineEdit(self.alunos)
-        self.alunos_caixa_email.setGeometry(QtCore.QRect(55, 294, 470, 53))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.alunos_caixa_email.setFont(font)
-        self.alunos_caixa_email.setStyleSheet("border-radius: 10px;\n"
-                                              "background-color: rgb(217, 217, 217);")
-        self.alunos_caixa_email.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.alunos_caixa_email.setObjectName("alunos_caixa_email")
-        self.alunos_caixa_sobrenome = QtWidgets.QLineEdit(self.alunos)
-        self.alunos_caixa_sobrenome.setGeometry(QtCore.QRect(55, 128, 470, 53))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.alunos_caixa_sobrenome.setFont(font)
-        self.alunos_caixa_sobrenome.setStyleSheet("border-radius: 10px;\n"
-                                                  "background-color: rgb(217, 217, 217);")
-        self.alunos_caixa_sobrenome.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.alunos_caixa_sobrenome.setObjectName("alunos_caixa_sobrenome")
-        self.alunos_botao_cadastrar = QtWidgets.QPushButton(self.alunos)
-        self.alunos_botao_cadastrar.setGeometry(
-            QtCore.QRect(335, 530, 150, 40))
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        font.setKerning(True)
+        self.alunos_botao_voltar.setFont(font)
+        self.alunos_botao_voltar.setCursor(
+            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.alunos_botao_voltar.setStyleSheet("border-radius: 20px;\n"
+                                               "background-color: rgb(227, 246, 0);")
+        self.alunos_botao_voltar.setObjectName("alunos_botao_voltar")
+        self.horizontalLayout_2.addWidget(self.alunos_botao_voltar)
+        self.alunos_botao_cadastrar = QtWidgets.QPushButton(
+            self.verticalLayoutWidget)
+        self.alunos_botao_cadastrar.setMinimumSize(QtCore.QSize(150, 40))
+        self.alunos_botao_cadastrar.setMaximumSize(QtCore.QSize(150, 40))
         font = QtGui.QFont()
         font.setPointSize(16)
         font.setKerning(True)
@@ -121,44 +184,184 @@ class Ui_Cadastro(object):
         self.alunos_botao_cadastrar.setStyleSheet("border-radius: 20px;\n"
                                                   "background-color: rgb(11, 97, 144);")
         self.alunos_botao_cadastrar.setObjectName("alunos_botao_cadastrar")
-        self.alunos_caixa_nascimento = QtWidgets.QDateEdit(self.alunos)
-        self.alunos_caixa_nascimento.setGeometry(
-            QtCore.QRect(55, 211, 231, 53))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.alunos_caixa_nascimento.setFont(font)
-        self.alunos_caixa_nascimento.setStyleSheet("border-radius: 10px;\n"
-                                                   "background-color: rgb(217, 217, 217);\n"
-                                                   "color: rgb(102, 102, 102);")
-        self.alunos_caixa_nascimento.setObjectName("alunos_caixa_nascimento")
-        self.alunos_caixa_turma = QtWidgets.QLineEdit(self.alunos)
-        self.alunos_caixa_turma.setGeometry(QtCore.QRect(300, 210, 221, 53))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.alunos_caixa_turma.setFont(font)
-        self.alunos_caixa_turma.setStyleSheet("border-radius: 10px;\n"
-                                              "background-color: rgb(217, 217, 217);")
-        self.alunos_caixa_turma.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.alunos_caixa_turma.setObjectName("alunos_caixa_turma")
+        self.horizontalLayout_2.addWidget(self.alunos_botao_cadastrar)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.abas.addTab(self.alunos, "")
         self.professores = QtWidgets.QWidget()
         self.professores.setStyleSheet("background-color: rgb(52, 161, 50);")
         self.professores.setObjectName("professores")
-        self.professores_caixa_email = QtWidgets.QLineEdit(self.professores)
-        self.professores_caixa_email.setGeometry(
-            QtCore.QRect(55, 294, 470, 53))
+        self.scrollArea = QtWidgets.QScrollArea(self.professores)
+        self.scrollArea.setGeometry(QtCore.QRect(31, 11, 525, 559))
+        self.scrollArea.setMinimumSize(QtCore.QSize(525, 559))
+        self.scrollArea.setMaximumSize(QtCore.QSize(525, 559))
+        self.scrollArea.setStyleSheet("border: none;")
+        self.scrollArea.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 525, 577))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(
+            self.scrollAreaWidgetContents)
+        self.verticalLayout_2.setSpacing(10)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.professor_caixa_nome = QtWidgets.QLineEdit(
+            self.scrollAreaWidgetContents)
+        self.professor_caixa_nome.setMinimumSize(QtCore.QSize(0, 50))
+        self.professor_caixa_nome.setMaximumSize(QtCore.QSize(16777215, 50))
         font = QtGui.QFont()
         font.setPointSize(16)
-        self.professores_caixa_email.setFont(font)
-        self.professores_caixa_email.setStyleSheet("border-radius: 10px;\n"
-                                                   "background-color: rgb(217, 217, 217);")
-        self.professores_caixa_email.setAlignment(
+        self.professor_caixa_nome.setFont(font)
+        self.professor_caixa_nome.setStyleSheet("border-radius: 10px;\n"
+                                                "background-color: rgb(217, 217, 217);")
+        self.professor_caixa_nome.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.professores_caixa_email.setObjectName("professores_caixa_email")
-        self.professores_caixa_senha1 = QtWidgets.QLineEdit(self.professores)
-        self.professores_caixa_senha1.setGeometry(
-            QtCore.QRect(55, 377, 470, 53))
+        self.professor_caixa_nome.setObjectName("professor_caixa_nome")
+        self.verticalLayout_2.addWidget(self.professor_caixa_nome)
+        self.professor_caixa_sobrenome = QtWidgets.QLineEdit(
+            self.scrollAreaWidgetContents)
+        self.professor_caixa_sobrenome.setMinimumSize(QtCore.QSize(0, 50))
+        self.professor_caixa_sobrenome.setMaximumSize(
+            QtCore.QSize(16777215, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.professor_caixa_sobrenome.setFont(font)
+        self.professor_caixa_sobrenome.setStyleSheet("border-radius: 10px;\n"
+                                                     "background-color: rgb(217, 217, 217);")
+        self.professor_caixa_sobrenome.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.professor_caixa_sobrenome.setObjectName(
+            "professor_caixa_sobrenome")
+        self.verticalLayout_2.addWidget(self.professor_caixa_sobrenome)
+        self.professor_caixa_nascimento = QtWidgets.QDateEdit(
+            self.scrollAreaWidgetContents)
+        self.professor_caixa_nascimento.setMinimumSize(QtCore.QSize(0, 50))
+        self.professor_caixa_nascimento.setMaximumSize(
+            QtCore.QSize(16777215, 16777215))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.professor_caixa_nascimento.setFont(font)
+        self.professor_caixa_nascimento.setStyleSheet("border-radius: 10px;\n"
+                                                      "background-color: rgb(217, 217, 217);\n"
+                                                      "color: rgb(102, 102, 102);")
+        self.professor_caixa_nascimento.setObjectName(
+            "professor_caixa_nascimento")
+        self.verticalLayout_2.addWidget(self.professor_caixa_nascimento)
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setSpacing(5)
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_3.setSpacing(10)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.professor_listView_materias = QtWidgets.QListWidget(
+            self.scrollAreaWidgetContents)
+        self.professor_listView_materias.setStyleSheet("border: 1px solid rgb(0, 0, 0);\n"
+                                                       "background-color: rgb(170, 255, 127);")
+        self.professor_listView_materias.setObjectName(
+            "professor_listView_materias")
+        self.verticalLayout_3.addWidget(self.professor_listView_materias)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setSpacing(10)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.professor_comboBox_materias = QtWidgets.QComboBox(
+            self.scrollAreaWidgetContents)
+        self.professor_comboBox_materias.setMinimumSize(QtCore.QSize(200, 50))
+        self.professor_comboBox_materias.setMaximumSize(QtCore.QSize(200, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.professor_comboBox_materias.setFont(font)
+        self.professor_comboBox_materias.setStyleSheet("border-radius: 10px;\n"
+                                                       "background-color: rgb(217, 217, 217);\n"
+                                                       "color: rgb(102, 102, 102);")
+        self.professor_comboBox_materias.setEditable(False)
+        self.professor_comboBox_materias.setObjectName(
+            "professor_comboBox_materias")
+        self.horizontalLayout_3.addWidget(self.professor_comboBox_materias)
+        self.professor_botao_add_materia = QtWidgets.QPushButton(
+            self.scrollAreaWidgetContents)
+        self.professor_botao_add_materia.setMinimumSize(QtCore.QSize(30, 30))
+        self.professor_botao_add_materia.setMaximumSize(QtCore.QSize(30, 30))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setUnderline(False)
+        font.setKerning(True)
+        self.professor_botao_add_materia.setFont(font)
+        self.professor_botao_add_materia.setCursor(
+            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.professor_botao_add_materia.setStyleSheet("border-radius: 15px;\n"
+                                                       "background-color: rgb(170, 255, 127);")
+        self.professor_botao_add_materia.setObjectName(
+            "professor_botao_add_materia")
+        self.horizontalLayout_3.addWidget(self.professor_botao_add_materia)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_6.addLayout(self.verticalLayout_3)
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setSpacing(10)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.professor_listView_turmas = QtWidgets.QListWidget(
+            self.scrollAreaWidgetContents)
+        self.professor_listView_turmas.setStyleSheet("border: 1px solid rgb(0, 0, 0);\n"
+                                                     "background-color: rgb(170, 255, 127);")
+        self.professor_listView_turmas.setObjectName(
+            "professor_listView_turmas")
+        self.verticalLayout_4.addWidget(self.professor_listView_turmas)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setSpacing(10)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.professor_comboBox_turmas = QtWidgets.QComboBox(
+            self.scrollAreaWidgetContents)
+        self.professor_comboBox_turmas.setMinimumSize(QtCore.QSize(200, 50))
+        self.professor_comboBox_turmas.setMaximumSize(QtCore.QSize(200, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.professor_comboBox_turmas.setFont(font)
+        self.professor_comboBox_turmas.setStyleSheet("border-radius: 10px;\n"
+                                                     "background-color: rgb(217, 217, 217);\n"
+                                                     "color: rgb(102, 102, 102);")
+        self.professor_comboBox_turmas.setObjectName(
+            "professor_comboBox_turmas")
+        self.horizontalLayout_5.addWidget(self.professor_comboBox_turmas)
+        self.professor_botao_add_turma = QtWidgets.QPushButton(
+            self.scrollAreaWidgetContents)
+        self.professor_botao_add_turma.setMinimumSize(QtCore.QSize(30, 30))
+        self.professor_botao_add_turma.setMaximumSize(QtCore.QSize(30, 30))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setKerning(True)
+        self.professor_botao_add_turma.setFont(font)
+        self.professor_botao_add_turma.setCursor(
+            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.professor_botao_add_turma.setStyleSheet("border-radius: 15px;\n"
+                                                     "background-color: rgb(170, 255, 127);")
+        self.professor_botao_add_turma.setObjectName(
+            "professor_botao_add_turma")
+        self.horizontalLayout_5.addWidget(self.professor_botao_add_turma)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_5)
+        self.horizontalLayout_6.addLayout(self.verticalLayout_4)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_2.addItem(spacerItem1)
+        self.professor_caixa_email = QtWidgets.QLineEdit(
+            self.scrollAreaWidgetContents)
+        self.professor_caixa_email.setMinimumSize(QtCore.QSize(0, 50))
+        self.professor_caixa_email.setMaximumSize(QtCore.QSize(16777215, 50))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.professor_caixa_email.setFont(font)
+        self.professor_caixa_email.setStyleSheet("border-radius: 10px;\n"
+                                                 "background-color: rgb(217, 217, 217);")
+        self.professor_caixa_email.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.professor_caixa_email.setObjectName("professor_caixa_email")
+        self.verticalLayout_2.addWidget(self.professor_caixa_email)
+        self.professor_caixa_senha1 = QtWidgets.QLineEdit(
+            self.scrollAreaWidgetContents)
+        self.professor_caixa_senha1.setMinimumSize(QtCore.QSize(0, 50))
+        self.professor_caixa_senha1.setMaximumSize(QtCore.QSize(16777215, 50))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(16)
@@ -166,70 +369,40 @@ class Ui_Cadastro(object):
         font.setItalic(False)
         font.setWeight(50)
         font.setStrikeOut(False)
-        self.professores_caixa_senha1.setFont(font)
-        self.professores_caixa_senha1.setStyleSheet("border-radius: 10px;\n"
-                                                    "background-color: rgb(217, 217, 217);")
-        self.professores_caixa_senha1.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.professores_caixa_senha1.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.professores_caixa_senha1.setObjectName("professores_caixa_senha1")
-        self.professores_caixa_senha2 = QtWidgets.QLineEdit(self.professores)
-        self.professores_caixa_senha2.setGeometry(
-            QtCore.QRect(55, 460, 470, 53))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(16)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
-        font.setStrikeOut(False)
-        self.professores_caixa_senha2.setFont(font)
-        self.professores_caixa_senha2.setStyleSheet("border-radius: 10px;\n"
-                                                    "background-color: rgb(217, 217, 217);")
-        self.professores_caixa_senha2.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.professores_caixa_senha2.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.professores_caixa_senha2.setObjectName("professores_caixa_senha2")
-        self.professores_caixa_nome = QtWidgets.QLineEdit(self.professores)
-        self.professores_caixa_nome.setGeometry(QtCore.QRect(55, 45, 470, 53))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        self.professores_caixa_nome.setFont(font)
-        self.professores_caixa_nome.setStyleSheet("border-radius: 10px;\n"
+        self.professor_caixa_senha1.setFont(font)
+        self.professor_caixa_senha1.setStyleSheet("border-radius: 10px;\n"
                                                   "background-color: rgb(217, 217, 217);")
-        self.professores_caixa_nome.setAlignment(
+        self.professor_caixa_senha1.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.professor_caixa_senha1.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.professores_caixa_nome.setObjectName("professores_caixa_nome")
-        self.professores_caixa_sobrenome = QtWidgets.QLineEdit(
-            self.professores)
-        self.professores_caixa_sobrenome.setGeometry(
-            QtCore.QRect(55, 128, 470, 53))
+        self.professor_caixa_senha1.setObjectName("professor_caixa_senha1")
+        self.verticalLayout_2.addWidget(self.professor_caixa_senha1)
+        self.professor_caixa_senha2 = QtWidgets.QLineEdit(
+            self.scrollAreaWidgetContents)
+        self.professor_caixa_senha2.setMinimumSize(QtCore.QSize(0, 50))
+        self.professor_caixa_senha2.setMaximumSize(QtCore.QSize(16777215, 50))
         font = QtGui.QFont()
+        font.setFamily("Arial")
         font.setPointSize(16)
-        self.professores_caixa_sobrenome.setFont(font)
-        self.professores_caixa_sobrenome.setStyleSheet("border-radius: 10px;\n"
-                                                       "background-color: rgb(217, 217, 217);")
-        self.professores_caixa_sobrenome.setAlignment(
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        font.setStrikeOut(False)
+        self.professor_caixa_senha2.setFont(font)
+        self.professor_caixa_senha2.setStyleSheet("border-radius: 10px;\n"
+                                                  "background-color: rgb(217, 217, 217);")
+        self.professor_caixa_senha2.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.professor_caixa_senha2.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.professores_caixa_sobrenome.setObjectName(
-            "professores_caixa_sobrenome")
-        self.professores_botao_cadastrar = QtWidgets.QPushButton(
-            self.professores)
-        self.professores_botao_cadastrar.setGeometry(
-            QtCore.QRect(335, 530, 150, 40))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setKerning(True)
-        self.professores_botao_cadastrar.setFont(font)
-        self.professores_botao_cadastrar.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.professores_botao_cadastrar.setStyleSheet("border-radius: 20px;\n"
-                                                       "background-color: rgb(11, 97, 144);")
-        self.professores_botao_cadastrar.setObjectName(
-            "professores_botao_cadastrar")
-        self.professores_botao_voltar = QtWidgets.QPushButton(self.professores)
-        self.professores_botao_voltar.setGeometry(
-            QtCore.QRect(100, 530, 150, 40))
+        self.professor_caixa_senha2.setObjectName("professor_caixa_senha2")
+        self.verticalLayout_2.addWidget(self.professor_caixa_senha2)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setContentsMargins(-1, 0, -1, 0)
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.professor_botao_voltar = QtWidgets.QPushButton(
+            self.scrollAreaWidgetContents)
+        self.professor_botao_voltar.setMinimumSize(QtCore.QSize(150, 40))
+        self.professor_botao_voltar.setMaximumSize(QtCore.QSize(150, 40))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(16)
@@ -237,69 +410,129 @@ class Ui_Cadastro(object):
         font.setItalic(False)
         font.setWeight(50)
         font.setKerning(True)
-        self.professores_botao_voltar.setFont(font)
-        self.professores_botao_voltar.setCursor(
+        self.professor_botao_voltar.setFont(font)
+        self.professor_botao_voltar.setCursor(
             QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.professores_botao_voltar.setStyleSheet("border-radius: 20px;\n"
-                                                    "background-color: rgb(227, 246, 0);")
-        self.professores_botao_voltar.setObjectName("professores_botao_voltar")
-        self.professores_caixa_nascimento = QtWidgets.QDateEdit(
-            self.professores)
-        self.professores_caixa_nascimento.setGeometry(
-            QtCore.QRect(55, 211, 470, 53))
+        self.professor_botao_voltar.setStyleSheet("border-radius: 20px;\n"
+                                                  "background-color: rgb(227, 246, 0);")
+        self.professor_botao_voltar.setObjectName("professor_botao_voltar")
+        self.horizontalLayout_4.addWidget(self.professor_botao_voltar)
+        self.professor_botao_cadastrar = QtWidgets.QPushButton(
+            self.scrollAreaWidgetContents)
+        self.professor_botao_cadastrar.setMinimumSize(QtCore.QSize(150, 40))
+        self.professor_botao_cadastrar.setMaximumSize(QtCore.QSize(150, 40))
         font = QtGui.QFont()
         font.setPointSize(16)
-        self.professores_caixa_nascimento.setFont(font)
-        self.professores_caixa_nascimento.setStyleSheet("border-radius: 10px;\n"
-                                                        "background-color: rgb(217, 217, 217);\n"
-                                                        "color: rgb(102, 102, 102);")
-        self.professores_caixa_nascimento.setObjectName(
-            "professores_caixa_nascimento")
+        font.setKerning(True)
+        self.professor_botao_cadastrar.setFont(font)
+        self.professor_botao_cadastrar.setCursor(
+            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.professor_botao_cadastrar.setStyleSheet("border-radius: 20px;\n"
+                                                     "background-color: rgb(11, 97, 144);")
+        self.professor_botao_cadastrar.setObjectName(
+            "professor_botao_cadastrar")
+        self.horizontalLayout_4.addWidget(self.professor_botao_cadastrar)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.abas.addTab(self.professores, "")
 
+        self._translate = QtCore.QCoreApplication.translate
         self.retranslateUi(Cadastro)
         self.abas.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Cadastro)
+        self.professor_botao_add_materia.clicked.connect(
+            self.botao_add_materia)
+        self.professor_botao_add_turma.clicked.connect(self.botao_add_turma)
+
+    def botao_add_materia(self):
+        if self.professor_comboBox_materias.currentText() not in [self.professor_listView_materias.item(i).text() for i in range(self.professor_listView_materias.count())] and self.professor_comboBox_materias.currentText() != '':
+            self.professor_listView_materias.addItem(
+                self.professor_comboBox_materias.currentText())
+            self.materias.append(
+                self.professor_comboBox_materias.currentData())
+
+    def botao_add_turma(self):
+        if self.professor_comboBox_turmas.currentText() not in [self.professor_listView_turmas.item(i).text() for i in range(self.professor_listView_turmas.count())] and self.professor_comboBox_turmas.currentText() != '':
+            self.professor_listView_turmas.addItem(
+                self.professor_comboBox_turmas.currentText())
+            self.turmas.append(
+                self.professor_comboBox_turmas.currentData())
+
+    def set_materias(self, materias: dict):
+        self.professor_comboBox_materias.clear()
+        self.materias = []
+        for indice, materia in enumerate(materias.values()):
+            self.professor_comboBox_materias.addItem(materia.nome, materia)
+            self.professor_comboBox_materias.setItemText(
+                indice, materia.nome)
+        self.professor_comboBox_materias.setCurrentIndex(0)
+
+    def set_turmas(self, turmas: dict):
+        self.professor_comboBox_turmas.clear()
+        self.alunos_comboBox_turmas.clear()
+        self.turmas = []
+        for indice, turma in enumerate(turmas.values()):
+            self.professor_comboBox_turmas.addItem(turma.nome, turma)
+            self.alunos_comboBox_turmas.addItem(turma.nome, turma)
+            self.professor_comboBox_turmas.setItemText(
+                indice, turma.nome)
+            self.alunos_comboBox_turmas.setItemText(indice, turma.nome)
+        self.alunos_comboBox_turmas.setCurrentIndex(0)
+        self.professor_comboBox_turmas.setCurrentIndex(0)
+
+    def get_materias(self):
+        materias = f'{self.materias[0].id}'
+        for i in self.materias[1:]:
+            materias += f'-{i.id}'
+        return materias
+    
+    def get_turmas(self):
+        turmas = f'{self.turmas[0].id}'
+        for i in self.turmas[1:]:
+            turmas += f'-{i.id}'
+        return turmas
 
     def retranslateUi(self, Cadastro):
-        _translate = QtCore.QCoreApplication.translate
-        Cadastro.setWindowTitle(_translate("Cadastro", "Cadastro"))
-        self.alunos_botao_voltar.setText(_translate("Cadastro", "Voltar"))
-        self.alunos_caixa_senha1.setPlaceholderText(
-            _translate("Cadastro", "Senha"))
-        self.alunos_caixa_senha2.setPlaceholderText(
-            _translate("Cadastro", "Repetir Senha"))
+        Cadastro.setWindowTitle(self._translate("Cadastro", "Cadastro"))
         self.alunos_caixa_nome.setPlaceholderText(
-            _translate("Cadastro", "Nome"))
-        self.alunos_caixa_email.setPlaceholderText(
-            _translate("Cadastro", "E-mail"))
+            self._translate("Cadastro", "Nome"))
         self.alunos_caixa_sobrenome.setPlaceholderText(
-            _translate("Cadastro", "Sobrenome"))
-        self.alunos_botao_cadastrar.setText(
-            _translate("Cadastro", "Cadastrar"))
+            self._translate("Cadastro", "Sobrenome"))
         self.alunos_caixa_nascimento.setDisplayFormat(
-            _translate("Cadastro", "yyyy-MM-dd"))
-        self.alunos_caixa_turma.setPlaceholderText(
-            _translate("Cadastro", "Turma"))
+            self._translate("Cadastro", "yyyy-MM-dd"))
+        self.alunos_caixa_email.setPlaceholderText(
+            self._translate("Cadastro", "E-mail"))
+        self.alunos_caixa_senha1.setPlaceholderText(
+            self._translate("Cadastro", "Senha"))
+        self.alunos_caixa_senha2.setPlaceholderText(
+            self._translate("Cadastro", "Repetir Senha"))
+        self.alunos_botao_voltar.setText(self._translate("Cadastro", "Voltar"))
+        self.alunos_botao_cadastrar.setText(
+            self._translate("Cadastro", "Cadastrar"))
         self.abas.setTabText(self.abas.indexOf(self.alunos),
-                             _translate("Cadastro", "Aluno"))
-        self.professores_caixa_email.setPlaceholderText(
-            _translate("Cadastro", "E-mail"))
-        self.professores_caixa_senha1.setPlaceholderText(
-            _translate("Cadastro", "Senha"))
-        self.professores_caixa_senha2.setPlaceholderText(
-            _translate("Cadastro", "Repetir Senha"))
-        self.professores_caixa_nome.setPlaceholderText(
-            _translate("Cadastro", "Nome"))
-        self.professores_caixa_sobrenome.setPlaceholderText(
-            _translate("Cadastro", "Sobrenome"))
-        self.professores_botao_cadastrar.setText(
-            _translate("Cadastro", "Cadastrar"))
-        self.professores_botao_voltar.setText(_translate("Cadastro", "Voltar"))
-        self.professores_caixa_nascimento.setDisplayFormat(
-            _translate("Cadastro", "yyyy-MM-dd"))
+                             self._translate("Cadastro", "Aluno"))
+        self.professor_caixa_nome.setPlaceholderText(
+            self._translate("Cadastro", "Nome"))
+        self.professor_caixa_sobrenome.setPlaceholderText(
+            self._translate("Cadastro", "Sobrenome"))
+        self.professor_caixa_nascimento.setDisplayFormat(
+            self._translate("Cadastro", "yyyy-MM-dd"))
+        self.professor_botao_add_materia.setText(
+            self._translate("Cadastro", "↑"))
+        self.professor_botao_add_turma.setText(
+            self._translate("Cadastro", "↑"))
+        self.professor_caixa_email.setPlaceholderText(
+            self._translate("Cadastro", "E-mail"))
+        self.professor_caixa_senha1.setPlaceholderText(
+            self._translate("Cadastro", "Senha"))
+        self.professor_caixa_senha2.setPlaceholderText(
+            self._translate("Cadastro", "Repetir Senha"))
+        self.professor_botao_voltar.setText(
+            self._translate("Cadastro", "Voltar"))
+        self.professor_botao_cadastrar.setText(
+            self._translate("Cadastro", "Cadastrar"))
         self.abas.setTabText(self.abas.indexOf(
-            self.professores), _translate("Cadastro", "Professor"))
+            self.professores), self._translate("Cadastro", "Professor"))
 
 
 if __name__ == "__main__":
@@ -308,5 +541,17 @@ if __name__ == "__main__":
     Cadastro = QtWidgets.QWidget()
     ui = Ui_Cadastro()
     ui.setupUi(Cadastro)
+    materias = {
+        0: Materia(1, 'Matemática'),
+        1: Materia(2, 'Português'),
+        2: Materia(3, 'História'),
+    }
+    turmas = {
+        0: Turma(1, '1º Ano', 1),
+        1: Turma(2, '2º Ano', 2),
+        2: Turma(3, '3º Ano', 3),
+    }
+    ui.set_materias(materias)
+    ui.set_turmas(turmas)
     Cadastro.show()
     sys.exit(app.exec_())
