@@ -666,7 +666,7 @@ class Main(QMainWindow, Ui_Main):
                         self, "Sucesso", "Professor cadastrado com sucesso")
                     self.request_turmas()
                     self.limpar_campos()
-                    self.QtStack.setCurrentIndex(2)
+                    self.QtStack.setCurrentIndex(3)
                 else:
                     QMessageBox.about(
                         self, "Erro", "E-mail de usuário já cadastrado")
@@ -692,6 +692,7 @@ class Main(QMainWindow, Ui_Main):
                 if self.enviar_cadastro(mensagem):
                     QMessageBox.about(
                         self, "Sucesso", "Aluno cadastrado com sucesso")
+                    self.request_materias()
                     self.limpar_campos()
                     self.QtStack.setCurrentIndex(2)
                 else:

@@ -181,31 +181,6 @@ class PaginaTurma(QtWidgets.QWidget):
         for i, atividade in enumerate(atividades_turma) if atividades_turma else enumerate([]):
             self.itens_atividade.update(
                 {atividade.titulo: ItemAtividade(self.scrollAreaWidgetContents)})
-            # self.botao_atividade[atividade.titulo] = QtWidgets.QPushButton(
-            #     self.scrollAreaWidgetContents)
-            # sizePolicy = QtWidgets.QSizePolicy(
-            #     QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-            # sizePolicy.setHorizontalStretch(0)
-            # sizePolicy.setVerticalStretch(0)
-            # sizePolicy.setHeightForWidth(
-            #     self.botao_atividade[atividade.titulo].sizePolicy().hasHeightForWidth())
-            # self.botao_atividade[atividade.titulo].setSizePolicy(sizePolicy)
-            # self.botao_atividade[atividade.titulo].setMinimumSize(
-            #     QtCore.QSize(120, 150))
-            # self.botao_atividade[atividade.titulo].setMaximumSize(
-            #     QtCore.QSize(120, 150))
-            # self.botao_atividade[atividade.titulo].setCursor(
-            #     QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            # self.botao_atividade[atividade.titulo].setLayoutDirection(
-            #     QtCore.Qt.LeftToRight)
-            # self.botao_atividade[atividade.titulo].setAutoFillBackground(False)
-            # self.botao_atividade[atividade.titulo].setStyleSheet("border-radius: 10px;\n"
-            #                                                      "background-color: rgb(217, 217, 217);\n"
-            #                                                      "background-image: url(img/lista.png);\n"
-            #                                                      "background-repeat: no-repeat;\n"
-            #                                                      "background-position: center center;")
-            # self.botao_atividade[atividade.titulo].setObjectName(
-            #     f"botao_atividade{i}")
             self.gridLayout.addWidget(
                 self.itens_atividade[atividade.titulo], i // 4, i % 4, 1, 1)
             if funcao_criar_pagina_atividade:
@@ -266,31 +241,6 @@ class PaginaTurma(QtWidgets.QWidget):
             num = len(self.itens_atividade)
             self.itens_atividade.update(
                 {num: ItemAtividade(self.scrollAreaWidgetContents)})
-            # self.botao_atividade[num] = QtWidgets.QPushButton(
-            #     self.scrollArea)
-            # sizePolicy = QtWidgets.QSizePolicy(
-            #     QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-            # sizePolicy.setHorizontalStretch(0)
-            # sizePolicy.setVerticalStretch(0)
-            # sizePolicy.setHeightForWidth(
-            #     self.botao_atividade[num].sizePolicy().hasHeightForWidth())
-            # self.botao_atividade[num].setSizePolicy(
-            #     sizePolicy)
-            # self.botao_atividade[num].setMinimumSize(
-            #     QtCore.QSize(120, 150))
-            # self.botao_atividade[num].setMaximumSize(
-            #     QtCore.QSize(120, 150))
-            # self.botao_atividade[num].setCursor(
-            #     QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            # self.botao_atividade[num].setLayoutDirection(
-            #     QtCore.Qt.LeftToRight)
-            # self.botao_atividade[num].setAutoFillBackground(
-            #     False)
-            # self.botao_atividade[num].setStyleSheet("border-radius: 10px;\n"
-            #                                         "background-color: rgb(217, 217, 217);\n"
-            #                                         "background-image: url(img/lista.png);\n"
-            #                                         "background-repeat: no-repeat;\n"
-            #                                         "background-position: center center;")
             self.gridLayout.addWidget(
                 self.itens_atividade[num], self.ultimo_botao_atividade[0], self.ultimo_botao_atividade[1], 1, 1)
             self.itens_atividade[num].setObjectName(f'botao_atividade{num}')
