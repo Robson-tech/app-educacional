@@ -485,7 +485,7 @@ class Ui_Cadastro(object):
         for i in self.materias[1:]:
             materias += f'-{i.id}'
         return materias
-    
+
     def get_turmas(self):
         turmas = f'{self.turmas[0].id}'
         for i in self.turmas[1:]:

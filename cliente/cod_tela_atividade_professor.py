@@ -55,18 +55,18 @@ class Ui_AtividadeProfessor(object):
         self.input_titulo.setAlignment(QtCore.Qt.AlignCenter)
         self.input_titulo.setObjectName("input_titulo")
         self.horizontalLayout_3.addWidget(self.input_titulo)
-        self.input_materia = QtWidgets.QLineEdit(
+        self.input_comboBox_materia = QtWidgets.QComboBox(
             self.scrollAreaWidgetContents_principal)
-        self.input_materia.setMinimumSize(QtCore.QSize(0, 50))
+        self.input_comboBox_materia.setMinimumSize(QtCore.QSize(300, 50))
         font = QtGui.QFont()
         font.setPointSize(28)
-        self.input_materia.setFont(font)
-        self.input_materia.setStyleSheet(
+        self.input_comboBox_materia.setFont(font)
+        self.input_comboBox_materia.setStyleSheet(
             "background-color: rgb(255, 255, 255);")
-        self.input_materia.setText("")
-        self.input_materia.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_materia.setObjectName("input_materia")
-        self.horizontalLayout_3.addWidget(self.input_materia)
+        self.input_comboBox_materia.setEditable(False)
+        self.input_comboBox_materia.setObjectName("input_comboBox_materia")
+        self.horizontalLayout_3.addWidget(
+            self.input_comboBox_materia)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.input_descricao = QtWidgets.QPlainTextEdit(
             self.scrollAreaWidgetContents_principal)
@@ -136,6 +136,7 @@ class Ui_AtividadeProfessor(object):
         self.botao_add_questao.clicked.connect(
             self.botao_add_nova_questao_funcao)
         self.retranslateUi(AtividadeProfessor)
+        self.input_comboBox_materia.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(AtividadeProfessor)
 
     def botao_add_nova_questao_funcao(self):
@@ -162,7 +163,7 @@ class Ui_AtividadeProfessor(object):
             "AtividadeProfessor", "Cadastrar Atividade"))
         self.input_titulo.setPlaceholderText(
             self._translate("AtividadeProfessor", "Título"))
-        self.input_materia.setPlaceholderText(
+        self.input_comboBox_materia.setCurrentText(
             self._translate("Atividade", "Matéria"))
         self.input_descricao.setPlaceholderText(
             self._translate("AtividadeProfessor", "Descrição"))

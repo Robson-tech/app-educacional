@@ -57,47 +57,45 @@ class Ui_TelaPrincipalProfessor(object):
         self.gridLayout = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout.setObjectName("gridLayout")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem, 0, 2, 1, 1)
-        self.botao_atividade1 = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.botao_atividade1.sizePolicy().hasHeightForWidth())
-        self.botao_atividade1.setSizePolicy(sizePolicy)
-        self.botao_atividade1.setMinimumSize(QtCore.QSize(120, 150))
-        self.botao_atividade1.setMaximumSize(QtCore.QSize(120, 150))
-        self.botao_atividade1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.botao_atividade1.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.botao_atividade1.setAutoFillBackground(False)
-        self.botao_atividade1.setStyleSheet("border-radius: 10px;\n"
-"background-color: rgb(217, 217, 217);\n"
-"background-image: url(:/img/lista.png);\n"
-"background-repeat: no-repeat;\n"
-"background-position: center center;")
-        self.botao_atividade1.setText("")
-        self.botao_atividade1.setObjectName("botao_atividade1")
-        self.gridLayout.addWidget(self.botao_atividade1, 0, 0, 1, 1)
+        self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem1, 1, 0, 1, 1)
-        self.botao_atividade2 = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        self.atividade_1 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
+        self.atividade_1.setMinimumSize(QtCore.QSize(120, 190))
+        self.atividade_1.setMaximumSize(QtCore.QSize(120, 190))
+        self.atividade_1.setTitle("")
+        self.atividade_1.setObjectName("atividade_1")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.atividade_1)
+        self.verticalLayout_6.setContentsMargins(0, 0, 0, -1)
+        self.verticalLayout_6.setSpacing(10)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.botao_atividade_1 = QtWidgets.QPushButton(self.atividade_1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.botao_atividade2.sizePolicy().hasHeightForWidth())
-        self.botao_atividade2.setSizePolicy(sizePolicy)
-        self.botao_atividade2.setMinimumSize(QtCore.QSize(120, 150))
-        self.botao_atividade2.setMaximumSize(QtCore.QSize(120, 150))
-        self.botao_atividade2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.botao_atividade2.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.botao_atividade2.setAutoFillBackground(False)
-        self.botao_atividade2.setStyleSheet("border-radius: 10px;\n"
+        sizePolicy.setHeightForWidth(self.botao_atividade_1.sizePolicy().hasHeightForWidth())
+        self.botao_atividade_1.setSizePolicy(sizePolicy)
+        self.botao_atividade_1.setMinimumSize(QtCore.QSize(120, 150))
+        self.botao_atividade_1.setMaximumSize(QtCore.QSize(120, 150))
+        self.botao_atividade_1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_atividade_1.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.botao_atividade_1.setAutoFillBackground(False)
+        self.botao_atividade_1.setStyleSheet("border-radius: 10px;\n"
 "background-color: rgb(217, 217, 217);\n"
 "background-image: url(:/img/lista.png);\n"
 "background-repeat: no-repeat;\n"
 "background-position: center center;")
-        self.botao_atividade2.setText("")
-        self.botao_atividade2.setObjectName("botao_atividade2")
-        self.gridLayout.addWidget(self.botao_atividade2, 0, 1, 1, 1)
+        self.botao_atividade_1.setText("")
+        self.botao_atividade_1.setObjectName("botao_atividade_1")
+        self.verticalLayout_6.addWidget(self.botao_atividade_1)
+        self.label_titulo_atividade_1 = QtWidgets.QLabel(self.atividade_1)
+        self.label_titulo_atividade_1.setMinimumSize(QtCore.QSize(120, 15))
+        self.label_titulo_atividade_1.setMaximumSize(QtCore.QSize(120, 15))
+        self.label_titulo_atividade_1.setStyleSheet("background-color: rgb(253, 255, 102);")
+        self.label_titulo_atividade_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_titulo_atividade_1.setObjectName("label_titulo_atividade_1")
+        self.verticalLayout_6.addWidget(self.label_titulo_atividade_1)
+        self.gridLayout.addWidget(self.atividade_1, 0, 0, 1, 1)
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
         self.botao_fechar = QtWidgets.QPushButton(self.page)
         self.botao_fechar.setGeometry(QtCore.QRect(530, 10, 40, 40))
@@ -213,8 +211,9 @@ class Ui_TelaPrincipalProfessor(object):
 
     def retranslateUi(self, TelaPrincipalProfessor):
         _translate = QtCore.QCoreApplication.translate
-        TelaPrincipalProfessor.setWindowTitle(_translate("TelaPrincipalProfessor", "Form"))
+        TelaPrincipalProfessor.setWindowTitle(_translate("TelaPrincipalProfessor", "Tela Principal"))
         self.novas_atividades.setText(_translate("TelaPrincipalProfessor", "Atividades"))
+        self.label_titulo_atividade_1.setText(_translate("TelaPrincipalProfessor", "Title"))
         self.botao_fechar.setText(_translate("TelaPrincipalProfessor", "X"))
         self.botao_add_atividade.setText(_translate("TelaPrincipalProfessor", "+"))
         self.botao_logoff.setText(_translate("TelaPrincipalProfessor", "Logoff"))
@@ -223,7 +222,6 @@ class Ui_TelaPrincipalProfessor(object):
         self.turma_2A.setText(_translate("TelaPrincipalProfessor", "Turma 2A"))
         self.turma_3A.setText(_translate("TelaPrincipalProfessor", "Turma 3A"))
         self.botao_sair.setText(_translate("TelaPrincipalProfessor", "Sair"))
-import img_rc
 
 
 if __name__ == "__main__":

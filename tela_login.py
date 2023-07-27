@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import settings
 
 
 class Ui_Login(object):
@@ -48,23 +47,6 @@ class Ui_Login(object):
             QtWidgets.QLayout.SetDefaultConstraint)
         self.horizontalLayout_6.setSpacing(0)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.botao_cadastro = QtWidgets.QPushButton(Login)
-        self.botao_cadastro.setMinimumSize(QtCore.QSize(150, 40))
-        self.botao_cadastro.setMaximumSize(QtCore.QSize(150, 40))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(16)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
-        font.setKerning(True)
-        self.botao_cadastro.setFont(font)
-        self.botao_cadastro.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.botao_cadastro.setStyleSheet("border-radius: 20px;\n"
-                                          f"background-color: rgb({settings.BOTAO_CADASTRO});")
-        self.botao_cadastro.setObjectName("botao_cadastro")
-        self.horizontalLayout_6.addWidget(self.botao_cadastro)
         self.botao_login = QtWidgets.QPushButton(self.background_login)
         self.botao_login.setMinimumSize(QtCore.QSize(150, 40))
         self.botao_login.setMaximumSize(QtCore.QSize(150, 40))
@@ -107,6 +89,8 @@ class Ui_Login(object):
         self.logo_escola_2 = QtWidgets.QLabel(self.background_login)
         self.logo_escola_2.setMinimumSize(QtCore.QSize(180, 180))
         self.logo_escola_2.setMaximumSize(QtCore.QSize(180, 180))
+        self.logo_escola_2.setStyleSheet("background-size: contain;")
+        self.logo_escola_2.setText("")
         self.logo_escola_2.setPixmap(QtGui.QPixmap("img/logo-escola.png"))
         self.logo_escola_2.setScaledContents(True)
         self.logo_escola_2.setAlignment(QtCore.Qt.AlignCenter)
@@ -124,7 +108,6 @@ class Ui_Login(object):
         _translate = QtCore.QCoreApplication.translate
         Login.setWindowTitle(_translate("Login", "Login"))
         self.caixa_email.setPlaceholderText(_translate("Login", "E-mail"))
-        self.botao_cadastro.setText(_translate("Login", "Cadastrar"))
         self.botao_login.setText(_translate("Login", "Logar"))
         self.caixa_senha.setPlaceholderText(_translate("Login", "Senha"))
 

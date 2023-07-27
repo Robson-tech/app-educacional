@@ -774,10 +774,11 @@ class MyThread(threading.Thread):
                             self.client_socket.send(enviar.encode())
                             enviar = '1|'
                             for materia in self.sistema.usuario.materias:
-                                enviar += f"{materia[0]},"
+                                enviar += f"{materia[1].capitalize()},"
                             enviar += '0|'
                             for turma in self.sistema.usuario.turmas.values():
-                                enviar += f'{turma.id}-{turma.nome},'
+                                enviar += f'{turma.nome},'
+                            enviar += '0|'
                             print(
                                 f'Professor {self.sistema.usuario.email} logou em {self.client_address}')
                         elif isinstance(self.sistema.usuario, Aluno):
@@ -802,7 +803,7 @@ class MyThread(threading.Thread):
                         if self.sistema.cadastrar_aluno(email, senha, nome, sobrenome, nascimento, turma):
                             enviar = '2'
                             print(
-                                f'Aluno {self.sistema.usuario.email} cadastrado no sistema em {self.client_address}')
+                                f'Aluno {email} cadastrado no sistema em {self.client_address}')
                         else:
                             enviar = '0'
                             print(
@@ -813,7 +814,7 @@ class MyThread(threading.Thread):
                         if self.sistema.cadastrar_professor(email, senha, nome, sobrenome, nascimento, turmas, materias):
                             enviar = '2'
                             print(
-                                f'Professor {self.sistema.usuario.email} cadastrado no sistema em {self.client_address}')
+                                f'Professor {email} cadastrado no sistema em {self.client_address}')
                         else:
                             enviar = '0'
                             print(
@@ -892,9 +893,14 @@ class MyThread(threading.Thread):
                     enviar += '0'
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '9':
+                    id_professor = mensagem_str[1]
                     enviar = '9|'
-                    for turma in self.sistema.turmas.values():
-                        enviar += f'{turma.id}-{turma.nome}-{turma.num_sala},'
+                    if id_professor == '0':
+                        for turma in self.sistema.turmas.values():
+                            enviar += f'{turma.id}-{turma.nome}-{turma.num_sala},'
+                    else:
+                        for turma in self.sistema.get_turmas_professor(id_professor).values():
+                            enviar += f'{turma.id}-{turma.nome}-{turma.num_sala},'
                     enviar += '0'
                     self.client_socket.send(enviar.encode())
                 elif mensagem_str[0] == '0':
@@ -1110,6 +1116,8 @@ if __name__ == "__main__":
     # teste = Teste()
     # teste.iniciar()
     # sistema = SistemaEducacional()
+    # sistema.login('jose@example.com', '1111')
+    # print(sistema.usuario.materias)
 
     # sistema.cadastrar_professor(
     #     'armando@example.com',

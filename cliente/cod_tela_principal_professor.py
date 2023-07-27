@@ -85,38 +85,16 @@ class Ui_TelaPrincipalProfessor(object):
         QtCore.QMetaObject.connectSlotsByName(TelaPrincipalProfessor)
 
     def add_pagina(self, nome_turma, turma_id, atividades=None, funcao_criar_pagina_atividade=None):
-        self.paginas[nome_turma] = PaginaTurma(nome_turma, turma_id, self.scrollAreaWidgetContents,
+        self.paginas[nome_turma] = TurmaPagina(nome_turma, turma_id, self.scrollAreaWidgetContents,
                                                self.verticalLayout, self._translate, atividades_turma=atividades, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade)
 
         def alterar_pagina():
             if self.stackedWidget.currentWidget().objectName() == nome_turma:
                 return
-            elif self.stackedWidget.currentWidget().objectName() != "page_recepcao":
-                self.paginas[self.stackedWidget.currentWidget().objectName()].botao_turma_lateral.setStyleSheet("""
-                        QPushButton {
-                            border-radius: 10px;
-                            background-color: rgb(252, 88, 20);
-                        }
-                    """
-                                                                                                                )
             self.stackedWidget.setCurrentWidget(self.paginas[nome_turma])
-            self.paginas[nome_turma].botao_turma_lateral.setStyleSheet("""
-                    QPushButton {
-                        border-radius: 10px;
-                        background-color: rgb(255, 229, 0);
-                    }
-                """
-                                                                       )
 
         def fechar_pagina():
             self.stackedWidget.setCurrentWidget(self.page_recepcao)
-            self.paginas[nome_turma].botao_turma_lateral.setStyleSheet("""
-                    QPushButton {
-                        border-radius: 10px;
-                        background-color: rgb(252, 88, 20);
-                    }
-                """
-                                                                       )
         self.paginas[nome_turma].botao_turma_lateral.clicked.connect(
             alterar_pagina)
         self.paginas[nome_turma].botao_fechar.clicked.connect(fechar_pagina)
@@ -143,7 +121,7 @@ class Ui_TelaPrincipalProfessor(object):
         self.botao_sair.setText(_translate("TelaPrincipalProfessor", "Sair"))
 
 
-class PaginaTurma(QtWidgets.QWidget):
+class TurmaPagina(QtWidgets.QWidget):
     def __init__(self, nome_turma, turma_id, scrollAreaWidgetContents_lateral, verticalLayout_lateral, _translate, atividades_turma=None, funcao_criar_pagina_atividade=None):
         super().__init__()
         self.setObjectName(nome_turma)
@@ -230,7 +208,7 @@ class PaginaTurma(QtWidgets.QWidget):
             turma_id, funcao_criar_pagina_atividade=funcao_criar_pagina_atividade))
 
         self.label_novas_atividades.setText(_translate(
-            "TelaPrincipalProfessor", "Atividades"))
+            "TelaPrincipalProfessor", nome_turma))
         self.botao_add_atividade.setText(
             _translate("TelaPrincipalProfessor", "+"))
         self.botao_fechar.setText(

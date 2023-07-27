@@ -20,67 +20,49 @@ class Ui_Atividade(object):
         Atividade.setStyleSheet("background-color: rgb(51, 51, 51);")
         self.scrollArea_principal = QtWidgets.QScrollArea(Atividade)
         self.scrollArea_principal.setGeometry(QtCore.QRect(20, 20, 861, 471))
-        self.scrollArea_principal.setStyleSheet(
-            "background-color: rgb(217, 217, 217);")
-        self.scrollArea_principal.setHorizontalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
-        self.scrollArea_principal.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.AdjustIgnored)
+        self.scrollArea_principal.setStyleSheet("background-color: rgb(217, 217, 217);")
+        self.scrollArea_principal.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea_principal.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
         self.scrollArea_principal.setWidgetResizable(True)
         self.scrollArea_principal.setObjectName("scrollArea_principal")
         self.scrollAreaWidgetContents_principal = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_principal.setGeometry(
-            QtCore.QRect(0, 0, 859, 469))
-        self.scrollAreaWidgetContents_principal.setObjectName(
-            "scrollAreaWidgetContents_principal")
-        self.verticalLayout = QtWidgets.QVBoxLayout(
-            self.scrollAreaWidgetContents_principal)
+        self.scrollAreaWidgetContents_principal.setGeometry(QtCore.QRect(0, 0, 859, 469))
+        self.scrollAreaWidgetContents_principal.setObjectName("scrollAreaWidgetContents_principal")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_principal)
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout_botoes_titulo_materia = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_botoes_titulo_materia.setObjectName(
-            "horizontalLayout_botoes_titulo_materia")
-        self.input_titulo = QtWidgets.QLineEdit(
-            self.scrollAreaWidgetContents_principal)
+        self.horizontalLayout_botoes_titulo_materia.setObjectName("horizontalLayout_botoes_titulo_materia")
+        self.input_titulo = QtWidgets.QLineEdit(self.scrollAreaWidgetContents_principal)
         self.input_titulo.setMinimumSize(QtCore.QSize(0, 50))
         font = QtGui.QFont()
         font.setPointSize(28)
         self.input_titulo.setFont(font)
-        self.input_titulo.setStyleSheet(
-            "background-color: rgb(255, 255, 255);")
+        self.input_titulo.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.input_titulo.setText("")
         self.input_titulo.setAlignment(QtCore.Qt.AlignCenter)
         self.input_titulo.setObjectName("input_titulo")
-        self.horizontalLayout_botoes_titulo_materia.addWidget(
-            self.input_titulo)
-        self.input_materia = QtWidgets.QLineEdit(
-            self.scrollAreaWidgetContents_principal)
-        self.input_materia.setMinimumSize(QtCore.QSize(0, 50))
+        self.horizontalLayout_botoes_titulo_materia.addWidget(self.input_titulo)
+        self.input_comboBox_materia = QtWidgets.QComboBox(self.scrollAreaWidgetContents_principal)
+        self.input_comboBox_materia.setMinimumSize(QtCore.QSize(300, 50))
         font = QtGui.QFont()
         font.setPointSize(28)
-        self.input_materia.setFont(font)
-        self.input_materia.setStyleSheet(
-            "background-color: rgb(255, 255, 255);")
-        self.input_materia.setText("")
-        self.input_materia.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_materia.setObjectName("input_materia")
-        self.horizontalLayout_botoes_titulo_materia.addWidget(
-            self.input_materia)
-        self.verticalLayout.addLayout(
-            self.horizontalLayout_botoes_titulo_materia)
-        self.input_descricao = QtWidgets.QPlainTextEdit(
-            self.scrollAreaWidgetContents_principal)
+        self.input_comboBox_materia.setFont(font)
+        self.input_comboBox_materia.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.input_comboBox_materia.setEditable(False)
+        self.input_comboBox_materia.setObjectName("input_comboBox_materia")
+        self.input_comboBox_materia.addItem("")
+        self.horizontalLayout_botoes_titulo_materia.addWidget(self.input_comboBox_materia)
+        self.verticalLayout.addLayout(self.horizontalLayout_botoes_titulo_materia)
+        self.input_descricao = QtWidgets.QPlainTextEdit(self.scrollAreaWidgetContents_principal)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.input_descricao.setFont(font)
-        self.input_descricao.setStyleSheet(
-            "background-color: rgb(255, 255, 255);")
-        self.input_descricao.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.input_descricao.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.input_descricao.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.input_descricao.setTabChangesFocus(True)
         self.input_descricao.setObjectName("input_descricao")
         self.verticalLayout.addWidget(self.input_descricao)
-        self.questao_1 = QtWidgets.QGroupBox(
-            self.scrollAreaWidgetContents_principal)
+        self.questao_1 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_principal)
         self.questao_1.setMinimumSize(QtCore.QSize(825, 300))
         self.questao_1.setMaximumSize(QtCore.QSize(845, 16777215))
         self.questao_1.setStyleSheet("background-color: rgb(52, 161, 50);")
@@ -156,8 +138,7 @@ class Ui_Atividade(object):
         self.selecao_E.setText("")
         self.selecao_E.setObjectName("selecao_E")
         self.gridLayout_alternativas.addWidget(self.selecao_E, 4, 0, 1, 1)
-        self.gridLayout_principal.addLayout(
-            self.gridLayout_alternativas, 2, 1, 1, 1)
+        self.gridLayout_principal.addLayout(self.gridLayout_alternativas, 2, 1, 1, 1)
         self.num_questao = QtWidgets.QLabel(self.questao_1)
         self.num_questao.setMinimumSize(QtCore.QSize(30, 30))
         self.num_questao.setMaximumSize(QtCore.QSize(30, 30))
@@ -165,7 +146,7 @@ class Ui_Atividade(object):
         font.setPointSize(12)
         self.num_questao.setFont(font)
         self.num_questao.setStyleSheet("border-radius: 15px;\n"
-                                       "background-color: rgb(252, 88, 20);")
+"background-color: rgb(252, 88, 20);")
         self.num_questao.setAlignment(QtCore.Qt.AlignCenter)
         self.num_questao.setObjectName("num_questao")
         self.gridLayout_principal.addWidget(self.num_questao, 0, 0, 1, 1)
@@ -173,38 +154,30 @@ class Ui_Atividade(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.input_enunciado.setFont(font)
-        self.input_enunciado.setStyleSheet(
-            "background-color: rgb(255, 255, 255);")
-        self.input_enunciado.setSizeAdjustPolicy(
-            QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.input_enunciado.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.input_enunciado.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.input_enunciado.setTabChangesFocus(True)
         self.input_enunciado.setObjectName("input_enunciado")
         self.gridLayout_principal.addWidget(self.input_enunciado, 1, 1, 1, 1)
         self.verticalLayout.addWidget(self.questao_1)
-        spacerItem = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
-        self.scrollArea_principal.setWidget(
-            self.scrollAreaWidgetContents_principal)
+        self.scrollArea_principal.setWidget(self.scrollAreaWidgetContents_principal)
         self.botao_voltar = QtWidgets.QPushButton(Atividade)
         self.botao_voltar.setGeometry(QtCore.QRect(0, 0, 41, 41))
         font = QtGui.QFont()
         font.setPointSize(24)
         self.botao_voltar.setFont(font)
-        self.botao_voltar.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_voltar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_voltar.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.botao_voltar.setStyleSheet("background-color: rgb(255, 255, 0);")
         self.botao_voltar.setObjectName("botao_voltar")
         self.layoutWidget = QtWidgets.QWidget(Atividade)
         self.layoutWidget.setGeometry(QtCore.QRect(21, 510, 861, 60))
         self.layoutWidget.setObjectName("layoutWidget")
-        self.horizontalLayout_botoes_add_publicar = QtWidgets.QHBoxLayout(
-            self.layoutWidget)
-        self.horizontalLayout_botoes_add_publicar.setContentsMargins(
-            0, 0, 0, 0)
-        self.horizontalLayout_botoes_add_publicar.setObjectName(
-            "horizontalLayout_botoes_add_publicar")
+        self.horizontalLayout_botoes_add_publicar = QtWidgets.QHBoxLayout(self.layoutWidget)
+        self.horizontalLayout_botoes_add_publicar.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_botoes_add_publicar.setObjectName("horizontalLayout_botoes_add_publicar")
         self.botao_add = QtWidgets.QPushButton(self.layoutWidget)
         self.botao_add.setMaximumSize(QtCore.QSize(200, 16777215))
         font = QtGui.QFont()
@@ -212,7 +185,7 @@ class Ui_Atividade(object):
         self.botao_add.setFont(font)
         self.botao_add.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_add.setStyleSheet("border: 3px solid rgb(7, 66, 22);\n"
-                                     "background-color: rgb(255, 255, 255);")
+"background-color: rgb(255, 255, 255);")
         self.botao_add.setObjectName("botao_add")
         self.horizontalLayout_botoes_add_publicar.addWidget(self.botao_add)
         self.botao_publicar = QtWidgets.QPushButton(self.layoutWidget)
@@ -221,39 +194,30 @@ class Ui_Atividade(object):
         font = QtGui.QFont()
         font.setPointSize(24)
         self.botao_publicar.setFont(font)
-        self.botao_publicar.setCursor(
-            QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.botao_publicar.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.botao_publicar.setStyleSheet("border: none;\n"
-                                          "border-radius: 25px;\n"
-                                          "background-color: rgb(0, 166, 202);")
+"border-radius: 25px;\n"
+"background-color: rgb(0, 166, 202);")
         self.botao_publicar.setObjectName("botao_publicar")
-        self.horizontalLayout_botoes_add_publicar.addWidget(
-            self.botao_publicar)
-        self.botao_publicar.clicked.connect(self.imprimir_descricao)
+        self.horizontalLayout_botoes_add_publicar.addWidget(self.botao_publicar)
 
         self.retranslateUi(Atividade)
+        self.input_comboBox_materia.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Atividade)
-
-    def imprimir_descricao(self):
-        print(self.input_descricao.toPlainText())
 
     def retranslateUi(self, Atividade):
         _translate = QtCore.QCoreApplication.translate
-        Atividade.setWindowTitle(_translate(
-            "Atividade", "Cadastrar Atividade"))
+        Atividade.setWindowTitle(_translate("Atividade", "Cadastrar Atividade"))
         self.input_titulo.setPlaceholderText(_translate("Atividade", "Título"))
-        self.input_materia.setPlaceholderText(
-            _translate("Atividade", "Matéria"))
-        self.input_descricao.setPlaceholderText(
-            _translate("Atividade", "Descrição"))
+        self.input_comboBox_materia.setCurrentText(_translate("Atividade", "Matéria"))
+        self.input_descricao.setPlaceholderText(_translate("Atividade", "Descrição"))
         self.input_A.setPlaceholderText(_translate("Atividade", "A"))
         self.input_B.setPlaceholderText(_translate("Atividade", "B"))
         self.input_C.setPlaceholderText(_translate("Atividade", "C"))
         self.input_D.setPlaceholderText(_translate("Atividade", "D"))
         self.input_E.setPlaceholderText(_translate("Atividade", "E"))
         self.num_questao.setText(_translate("Atividade", "1"))
-        self.input_enunciado.setPlaceholderText(
-            _translate("Atividade", "Enunciado"))
+        self.input_enunciado.setPlaceholderText(_translate("Atividade", "Enunciado"))
         self.botao_voltar.setText(_translate("Atividade", "←"))
         self.botao_add.setText(_translate("Atividade", "+"))
         self.botao_publicar.setText(_translate("Atividade", "Publicar"))
