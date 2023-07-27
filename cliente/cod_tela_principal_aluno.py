@@ -95,148 +95,15 @@ class Ui_TelaPrincipalAluno(object):
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(TelaPrincipalAluno)
 
-    def add_pagina(self, nome, atividades, funcao_criar_pagina_atividade=None):
-        # self.materias[nome] = QtWidgets.QWidget()
-        # self.materias[nome].setObjectName(nome)
-        # self.rotulo_novas_atividades = QtWidgets.QLabel(self.materias[nome])
-        # self.rotulo_novas_atividades.setGeometry(QtCore.QRect(10, 10, 560, 40))
-        # font = QtGui.QFont()
-        # font.setPointSize(24)
-        # self.rotulo_novas_atividades.setFont(font)
-        # self.rotulo_novas_atividades.setStyleSheet("color: white;")
-        # self.rotulo_novas_atividades.setObjectName("rotulo_novas_atividades")
-        # self.line = QtWidgets.QFrame(self.materias[nome])
-        # self.line.setGeometry(QtCore.QRect(10, 50, 560, 7))
-        # self.line.setStyleSheet("")
-        # self.line.setFrameShadow(QtWidgets.QFrame.Plain)
-        # self.line.setLineWidth(5)
-        # self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        # self.line.setObjectName("line")
-        # self.conteudo_scrollArea = QtWidgets.QScrollArea(self.materias[nome])
-        # self.conteudo_scrollArea.setGeometry(QtCore.QRect(10, 60, 561, 501))
-        # self.conteudo_scrollArea.setStyleSheet("border: none;")
-        # self.conteudo_scrollArea.setVerticalScrollBarPolicy(
-        #     QtCore.Qt.ScrollBarAlwaysOn)
-        # self.conteudo_scrollArea.setHorizontalScrollBarPolicy(
-        #     QtCore.Qt.ScrollBarAlwaysOff)
-        # self.conteudo_scrollArea.setWidgetResizable(True)
-        # self.conteudo_scrollArea.setObjectName("conteudo_scrollArea")
-        # self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        # self.scrollAreaWidgetContents.setGeometry(
-        #     QtCore.QRect(0, 0, 544, 221))
-        # self.scrollAreaWidgetContents.setObjectName(
-        #     "scrollAreaWidgetContents")
-        # self.gridLayout = QtWidgets.QGridLayout(
-        #     self.scrollAreaWidgetContents)
-        # self.gridLayout.setObjectName("gridLayout")
-        # self.itens_atividade = {}
-        # for i, atividade in enumerate(atividades.values()):
-        #     self.itens_atividade.update({atividade.titulo: TelaPrincipalAlunoAtividade(self.scrollAreaWidgetContents)})
-        #     self.gridLayout.addWidget(
-        #         self.itens_atividade[atividade.titulo], i // 4, i % 4, 1, 1)
-        #     if funcao_criar_pagina_atividade:
-        #         self.itens_atividade[atividade.titulo].botao_atividade.clicked.connect(funcao_criar_pagina_atividade(
-        #             atividade))
-        #     self.itens_atividade[atividade.titulo].label_titulo_atividade.setText(
-        #         self._translate("TelaPrincipalAluno", atividade.titulo))
-        # spacerItem = QtWidgets.QSpacerItem(
-        #     20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        # self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
-        # spacerItem1 = QtWidgets.QSpacerItem(
-        #     40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        # self.gridLayout.addItem(spacerItem1, 0, 4, 1, 1)
-        # self.conteudo_scrollArea.setWidget(self.scrollAreaWidgetContents)
-        # self.botao_fechar = QtWidgets.QPushButton(self.materias[nome])
-        # self.botao_fechar.setObjectName(u"botao_fechar")
-        # self.botao_fechar.setGeometry(QtCore.QRect(530, 10, 40, 40))
-        # self.botao_fechar.setFont(font)
-        # self.botao_fechar.setCursor(
-        #     QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        # self.botao_fechar.setStyleSheet(u"background-color: rgb(255, 0, 0);")
-        # self.rotulo_novas_atividades.raise_()
-        # self.line.raise_()
-        # self.conteudo_scrollArea.raise_()
-        # self.botao_fechar.raise_()
-        # self.ultima_pagina = self.stackedWidget.currentWidget().objectName()
-        # self.stackedWidget.addWidget(self.materias[nome])
-
-        # def alterar_pagina():
-        #     if self.stackedWidget.currentWidget().objectName() == nome:
-        #         return
-        #     elif self.stackedWidget.currentWidget().objectName() != "pagina_recepcao":
-        #         self.materias_botoes[self.stackedWidget.currentWidget().objectName()].setStyleSheet(
-        #             'QPushButton {\n'
-        #                 'border-radius: 10px;\n'
-        #                 'background-color: rgb(252, 88, 20);\n'
-        #             '}'
-        #         )
-        #     self.stackedWidget.setCurrentWidget(self.materias[nome])
-        #     self.materias_botoes[nome].setStyleSheet(
-        #         'QPushButton {\n'
-        #             'border-radius: 10px;\n'
-        #             'background-color: rgb(255, 229, 0);\n'
-        #         '}'
-        #     )
-        #     self.ultima_pagina = self.stackedWidget.currentWidget().objectName()
-
-        # def fechar_pagina():
-        #     self.ultima_pagina = self.stackedWidget.currentWidget().objectName()
-        #     self.stackedWidget.setCurrentWidget(self.pagina_recepcao)
-        #     self.materias_botoes[nome].setStyleSheet(
-        #         'QPushButton {\n'
-        #             'border-radius: 10px;\n'
-        #             'background-color: rgb(252, 88, 20);\n'
-        #         '}'
-        #     )
-        # self.materias_botoes[nome].clicked.connect(alterar_pagina)
-        # self.botao_fechar.clicked.connect(fechar_pagina)
-        # self.stackedWidget.setCurrentWidget(self.pagina_recepcao)
-        # self.rotulo_novas_atividades.setText(
-        #     self._translate("TelaPrincipalAluno", "Novas Atividades"))
-        # self.botao_fechar.setText(QtCore.QCoreApplication.translate(
-        #     "TelaPrincipalAluno", u"X", None))
-        self.materias[nome] = TelaPrincipalAlunoMateria(
-            nome,
-            atividades,
-            self.ultimo_botao,
-            self.scrollAreaWidgetContents,
-            self.verticalLayout,
-            self.stackedWidget,
-            funcao_criar_pagina_atividade
-        )
-        self.materias[nome].pagina.materia_botao.clicked.connect(
-            self.alterar_pagina)
-        self.materias[nome].pagina.botao_fechar.clicked.connect(
-            self.fechar_pagina)
-        self.stackedWidget.setCurrentWidget(self.pagina_recepcao)
-
     def add_materia(self, nome, atividades, funcao_criar_pagina_atividade=None):
-        # self.materias_botoes[nome] = QtWidgets.QPushButton(
-        #     self.scrollAreaWidgetContents)
-        # font = QtGui.QFont()
-        # font.setPointSize(24)
-        # self.materias_botoes[nome].setFont(font)
-        # self.materias_botoes[nome].setCursor(
-        #     QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        # self.materias_botoes[nome].setStyleSheet(
-        #     'QPushButton {\n'
-        #     'border-radius: 10px;\n'
-        #     'background-color: rgb(252, 88, 20);\n'
-        #     '}'
-        # )
-        # self.materias_botoes[nome].setObjectName(nome)
-        # self.verticalLayout.addWidget(self.materias_botoes[nome])
-        # self.materias_botoes[nome].setText(
-        #     self._translate("TelaPrincipalAluno", nome))
-        # self.add_pagina(nome, atividades, funcao_criar_pagina_atividade)
         self.materias[nome] = TelaPrincipalAlunoMateria(
             nome,
             atividades,
             self.scrollAreaWidgetContents,
-            self.verticalLayout,
             self.stackedWidget,
             funcao_criar_pagina_atividade
         )
+        self.verticalLayout.addWidget(self.materias[nome].botao)
         self.stackedWidget.addWidget(self.materias[nome].pagina)
         self.stackedWidget.setCurrentWidget(self.pagina_recepcao)
 
@@ -251,11 +118,11 @@ class Ui_TelaPrincipalAluno(object):
                 self.verticalLayout.itemAt(self.verticalLayout.count() - 1))
 
     def limpar_materias(self):
-        for materia in self.materias_botoes:
-            self.verticalLayout.removeWidget(self.materias_botoes[materia])
-            self.materias_botoes[materia].deleteLater()
-        self.materias_botoes = {}
-        self.verticalLayout.removeItem(self.verticalLayout.itemAt(0))
+        for materia in self.materias.values():
+            self.verticalLayout.removeWidget(materia.botao)
+            self.stackedWidget.removeWidget(materia.pagina)
+        self.remover_espaçamento()
+        self.materias = {}
 
     def retranslateUi(self, TelaPrincipalAluno):
         TelaPrincipalAluno.setWindowTitle(
@@ -266,12 +133,10 @@ class Ui_TelaPrincipalAluno(object):
 
 
 class TelaPrincipalAlunoMateria:
-    def __init__(self, materia_nome: str, atividades: Atividade, scrollAreaWidgetContents: QtWidgets.QWidget, verticalLayout: QtWidgets.QVBoxLayout, stackedWidget: QtWidgets.QStackedWidget, funcao_criar_pagina_atividade=None):
-        self.scrollAreaWidgetContents = scrollAreaWidgetContents
-        self.verticalLayout = verticalLayout
+    def __init__(self, materia_nome: str, atividades: Atividade, scrollAreaWidgetContents: QtWidgets.QWidget, stackedWidget: QtWidgets.QStackedWidget, funcao_criar_pagina_atividade=None):
         self.stackedWidget = stackedWidget
         self.botao = QtWidgets.QPushButton(
-            self.scrollAreaWidgetContents)
+            scrollAreaWidgetContents)
         font = QtGui.QFont()
         font.setPointSize(24)
         self.botao.setFont(font)
@@ -284,14 +149,11 @@ class TelaPrincipalAlunoMateria:
             '}'
         )
         self.botao.setObjectName(materia_nome)
-        self.verticalLayout.addWidget(self.botao)
         self.botao.setText(materia_nome)
         self.botao.clicked.connect(self.abrir_pagina)
         self.pagina = TelaPrincipalAlunoMateriaPagina(
             materia_nome,
             atividades,
-            stackedWidget,
-            self.botao,
             funcao_criar_pagina_atividade
         )
         self.pagina.botao_fechar.clicked.connect(self.fechar_pagina)
@@ -304,11 +166,9 @@ class TelaPrincipalAlunoMateria:
 
 
 class TelaPrincipalAlunoMateriaPagina(QtWidgets.QWidget):
-    def __init__(self, materia_nome: str, atividades: Atividade, stackedWidget: QtWidgets.QStackedWidget, materia_botao: QtWidgets.QPushButton, funcao_criar_pagina_atividade=None):
+    def __init__(self, materia_nome: str, atividades: Atividade, funcao_criar_pagina_atividade=None):
         super().__init__()
         self.materia_nome = materia_nome
-        self.stackedWidget = stackedWidget
-        self.materia_botao = materia_botao
         self.setObjectName(materia_nome)
         self.rotulo_novas_atividades = QtWidgets.QLabel(self)
         self.rotulo_novas_atividades.setGeometry(QtCore.QRect(10, 10, 560, 40))
@@ -431,15 +291,12 @@ if __name__ == "__main__":
         "Potência": Atividade(4, "Potência", "Matemática", 1, 1, 1, {}),
         "Equações": Atividade(5, "Equações", "Matemática", 1, 1, 1, {}),
     })
-    ui.add_materia("Química", {
-        "Tabela Periódica": Atividade(1, "Tabela Periódica", "Química", 1, 1, 1, {}),
-        "Ligações Químicas": Atividade(2, "Ligações Químicas", "Química", 1, 1, 1, {}),
-        "Função Afim": Atividade(3, "Função Afim", "Química", 1, 1, 1, {}),
-        "Radiciação": Atividade(4, "Radiciação", "Química", 1, 1, 1, {}),
-    })
-    ui.add_materia("Física", {
-        "Função Afim": Atividade(1, "Função Afim", "Física", 1, 1, 1, {}),
-        "Radiciação": Atividade(2, "Radiciação", "Física", 1, 1, 1, {}),
+    ui.inserir_espacamento()
+    ui.limpar_materias()
+    ui.add_materia("Português", {
+        "Análise Sintática": Atividade(1, "Análise Sintática", "Português", 1, 1, 1, {}),
+        "Análise Morfológica": Atividade(2, "Análise Morfológica", "Português", 1, 1, 1, {}),
+        "Análise Semântica": Atividade(3, "Análise Semântica", "Português", 1, 1, 1, {}),
     })
     ui.inserir_espacamento()
     TelaPrincipalAluno.show()

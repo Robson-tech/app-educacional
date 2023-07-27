@@ -239,6 +239,7 @@ class Main(QMainWindow, Ui_Main):
 
     def request_materias(self):
         self._materias = {}
+        self.tela_principal_aluno.limpar_materias()
         self.client_socket.send('8'.encode())
         resposta = self.client_socket.recv(1024).decode().split('|')
         for materia in resposta[1].split(',')[:-1]:
@@ -563,35 +564,16 @@ class Main(QMainWindow, Ui_Main):
         bool
             True se o cadastro foi realizado com sucesso, False caso contrário
         """
+        cadastrou = False
         if mensagem.split('|')[0] == '2':
             self.client_socket.send(mensagem.encode())
             resposta = self.client_socket.recv(1024).decode()
 
             if resposta and resposta == '2':
-                return True
-        return False
-
-    def botao_logoff(self):
-        """
-        Realiza o logoff
-        """
-        if isinstance(self.usuario, Professor):
-            self.tela_principal_professor.limpar_paginas()
-        elif isinstance(self.usuario, Aluno):
-            self.tela_principal_aluno.limpar_paginas()
-            self.tela_principal_aluno.limpar_materias()
-        self.client_socket.send('0'.encode())
-        self.usuario = None
-        self.QtStack.setCurrentIndex(0)
-
-    def botao_sair(self):
-        """
-        Encerra o programa
-        """
-        mensagem = '-1'
-        self.client_socket.send(mensagem.encode())
-        self.client_socket.close()
-        exit()
+                msn_login = f'1|{mensagem.split("|")[1].split(",")[0]},{mensagem.split("|")[1].split(",")[1]}'
+                self.enviar_login(msn_login)
+                cadastrou = True
+        return cadastrou
 
     def enviar_login(self, mensagem):
         """
@@ -640,6 +622,7 @@ class Main(QMainWindow, Ui_Main):
                     self.request_turmas()
                     self.QtStack.setCurrentIndex(3)
                 elif resposta[0] == '2':
+                    self.request_materias()
                     self.QtStack.setCurrentIndex(2)
             else:
                 QMessageBox.about(self, "Erro", "E-mail ou senha incorretos")
@@ -702,6 +685,23 @@ class Main(QMainWindow, Ui_Main):
                 QMessageBox.about(self, "Erro", "Senhas não coincidem")
         else:
             QMessageBox.about(self, "Erro", "Preencha todos os campos")
+
+    def botao_logoff(self):
+        """
+        Realiza o logoff
+        """
+        self.client_socket.send('0'.encode())
+        self.usuario = None
+        self.QtStack.setCurrentIndex(0)
+
+    def botao_sair(self):
+        """
+        Encerra o programa
+        """
+        mensagem = '-1'
+        self.client_socket.send(mensagem.encode())
+        self.client_socket.close()
+        exit()
 
     def botao_cadastrar(self):
         """

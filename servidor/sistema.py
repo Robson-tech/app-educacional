@@ -470,7 +470,6 @@ class SistemaEducacional:
                 self._cursor.execute(consulta_sql, parametros_consulta)
 
             self._mydb.commit()
-            self.login_professor(self.buscar(email))
             cadastrou = True
         return cadastrou
 
@@ -498,33 +497,28 @@ class SistemaEducacional:
         bool
             True, caso o aluno tenha sido cadastrado com sucesso. Caso contrario, retorna False.
         """
-        if self.buscar(email):
-            return False
-        consulta_sql = "SELECT sistema_educacional.turmas.id FROM sistema_educacional.turmas WHERE sistema_educacional.turmas.nome = %s"
-        parametros_consulta = (turma,)
-        self._cursor.execute(consulta_sql, parametros_consulta)
-        try:
+        cadastrou = False
+        if not self.buscar(email):
+            # Verifica se a turma existe
+            consulta_sql = "SELECT sistema_educacional.turmas.id FROM sistema_educacional.turmas WHERE sistema_educacional.turmas.nome = %s"
+            parametros_consulta = (turma,)
+            self._cursor.execute(consulta_sql, parametros_consulta)
             turma_id = self._cursor.fetchone()[0]
-        except:
-            return False
-        consulta_sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
-        parametros_consulta = (email, senha, nome,
-                               sobrenome, nascimento)
-        self._cursor.execute(consulta_sql, parametros_consulta)
-        self._mydb.commit()
-        consulta_sql = 'SELECT sistema_educacional.usuarios.id, sistema_educacional.usuarios.data_cadastro, sistema_educacional.usuarios.ultimo_login FROM sistema_educacional.usuarios WHERE email = %s'
-        parametros_consulta = (email,)
-        self._cursor.execute(consulta_sql, parametros_consulta)
-        id, data_cadastro, ultimo_login = self._cursor.fetchone()
-        aluno = Aluno(id, email, senha, nome, sobrenome,
-                      nascimento, data_cadastro, ultimo_login, turma)
-        self._usuario = aluno
-
-        consulta_sql = "INSERT INTO sistema_educacional.alunos (usuario_id, pontuacao_geral, turma_id) VALUES (%s, %s, %s)"
-        parametros_consulta = (aluno.id, 0, turma_id)
-        self._cursor.execute(consulta_sql, parametros_consulta)
-        self._mydb.commit()
-        return True
+            if turma_id:
+                # Cadastra o usuario
+                consulta_sql = "INSERT INTO sistema_educacional.usuarios (email, senha, nome, sobrenome, nascimento, data_cadastro, ultimo_login) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+                parametros_consulta = (email, senha, nome,
+                                    sobrenome, nascimento)
+                self._cursor.execute(consulta_sql, parametros_consulta)
+                
+                # Cadastra o aluno
+                consulta_sql = "INSERT INTO sistema_educacional.alunos (usuario_id, pontuacao_geral, turma_id) VALUES (%s, %s, %s)"
+                parametros_consulta = (self._cursor.lastrowid, 0, turma_id)
+                self._cursor.execute(consulta_sql, parametros_consulta)
+            
+                self._mydb.commit()
+                cadastrou = True
+        return cadastrou
 
     def login_professor(self, usuario):
         """
