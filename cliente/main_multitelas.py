@@ -319,6 +319,66 @@ class Main(QMainWindow, Ui_Main):
             return None
         return Atividade(*atividade_campos, lista_questoes)
 
+    def get_atividades_materia(self, materia_id):
+        """
+        Retorna as atividades da matéria
+
+        Parameters
+        ----------
+        materia_id : int
+            id da matéria
+
+        Returns
+        -------
+        dict
+            dicionário de atividades
+        """
+        self.client_socket.send(f'3|{materia_id}'.encode())
+        atividades = self.client_socket.recv(32784).decode().split('|')
+        lista_atividades = {}
+        for atividade in atividades[1:]:
+            atividade_campos = atividade.split('//')[:6]
+            lista_questoes = {}
+            for questao in atividade.split('//')[6:]:
+                questao_campos = questao.split(';;')
+                lista_questoes.update(
+                    {questao_campos[0]: Questao(*questao_campos)})
+            lista_atividades.update(
+                {atividade_campos[0]: Atividade(*atividade_campos, lista_questoes)})
+        return lista_atividades
+
+    def get_atividades_turma_professor(self, turma_id, professor_id):
+        """
+        Retorna as atividades da turma do professor
+
+        Parameters
+        ----------
+        turma_id : int
+            id da turma
+        professor_id : int
+            id do professor
+
+        Returns
+        -------
+        dict
+            dicionário de atividades
+        """
+        self.client_socket.send(f'5|{turma_id},{professor_id}'.encode())
+        atividades = self.client_socket.recv(32784).decode().split('|')
+        if len(atividades) == 1:
+            return None
+        lista_atividades = []
+        for atividade in atividades[1:]:
+            atividade_campos = atividade.split('//')[:6]
+            lista_questoes = {}
+            for questao in atividade.split('//')[6:]:
+                questao_campos = questao.split(';;')
+                lista_questoes.update(
+                    {questao_campos[0]: Questao(*questao_campos)})
+            lista_atividades.append(
+                Atividade(*atividade_campos, lista_questoes))
+        return lista_atividades
+
     def criar_pagina_atividade(self, atividade):
         """
         Cria a página da atividade
@@ -404,66 +464,6 @@ class Main(QMainWindow, Ui_Main):
         def ir_para_pagina_atividade():
             self.QtStack.setCurrentWidget(novo)
         return ir_para_pagina_atividade
-
-    def get_atividades_materia(self, materia_id):
-        """
-        Retorna as atividades da matéria
-
-        Parameters
-        ----------
-        materia_id : int
-            id da matéria
-
-        Returns
-        -------
-        dict
-            dicionário de atividades
-        """
-        self.client_socket.send(f'3|{materia_id}'.encode())
-        atividades = self.client_socket.recv(32784).decode().split('|')
-        lista_atividades = {}
-        for atividade in atividades[1:]:
-            atividade_campos = atividade.split('//')[:6]
-            lista_questoes = {}
-            for questao in atividade.split('//')[6:]:
-                questao_campos = questao.split(';;')
-                lista_questoes.update(
-                    {questao_campos[0]: Questao(*questao_campos)})
-            lista_atividades.update(
-                {atividade_campos[0]: Atividade(*atividade_campos, lista_questoes)})
-        return lista_atividades
-
-    def get_atividades_turma_professor(self, turma_id, professor_id):
-        """
-        Retorna as atividades da turma do professor
-
-        Parameters
-        ----------
-        turma_id : int
-            id da turma
-        professor_id : int
-            id do professor
-
-        Returns
-        -------
-        dict
-            dicionário de atividades
-        """
-        self.client_socket.send(f'5|{turma_id},{professor_id}'.encode())
-        atividades = self.client_socket.recv(32784).decode().split('|')
-        if len(atividades) == 1:
-            return None
-        lista_atividades = []
-        for atividade in atividades[1:]:
-            atividade_campos = atividade.split('//')[:6]
-            lista_questoes = {}
-            for questao in atividade.split('//')[6:]:
-                questao_campos = questao.split(';;')
-                lista_questoes.update(
-                    {questao_campos[0]: Questao(*questao_campos)})
-            lista_atividades.append(
-                Atividade(*atividade_campos, lista_questoes))
-        return lista_atividades
 
     def enviar_cadastro_atividade(self, mensagem):
         """
